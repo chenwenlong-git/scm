@@ -1,0 +1,4 @@
+# 加工单类型限制仓库编码配置
+procOrderTypeWarehouseRestricted:
+  WH:
+    - "WH01"

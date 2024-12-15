@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.sample.dao.SampleChildOrderMapper">
+    <sql id="search_where">
+        WHERE sco.del_timestamp = 0
+        <if test="dto.sampleParentOrderNo != null and dto.sampleParentOrderNo != ''">
+            AND sco.sample_parent_order_no LIKE concat('%',#{dto.sampleParentOrderNo}, '%')
+        </if>
+        <if test="dto.sampleChildOrderNo != null and dto.sampleChildOrderNo != ''">
+            AND sco.sample_child_order_no LIKE concat('%',#{dto.sampleChildOrderNo}, '%')
+        </if>
+        <if test="dto.sampleChildOrderNoList != null and dto.sampleChildOrderNoList.size() > 0">
+            AND sco.sample_child_order_no IN
+            <foreach collection="dto.sampleChildOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.spuList != null and dto.spuList.size() > 0">
+            AND sco.spu IN
+            <foreach collection="dto.spuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND sco.sku IN
+            <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sku != null and dto.sku != ''">
+            AND sco.sku LIKE concat('%',#{dto.sku}, '%')
+        </if>
+        <if test="dto.platformList != null and dto.platformList.size() > 0">
+            AND sco.platform IN
+            <foreach collection="dto.platformList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND sco.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierNameList != null and dto.supplierNameList.size() > 0">
+            AND sco.supplier_name IN
+            <foreach collection="dto.supplierNameList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sampleOrderStatusList != null and dto.sampleOrderStatusList.size() > 0">
+            AND sco.sample_order_status IN
+            <foreach collection="dto.sampleOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.categoryName != null and dto.categoryName != ''">
+            AND spo.category_name = #{dto.categoryName}
+        </if>
+        <if test="dto.placeOrderUsername != null and dto.placeOrderUsername != ''">
+            AND scoc.place_order_username = #{dto.placeOrderUsername}
+        </if>
+        <if test="dto.approveUsername != null and dto.approveUsername != ''">
+            AND scoc.approve_username = #{dto.approveUsername}
+        </if>
+        <if test="dto.receiveUsername != null and dto.receiveUsername != ''">
+            AND scoc.receive_username = #{dto.receiveUsername}
+        </if>
+        <if test="dto.receiptUsername != null and dto.receiptUsername != ''">
+            AND scoc.receipt_username = #{dto.receiptUsername}
+        </if>
+        <if test="dto.sampleUsername != null and dto.sampleUsername != ''">
+            AND scoc.sample_username = #{dto.sampleUsername}
+        </if>
+        <if test="dto.placeOrderUser != null and dto.placeOrderUser != ''">
+            AND scoc.place_order_user = #{dto.placeOrderUser}
+        </if>
+        <if test="dto.approveUser != null and dto.approveUser != ''">
+            AND scoc.approve_user = #{dto.approveUser}
+        </if>
+        <if test="dto.receiveUser != null and dto.receiveUser != ''">
+            AND scoc.receive_user = #{dto.receiveUser}
+        </if>
+        <if test="dto.receiptUser != null and dto.receiptUser != ''">
+            AND scoc.receipt_user = #{dto.receiptUser}
+        </if>
+        <if test="dto.sampleUser != null and dto.sampleUser != ''">
+            AND scoc.sample_user = #{dto.sampleUser}
+        </if>
+        <if test="dto.deliverUser != null and dto.deliverUser != ''">
+            AND scoc.deliver_user LIKE concat('%',#{dto.deliverUser}, '%')
+        </if>
+        <if test="dto.deliverUserName != null and dto.deliverUserName != ''">
+            AND scoc.deliver_username LIKE concat('%',#{dto.deliverUsername}, '%')
+        </if>
+        <if test="dto.sampleDeliverOrderNo != null and dto.sampleDeliverOrderNo != ''">
+            AND scoc.sample_deliver_order_no LIKE concat('%',#{dto.sampleDeliverOrderNo}, '%')
+        </if>
+        <if test="dto.sampleReceiptOrderNo != null and dto.sampleReceiptOrderNo != ''">
+            AND scoc.sample_receipt_order_no LIKE concat('%',#{dto.sampleReceiptOrderNo}, '%')
+        </if>
+        <if test="dto.sampleQcOrderNo != null and dto.sampleQcOrderNo != ''">
+            AND scoc.sample_qc_order_no = #{dto.sampleQcOrderNo}
+        </if>
+        <if test="dto.sampleWarehousingOrderNo != null and dto.sampleWarehousingOrderNo != ''">
+            AND scoc.sample_warehousing_order_no = #{dto.sampleWarehousingOrderNo}
+        </if>
+        <if test="dto.sampleSettleOrderNo != null and dto.sampleSettleOrderNo != ''">
+            AND scoc.sample_settle_order_no = #{dto.sampleSettleOrderNo}
+        </if>
+        <if test="dto.placeOrderTimeStart != null">
+            <![CDATA[ AND scoc.place_order_time >= #{dto.placeOrderTimeStart} ]]>
+        </if>
+        <if test="dto.placeOrderTimeEnd != null">
+            <![CDATA[ AND scoc.place_order_time <= #{dto.placeOrderTimeEnd} ]]>
+        </if>
+        <if test="dto.approveTimeStart != null">
+            <![CDATA[ AND scoc.approve_time >= #{dto.approveTimeStart} ]]>
+        </if>
+        <if test="dto.approveTimeEnd != null">
+            <![CDATA[ AND scoc.approve_time <= #{dto.approveTimeEnd} ]]>
+        </if>
+        <if test="dto.receiveOrderTimeStart != null">
+            <![CDATA[ AND scoc.receive_order_time >= #{dto.receiveOrderTimeStart} ]]>
+        </if>
+        <if test="dto.receiveOrderTimeEnd != null">
+            <![CDATA[ AND scoc.receive_order_time <= #{dto.receiveOrderTimeEnd} ]]>
+        </if>
+        <if test="dto.deliverTimeStart != null">
+            <![CDATA[ AND scoc.deliver_time >= #{dto.deliverTimeStart} ]]>
+        </if>
+        <if test="dto.deliverTimeEnd != null">
+            <![CDATA[ AND scoc.deliver_time <= #{dto.deliverTimeEnd} ]]>
+        </if>
+        <if test="dto.receiptTimeStart != null">
+            <![CDATA[ AND scoc.receipt_time >= #{dto.receiptTimeStart} ]]>
+        </if>
+        <if test="dto.receiptTimeEnd != null">
+            <![CDATA[ AND scoc.receipt_time <= #{dto.receiptTimeEnd} ]]>
+        </if>
+        <if test="dto.sampleTimeStart != null">
+            <![CDATA[ AND scoc.sample_time >= #{dto.sampleTimeStart} ]]>
+        </if>
+        <if test="dto.sampleTimeEnd != null">
+            <![CDATA[ AND scoc.sample_time <= #{dto.sampleTimeEnd} ]]>
+        </if>
+        <if test="dto.deliverDateStart != null">
+            <![CDATA[ AND sco.deliver_date >= #{dto.deliverDateStart} ]]>
+        </if>
+        <if test="dto.deliverDateEnd != null">
+            <![CDATA[ AND sco.deliver_date <= #{dto.deliverDateEnd} ]]>
+        </if>
+        <if test="dto.typesetTimeStart != null">
+            <![CDATA[ AND scoc.typeset_time >= #{dto.typesetTimeStart} ]]>
+        </if>
+        <if test="dto.typesetTimeEnd != null">
+            <![CDATA[ AND scoc.typeset_time <= #{dto.typesetTimeEnd} ]]>
+        </if>
+        <if test="dto.isFirstOrder != null">
+            AND spo.is_first_order = #{dto.isFirstOrder}
+        </if>
+        <if test="dto.isUrgentOrder != null">
+            AND spo.is_urgent_order = #{dto.isUrgentOrder}
+        </if>
+        <if test="dto.isNormalOrder != null">
+            AND spo.is_normal_order = #{dto.isNormalOrder}
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND sco.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+
+
+    <select id="searchSamplePurchase"
+            resultType="com.hete.supply.scm.server.scm.sample.entity.vo.SamplePurchaseSearchVo">
+        SELECT sco.sample_child_order_id AS sampleChildOrderId,
+        sco.version AS version,
+        sco.sample_child_order_no AS sampleChildOrderNo,
+        sco.sample_order_status AS sampleOrderStatus,
+        sco.spu AS spu,
+        sco.platform AS platform,
+        sco.supplier_code AS supplierCode,
+        sco.supplier_name AS supplierName,
+        sco.warehouse_code AS warehouseCode,
+        sco.warehouse_name AS warehouseName,
+        sco.warehouse_types AS warehouseTypes,
+        sco.sku AS sku,
+        sco.create_time AS createTime,
+        scoc.typesetting_time AS typesettingTime,
+        sco.purchase_cnt AS purchaseCnt,
+        scoc.typeset_time AS typesetTime,
+        scoc.receive_order_time AS receiveOrderTime,
+        scoc.receipt_time AS receiptTime,
+        scoc.sample_time AS sampleTime,
+        scoc.deliver_time AS deliverTime,
+        spo.is_first_order AS isFirstOrder,
+        spo.is_urgent_order AS isUrgentOrder,
+        spo.is_normal_order AS isNormalOrder,
+        sco.deliver_date AS deliverDate,
+        scoc.deliver_user AS deliverUser,
+        spo.sample_parent_order_id AS sampleParentOrderId,
+        scoc.deliver_username AS deliverUsername,
+        sco.sample_produce_label AS sampleProduceLabel
+        FROM sample_child_order AS sco
+        LEFT JOIN sample_child_order_change AS scoc
+        ON sco.sample_child_order_id = scoc.sample_child_order_id
+        LEFT JOIN sample_parent_order AS spo
+        ON sco.sample_parent_order_no = spo.sample_parent_order_no
+        <include refid="search_where"></include>
+        ORDER BY sco.create_time DESC
+    </select>
+
+
+    <select id="sampleChildOrderChangeSearch"
+            resultType="com.hete.supply.scm.server.scm.sample.entity.vo.SampleChildOrderChangeSearchVo">
+        SELECT sco.sample_child_order_id AS sampleChildOrderId,
+        sco.sample_child_order_no AS sampleChildOrderNo,
+        sco.sample_order_status AS sampleOrderStatus,
+        sco.supplier_code AS supplierCode,
+        sco.supplier_name AS supplierName,
+        sco.settle_price AS settlePrice,
+        scoc.sample_time AS sampleTime
+        FROM sample_child_order AS sco
+        INNER JOIN sample_child_order_change AS scoc
+        ON sco.sample_child_order_id = scoc.sample_child_order_id
+        WHERE sco.del_timestamp = 0
+        <if test="supplierCode != null and supplierCode != ''">
+            AND sco.supplier_code = #{supplierCode}
+        </if>
+        <if test="sampleTime != null">
+            <![CDATA[ AND scoc.sample_time <= #{sampleTime} ]]>
+        </if>
+        <if test="sampleTimeStart != null">
+            <![CDATA[ AND scoc.sample_time >= #{sampleTimeStart} ]]>
+        </if>
+        <if test="sampleTimeEnd != null">
+            <![CDATA[ AND scoc.sample_time <= #{sampleTimeEnd} ]]>
+        </if>
+        <if test="sampleOrderStatus != null">
+            AND sco.sample_order_status = #{sampleOrderStatus}
+        </if>
+        ORDER BY sco.create_time DESC
+    </select>
+    <select id="getAllSkuList" resultType="java.lang.String">
+        SELECT DISTINCT (sco.sku)
+        FROM sample_child_order AS sco
+    </select>
+    <select id="getSampleChildExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sample_child_order AS sco
+        LEFT JOIN sample_child_order_change AS scoc
+        ON sco.sample_child_order_id = scoc.sample_child_order_id
+        LEFT JOIN sample_parent_order AS spo
+        ON sco.sample_parent_order_no = spo.sample_parent_order_no
+        <include refid="search_where"></include>
+    </select>
+    <select id="getSampleChildExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.SampleChildExportVo">
+        SELECT sco.sample_parent_order_no AS sampleParentOrderNo,
+        sco.sample_child_order_no AS sampleChildOrderNo,
+        sco.sample_order_status AS sampleOrderStatus,
+        sco.spu AS spu,
+        sco.purchase_cnt AS purchaseCnt,
+        sco.purchase_predict_price AS purchasePredictPrice,
+        sco.proofing_price AS proofingPrice,
+        sco.cost_price AS costPrice,
+        sco.sample_result AS sampleResult,
+        sco.sku AS sku,
+        sco.sku_batch_code AS skuBatchCode,
+        sco.supplier_code AS supplierCode,
+        sco.platform AS platform,
+        scoc.receipt_username AS receiptUsername,
+        scoc.sample_username AS sampleUsername,
+        scoc.receive_order_time AS receiveOrderTime,
+        scoc.deliver_time AS deliverTime,
+        scoc.receipt_time AS receiptTime,
+        scoc.sample_time AS sampleTime,
+        spo.create_time AS parentOrderCreateTime,
+        sco.create_time AS childOrderCreateTime,
+        sco.demand_describe AS demandDescribe
+        FROM sample_child_order AS sco
+        LEFT JOIN sample_child_order_change AS scoc
+        ON sco.sample_child_order_id = scoc.sample_child_order_id
+        LEFT JOIN sample_parent_order AS spo
+        ON sco.sample_parent_order_no = spo.sample_parent_order_no
+        <include refid="search_where"></include>
+        ORDER BY sco.create_time DESC
+    </select>
+    <select id="getDefectiveSampleByNo" resultType="java.lang.String">
+        SELECT sco.sample_child_order_no AS sampleChildOrderNo
+        FROM sample_child_order AS sco
+        WHERE sco.del_timestamp = 0
+        AND sco.sample_order_status = #{sampleOrderStatus}
+        AND sco.sample_result = #{sampleResult}
+        <if test="sampleChildOrderNo != null">
+            AND sco.sample_child_order_no LIKE concat('%',#{sampleChildOrderNo}, '%')
+        </if>
+    </select>
+    <select id="getDistinctNoListBySkuList" resultType="java.lang.String">
+        SELECT MAX(sco.sample_child_order_no)
+        FROM sample_child_order AS sco
+        WHERE sco.del_timestamp = 0
+        <if test="skuList != null and skuList.size() > 0">
+            AND sco.sku IN
+            <foreach collection="skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY sco.sku
+    </select>
+    <select id="getOneBySku" resultType="com.hete.supply.scm.server.scm.sample.entity.po.SampleChildOrderPo">
+        SELECT sco.sample_parent_order_no,
+        sco.sample_child_order_no
+        FROM sample_child_order AS sco
+        LEFT JOIN sample_child_order_result AS scor
+        ON sco.sample_child_order_no = scor.sample_child_order_no
+        WHERE sco.del_timestamp = 0
+        <if test="sku != null and sku != ''">
+            AND sco.sku = #{sku}
+        </if>
+        ORDER BY scor.create_time DESC
+        LIMIT 1
+    </select>
+    <select id="getListBySkuAndDevType"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.SampleListBySkuAndDevTypeVo">
+        SELECT sco.sample_child_order_id AS sampleChildOrderId,
+        sco.sample_parent_order_no AS sampleParentOrderNo,
+        sco.sample_child_order_no AS sampleChildOrderNo,
+        sco.sku AS sku,
+        sco.proofing_price AS proofingPrice,
+        sco.cost_price AS costPrice,
+        sco.sample_produce_label AS sampleProduceLabel,
+        sco.warehouse_code AS warehouseCode
+        FROM sample_child_order AS sco
+        WHERE sco.del_timestamp = 0
+        <if test="skuList != null and skuList.size() > 0">
+            AND sco.sku IN
+            <foreach collection="skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="sampleDevTypeList != null and sampleDevTypeList.size() > 0">
+            AND sco.sample_dev_type IN
+            <foreach collection="sampleDevTypeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="sampleOrderStatusList != null and sampleOrderStatusList.size() > 0">
+            AND sco.sample_order_status IN
+            <foreach collection="sampleOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="sampleProduceLabelList != null and sampleProduceLabelList.size() > 0">
+            AND sco.sample_produce_label IN
+            <foreach collection="sampleProduceLabelList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY sco.create_time DESC
+    </select>
+</mapper>

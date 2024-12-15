@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.develop.dao.DevelopSampleOrderMapper">
+    <sql id="common_where">
+        dso.del_timestamp = 0
+        <if test="dto.developSampleOrderNo != null and dto.developSampleOrderNo != ''">
+            AND dso.develop_sample_order_no LIKE concat('%',#{dto.developSampleOrderNo}, '%')
+        </if>
+        <if test="dto.developSampleOrderNoList != null and dto.developSampleOrderNoList.size() > 0">
+            AND dso.develop_sample_order_no IN
+            <foreach collection="dto.developSampleOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.developChildOrderNo != null and dto.developChildOrderNo != ''">
+            AND dso.develop_child_order_no LIKE concat('%',#{dto.developChildOrderNo}, '%')
+        </if>
+        <if test="dto.developPamphletOrderNo != null and dto.developPamphletOrderNo != ''">
+            AND dso.develop_pamphlet_order_no LIKE concat('%',#{dto.developPamphletOrderNo}, '%')
+        </if>
+        <if test="dto.receiptOrderNo != null and dto.receiptOrderNo != ''">
+            AND dso.receipt_order_no LIKE concat('%',#{dto.receiptOrderNo}, '%')
+        </if>
+        <if test="dto.sku != null and dto.sku != ''">
+            AND dso.sku LIKE concat('%',#{dto.sku}, '%')
+        </if>
+        <if test="dto.skuBatchCode != null and dto.skuBatchCode != ''">
+            AND dso.sku_batch_code LIKE concat('%',#{dto.skuBatchCode}, '%')
+        </if>
+        <if test="dto.handleUsername != null and dto.handleUsername != ''">
+            AND dso.handle_username LIKE concat('%',#{dto.handleUsername}, '%')
+        </if>
+        <if test="dto.createUsername != null and dto.createUsername != ''">
+            AND dso.create_username LIKE concat('%',#{dto.createUsername}, '%')
+        </if>
+        <if test="dto.signUsername != null and dto.signUsername != ''">
+            AND dso.sign_username LIKE concat('%',#{dto.signUsername}, '%')
+        </if>
+        <if test="dto.returnUsername != null and dto.returnUsername != ''">
+            AND dso.return_username LIKE concat('%',#{dto.returnUsername}, '%')
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND dso.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND dso.create_time <= #{dto.createTimeEnd}  ]]>
+        </if>
+        <if test="dto.handleTimeStart != null">
+            <![CDATA[ AND dso.handle_time >= #{dto.handleTimeStart} ]]>
+        </if>
+        <if test="dto.handleTimeEnd != null">
+            <![CDATA[ AND dso.handle_time <= #{dto.handleTimeEnd}  ]]>
+        </if>
+        <if test="dto.shelvesTimeStart != null">
+            <![CDATA[ AND dso.shelves_time >= #{dto.shelvesTimeStart} ]]>
+        </if>
+        <if test="dto.shelvesTimeEnd != null">
+            <![CDATA[ AND dso.shelves_time <= #{dto.shelvesTimeEnd}  ]]>
+        </if>
+        <if test="dto.signTimeStart != null">
+            <![CDATA[ AND dso.sign_time >= #{dto.signTimeStart} ]]>
+        </if>
+        <if test="dto.signTimeEnd != null">
+            <![CDATA[ AND dso.sign_time <= #{dto.signTimeEnd}  ]]>
+        </if>
+        <if test="dto.returnTimeStart != null">
+            <![CDATA[ AND dso.return_time >= #{dto.returnTimeStart} ]]>
+        </if>
+        <if test="dto.returnTimeEnd != null">
+            <![CDATA[ AND dso.return_time <= #{dto.returnTimeEnd}  ]]>
+        </if>
+        <if test="dto.developSampleMethodList != null and dto.developSampleMethodList.size() > 0">
+            AND dso.develop_sample_method IN
+            <foreach collection="dto.developSampleMethodList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.developSampleStatusList != null and dto.developSampleStatusList.size() > 0">
+            AND dso.develop_sample_status IN
+            <foreach collection="dto.developSampleStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.platform != null and dto.platform != ''">
+            AND dso.platform LIKE concat('%',#{dto.platform}, '%')
+        </if>
+        <if test="dto.platformList != null and dto.platformList.size() > 0">
+            AND dso.platform IN
+            <foreach collection="dto.platformList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierCode != null and dto.supplierCode != ''">
+            AND dso.supplier_code LIKE concat('%',#{dto.supplierCode}, '%')
+        </if>
+        <if test="dto.authSupplierCodeList != null and dto.authSupplierCodeList.size() > 0">
+            AND dso.supplier_code IN
+            <foreach collection="dto.authSupplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND dso.sku IN
+            <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.developSampleTypeList != null and dto.developSampleTypeList.size() > 0">
+            AND dso.develop_sample_type IN
+            <foreach collection="dto.developSampleTypeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.developChildOrderNoList != null and dto.developChildOrderNoList.size() > 0">
+            AND dso.develop_child_order_no IN
+            <foreach collection="dto.developChildOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.skuBatchCodeList != null and dto.skuBatchCodeList.size() > 0">
+            AND dso.sku_batch_code IN
+            <foreach collection="dto.skuBatchCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    <select id="search" resultType="com.hete.supply.scm.server.scm.develop.entity.vo.DevelopSampleOrderSearchVo">
+        SELECT dso.develop_sample_order_no AS developSampleOrderNo,
+        dso.develop_pricing_order_no AS developPricingOrderNo,
+        dso.version AS version,
+        dso.develop_parent_order_no AS developParentOrderNo,
+        dso.develop_child_order_no AS developChildOrderNo,
+        dso.develop_pamphlet_order_no AS developPamphletOrderNo,
+        dso.develop_sample_status AS developSampleStatus,
+        dso.develop_sample_method AS developSampleMethod,
+        dso.platform AS platform,
+        dso.supplier_code AS supplierCode,
+        dso.develop_pricing_order_no AS developPricingOrderNo,
+        dso.spu AS spu,
+        dso.sku AS sku,
+        dso.sku_batch_code AS skuBatchCode,
+        dso.receipt_order_no AS receiptOrderNo,
+        dso.shelves_time AS shelvesTime,
+        dso.create_username AS createUsername,
+        dso.create_time AS createTime,
+        dso.handle_username AS handleUsername,
+        dso.handle_time AS handleTime,
+        dso.sku_batch_sample_price AS skuBatchSamplePrice,
+        dso.sku_batch_purchase_price AS skuBatchPurchasePrice,
+        dso.develop_sample_type AS developSampleType,
+        dso.return_tracking_no AS returnTrackingNo,
+        dso.develop_sample_direction AS developSampleDirection,
+        dso.warehouse_code AS warehouseCode,
+        dso.warehouse_name AS warehouseName
+        FROM develop_sample_order AS dso
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY dso.develop_sample_order_id DESC
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT count(dso.develop_sample_order_no) AS total
+        FROM develop_sample_order AS dso
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY dso.develop_sample_order_id DESC
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.DevelopSampleOrderExportVo">
+        SELECT dso.develop_sample_order_no AS developSampleOrderNo,
+        dso.develop_pricing_order_no AS developPricingOrderNo,
+        dso.version AS version,
+        dso.develop_parent_order_no AS developParentOrderNo,
+        dso.develop_child_order_no AS developChildOrderNo,
+        dso.develop_pamphlet_order_no AS developPamphletOrderNo,
+        dso.develop_sample_status AS developSampleStatus,
+        dso.develop_sample_method AS developSampleMethod,
+        dso.platform AS platform,
+        dso.supplier_code AS supplierCode,
+        dso.develop_pricing_order_no AS developPricingOrderNo,
+        dso.sku AS sku,
+        dso.sku_batch_code AS skuBatchCode,
+        dso.receipt_order_no AS receiptOrderNo,
+        dso.shelves_time AS shelvesTime,
+        dso.create_username AS createUsername,
+        dso.create_time AS createTime,
+        dso.handle_username AS handleUsername,
+        dso.sign_time AS signTime,
+        dso.sku_batch_sample_price AS skuBatchSamplePrice,
+        dso.sku_batch_purchase_price AS skuBatchPurchasePrice,
+        dso.handle_time AS handleTime
+        FROM develop_sample_order AS dso
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY dso.develop_sample_order_id DESC
+    </select>
+</mapper>

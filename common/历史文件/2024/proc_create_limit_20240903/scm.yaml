@@ -1,0 +1,5 @@
+#询问产品韩子奇索要线上环境复杂工序配置id
+scm:
+  process:
+    complexProcessIds:
+      - "0"

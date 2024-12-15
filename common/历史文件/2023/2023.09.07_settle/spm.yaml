@@ -1,0 +1,28 @@
+provider:
+  generic-export-map:
+    spm_deduct_order_sku_export:
+      biz-system-code: SPM
+      file-prefix: 扣款单明细列表信息
+      resource-name: SPM系统-扣款单明细列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.DeductOrderFacade
+      method-name-count: getExportSkuTotals
+      method-name-record: getExportSkuList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.DeductOrderDto
+      header-alias:
+        deductOrderNo: 扣款单号
+        deductTypeName: 扣款类型
+        deductStatusName: 状态
+        supplierCode: 供应商代码
+        deductPriceTotal: 扣款总金额
+        settleOrderNo: 关联结算单
+        deductOrderPurchaseTypeName: 单据类型
+        businessNo: 单据号
+        settlePrice: 结算金额
+        spu: spu
+        sku: 商品sku
+        deductNum: 扣款数量
+        deductUnitPrice: 扣款单价
+        deductRemarks: 扣款原因
+        deductPrice: 扣款金额（明细）

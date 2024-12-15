@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.qc.dao.QcDetailMapper">
+    <!-- 定义 common where 子句 -->
+    <sql id="commonWhereClause">
+        WHERE del_timestamp=0
+        <if test="qcOrderNos != null and qcOrderNos.size() > 0">
+            AND qc_order_no IN
+            <foreach collection="qcOrderNos" item="qcOrderNo" separator="," open="(" close=")">
+                #{qcOrderNo}
+            </foreach>
+        </if>
+    </sql>
+
+    <sql id="commonExportWhereClause">
+        WHERE qd.del_timestamp = 0
+        <if test="qcSearchDto.containerCodeList != null and qcSearchDto.containerCodeList.size() > 0">
+            and qd.container_code in
+            <foreach item="item" collection="qcSearchDto.containerCodeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qcSearchDto.skuBatchCodeList != null and qcSearchDto.skuBatchCodeList.size() > 0">
+            and qd.batch_code in
+            <foreach item="item" collection="qcSearchDto.skuBatchCodeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qcSearchDto.skuList != null and qcSearchDto.skuList.size() > 0">
+            and qd.sku_code in
+            <foreach item="item" collection="qcSearchDto.skuList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qcSearchDto.sku != null and qcSearchDto.sku != ''">
+            and qd.sku_code like concat('%',#{qcSearchDto.sku}, '%')
+        </if>
+        <if test="qcSearchDto.supplierCode != null and qcSearchDto.supplierCode != ''">
+            and qro.supplier_code = #{qcSearchDto.supplierCode}
+        </if>
+        <if test="qcSearchDto.deliveryOrderNo != null and qcSearchDto.deliveryOrderNo != ''">
+            and qro.delivery_order_no = #{qcSearchDto.deliveryOrderNo}
+        </if>
+        <if test="qcSearchDto.scmBizNo != null and qcSearchDto.scmBizNo != ''">
+            and qro.scm_biz_no = #{qcSearchDto.scmBizNo}
+        </if>
+        <if test="qcSearchDto.receiveType != null">
+            and qro.receive_type = #{qcSearchDto.receiveType}
+        </if>
+        <if test="qcSearchDto.goodsCategory != null and qcSearchDto.goodsCategory != ''">
+            and qro.goods_category = #{qcSearchDto.goodsCategory}
+        </if>
+        <if test="qcSearchDto.smGoodsCategory != null and qcSearchDto.smGoodsCategory != ''">
+            and qro.goods_category = #{qcSearchDto.smGoodsCategory}
+        </if>
+
+        <if test="qcSearchDto.qcOrderNoList != null and qcSearchDto.qcOrderNoList.size() > 0">
+            and qo.qc_order_no in
+            <foreach item="item" collection="qcSearchDto.qcOrderNoList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qcSearchDto.warehouseCode != null and qcSearchDto.warehouseCode != ''">
+            and qo.warehouse_code = #{qcSearchDto.warehouseCode}
+        </if>
+        <if test="qcSearchDto.processOrderNo != null and qcSearchDto.processOrderNo != ''">
+            and qo.process_order_no = #{qcSearchDto.processOrderNo}
+        </if>
+        <if test="qcSearchDto.repairOrderNo != null and qcSearchDto.repairOrderNo != ''">
+            and qo.repair_order_no = #{qcSearchDto.repairOrderNo}
+        </if>
+        <if test="qcSearchDto.qcSourceOrderNo != null and qcSearchDto.qcSourceOrderNo != ''">
+            and qo.qc_source_order_no = #{qcSearchDto.qcSourceOrderNo}
+        </if>
+        <if test="qcSearchDto.qcSourceOrderType != null">
+            and qo.qc_source_order_type = #{qcSearchDto.qcSourceOrderType}
+        </if>
+        <if test="qcSearchDto.receiveOrderNo != null and qcSearchDto.receiveOrderNo != ''">
+            and qo.receive_order_no = #{qcSearchDto.receiveOrderNo}
+        </if>
+        <if test="qcSearchDto.qcType != null and qcSearchDto.qcType.size() > 0">
+            and qo.qc_type in
+            <foreach item="item" collection="qcSearchDto.qcType" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qcSearchDto.qcResult != null">
+            and qo.qc_result = #{qcSearchDto.qcResult}
+        </if>
+        <if test="qcSearchDto.operator != null and qcSearchDto.operator != ''">
+            and qo.operator = #{qcSearchDto.operator}
+        </if>
+        <if test="qcSearchDto.operatorName != null and qcSearchDto.operatorName != ''">
+            and qo.operator_name = #{qcSearchDto.operatorName}
+        </if>
+        <if test="qcSearchDto.createTimeStart != null">
+            <![CDATA[ and qo.create_time >= #{qcSearchDto.createTimeStart} ]]>
+        </if>
+        <if test="qcSearchDto.createTimeEnd != null">
+            <![CDATA[ and qo.create_time <= #{qcSearchDto.createTimeEnd} ]]>
+        </if>
+        <if test="qcSearchDto.handOverTimeStart != null">
+            <![CDATA[ and qo.hand_over_time >= #{qcSearchDto.handOverTimeStart} ]]>
+        </if>
+        <if test="qcSearchDto.handOverTimeEnd != null">
+            <![CDATA[ and qo.hand_over_time <= #{qcSearchDto.handOverTimeEnd} ]]>
+        </if>
+        <if test="qcSearchDto.taskFinishTimeStart != null">
+            <![CDATA[ and qo.task_finish_time >= #{qcSearchDto.taskFinishTimeStart} ]]>
+        </if>
+        <if test="qcSearchDto.taskFinishTimeEnd != null">
+            <![CDATA[ and qo.task_finish_time <= #{qcSearchDto.taskFinishTimeEnd} ]]>
+        </if>
+        <if test="qcSearchDto.qcDetailQcOrderNoList != null and qcSearchDto.qcDetailQcOrderNoList.size() > 0">
+            and qo.qc_order_no in
+            <foreach item="item" collection="qcSearchDto.qcDetailQcOrderNoList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qcSearchDto.qcReceiveQcOrderNoList != null and qcSearchDto.qcReceiveQcOrderNoList.size() > 0">
+            and qo.qc_order_no in
+            <foreach item="item" collection="qcSearchDto.qcReceiveQcOrderNoList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qcSearchDto.qcStateList != null and qcSearchDto.qcStateList.size() > 0">
+            and qo.qc_state in
+            <foreach item="item" collection="qcSearchDto.qcStateList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qcSearchDto.auditor != null and qcSearchDto.auditor != ''">
+            and qo.auditor like concat('%',#{qcSearchDto.auditor}, '%')
+        </if>
+        <if test="qcSearchDto.handOverUser != null and qcSearchDto.handOverUser != ''">
+            and qo.hand_over_user like concat('%',#{qcSearchDto.handOverUser}, '%')
+        </if>
+        <if test="qcSearchDto.auditTimeStart != null">
+            <![CDATA[ and qo.audit_time >= #{qcSearchDto.auditTimeStart} ]]>
+        </if>
+        <if test="qcSearchDto.auditTimeEnd != null">
+            <![CDATA[ and qo.audit_time <= #{qcSearchDto.auditTimeEnd} ]]>
+        </if>
+        <if test="qcSearchDto.isUrgentOrder != null">
+            and qo.is_urgent_order = #{qcSearchDto.isUrgentOrder}
+        </if>
+        <if test="qcSearchDto.categoryName != null and qcSearchDto.categoryName != ''">
+            and qd.category_name like concat('%',#{qcSearchDto.categoryName}, '%')
+        </if>
+        <if test="qcSearchDto.supplierCodeList != null and qcSearchDto.supplierCodeList.size() > 0">
+            and qro.supplier_code in
+            <foreach item="item" collection="qcSearchDto.supplierCodeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="qcSearchDto.qcOrigin != null">
+            and qo.qc_origin = #{qcSearchDto.qcOrigin}
+        </if>
+        <if test="qcSearchDto.qcOriginProperty != null">
+            and qo.qc_origin_property = #{qcSearchDto.qcOriginProperty}
+        </if>
+        <if test="qcSearchDto.purchaseChildOrderNo != null and qcSearchDto.purchaseChildOrderNo != ''">
+            and qo.purchase_child_order_no = #{qcSearchDto.purchaseChildOrderNo}
+        </if>
+    </sql>
+
+    <!-- 质检明细表的通用字段 -->
+    <sql id="baseColumns">
+        qc_detail_id, qc_order_no, container_code, batch_code, spu, sku_code,
+        amount, wait_amount, pass_amount, not_pass_amount, qc_result,
+        qc_not_passed_reason, remark, picture_ids, weight, relation_qc_detail_id
+    </sql>
+
+    <sql id="exportBaseColumns">
+        qd.qc_order_no,
+        qo.warehouse_code,
+        qd.sku_code,
+        qd.batch_code,
+        qd.qc_not_passed_reason,
+        qo.qc_type,
+        qo.process_order_no,
+        qo.repair_order_no,
+        qo.receive_order_no,
+        qro.scm_biz_no,
+        qd.wait_amount,
+        qd.amount,
+        qd.pass_amount,
+        qd.not_pass_amount,
+        qo.operator_name,
+        qd.qc_detail_id,
+        qd.container_code,
+        qd.remark,
+        qd.spu,
+        qo.task_finish_time,
+        qo.hand_over_user,
+        qo.hand_over_time,
+        qo.auditor,
+        qo.audit_time,
+        qo.qc_origin,
+        qo.qc_origin_property,
+        qo.purchase_child_order_no,
+        qo.supplier_code,
+        qo.is_urgent_order,
+        qo.qc_source_order_no,
+        qo.qc_source_order_type
+    </sql>
+
+
+    <select id="getQcDetailExportTotals" resultType="java.lang.Integer">
+        select count(1)
+        from qc_detail qd
+        left join qc_order qo on qd.qc_order_no = qo.qc_order_no and qo.del_timestamp = 0
+        left join qc_receive_order qro on qd.qc_order_no = qro.qc_order_no and qro.del_timestamp = 0
+        <include refid="commonExportWhereClause"/>
+    </select>
+
+    <select id="getQcDetailExportList" resultType="com.hete.supply.scm.server.scm.qc.entity.bo.QcDetailExportBo">
+        select
+        <include refid="exportBaseColumns"/>
+        from qc_detail qd
+        left join qc_order qo on qd.qc_order_no = qo.qc_order_no and qo.del_timestamp = 0
+        left join qc_receive_order qro on qd.qc_order_no = qro.qc_order_no and qro.del_timestamp = 0
+        <include refid="commonExportWhereClause"/>
+    </select>
+
+    <select id="getQcWaitDetail" resultType="com.hete.supply.scm.server.scm.qc.entity.bo.QcWaitDetailBo">
+        SELECT qd.sku_code, qo.warehouse_code, SUM(qd.amount) amount
+        FROM qc_order qo
+        JOIN qc_detail qd ON qo.qc_order_no = qd.qc_order_no
+        WHERE qo.del_timestamp = 0 AND qd.del_timestamp = 0
+        <if test="qcStateList != null and qcStateList.size()>0">
+            AND qo.qc_state IN
+            <foreach collection="qcStateList" open="(" separator="," item="qcState" close=")">
+                #{qcState}
+            </foreach>
+        </if>
+        <if test="skuCodeList != null and skuCodeList.size()>0">
+            AND qd.sku_code IN
+            <foreach collection="skuCodeList" open="(" separator="," item="skuCode" close=")">
+                #{skuCode}
+            </foreach>
+        </if>
+        GROUP BY qd.sku_code, qo.warehouse_code
+    </select>
+
+</mapper>

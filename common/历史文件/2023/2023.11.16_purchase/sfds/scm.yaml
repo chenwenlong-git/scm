@@ -1,0 +1,81 @@
+provider:
+  generic-export-map:
+    scm_purchase_pre_confirm:
+      biz-system-code: SCM
+      file-prefix: SCM待跟单确认列表导出
+      resource-name: SCM系统-SCM待跟单确认列表导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.PurchaseChildFacade
+      method-name-count: exportPurchaseChildPreConfirmTotals
+      method-name-record: exportPurchaseChildPreConfirm
+      param-type: com.hete.supply.scm.api.scm.entity.dto.PurchaseProductSearchDto
+      header-alias:
+        platformName: 需求平台
+        sku: 商品sku
+        skuEncode: 产品名称
+        purchaseTotal: 下单数
+        expectedOnShelvesDate: 期望上架时间
+        deliverDate: 要求发货时间
+        purchaseChildOrderNo: 采购子单号
+        b: 采购类型
+        warehouseCode: 收货仓库编码
+        d: 采购单价
+        e: 优惠金额
+        c: 原料仓库编码
+        f1: 原料sku1
+        g1: 单位bom需求数1
+        f2: 原料sku2
+        g2: 单位bom需求数2
+        f3: 原料sku3
+        g3: 单位bom需求数3
+        f4: 原料sku4
+        g4: 单位bom需求数4
+        f5: 原料sku5
+        g5: 单位bom需求数5
+
+
+  generic-import-map:
+    purchase_import_edit:
+      biz-system-code: SCM
+      resource-name: 导入修改子单数据
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.PurchaseChildImportationFacade
+      method-name-record: importEditPurchaseChild
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.PurchaseChildEditImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      #表头转字段名
+      header-alias:
+        "[采购子单单号]": purchaseChildOrderNo
+        "[收货仓库编码]": warehouseCode
+        "[采购约定交期]": deliverDateStr
+        "[采购价]": purchasePrice
+        "[优惠金额]": substractPrice
+    purchase_child_confirm_import:
+      biz-system-code: SCM
+      resource-name: 导入采购子单批量确认(大货/采购)
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.PurchaseChildImportationFacade
+      method-name-record: importPurchaseConfirmPurchaseChild
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.PurchaseChildConfirmImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      #表头转字段名
+      header-alias:
+        "[采购子单号]": purchaseChildOrderNo
+        "[采购类型]": purchaseBizTypeStr
+        "[收货仓库编码]": warehouseCode
+        "[采购单价]": purchasePrice
+        "[优惠金额]": substractPrice
+        "[原料仓库编码]": rawWarehouseCode
+        "[原料sku1]": rawSku1
+        "[单位bom需求数1]": deliveryCnt1
+        "[原料sku2]": rawSku2
+        "[单位bom需求数2]": deliveryCnt2
+        "[原料sku3]": rawSku3
+        "[单位bom需求数3]": deliveryCnt3
+        "[原料sku4]": rawSku4
+        "[单位bom需求数4]": deliveryCnt4
+        "[原料sku5]": rawSku5
+        "[单位bom需求数5]": deliveryCnt5

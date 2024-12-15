@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.process.dao.ProcessOrderScanMapper">
+
+    <sql id="common_where">
+        pos.del_timestamp = 0
+        <if test="params.processOrderScanIdList != null and params.processOrderScanIdList.size() > 0">
+            AND pos.process_order_scan_id in
+            <foreach collection="params.processOrderScanIdList" item="id" index="index" open="(" close=")"
+                     separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.processOrderNo != null and params.processOrderNo != ''">
+            AND pos.process_order_no = #{params.processOrderNo}
+        </if>
+        <if test="params.processOrderNoList != null and params.processOrderNoList.size() > 0">
+            AND pos.process_order_no in
+            <foreach collection="params.processOrderNoList" item="processOrderNo" index="index" open="(" close=")"
+                     separator=",">
+                #{processOrderNo}
+            </foreach>
+        </if>
+        <if test="params.processName != null and params.processName != ''">
+            AND pos.process_name = #{params.processName}
+        </if>
+        <if test="params.receiptUser != null and params.receiptUser != ''">
+            AND pos.receipt_user = #{params.receiptUser}
+        </if>
+        <if test="params.completeUser != null and params.completeUser != ''">
+            AND pos.complete_user = #{params.completeUser}
+        </if>
+        <if test="params.completeUsername != null and params.completeUsername != ''">
+            AND pos.complete_username = #{params.completeUsername}
+        </if>
+        <if test="params.createTimeStart != null">
+            <![CDATA[ AND pos.create_time >= #{params.createTimeStart} ]]>
+        </if>
+        <if test="params.createTimeEnd != null">
+            <![CDATA[ AND pos.create_time <= #{params.createTimeEnd} ]]>
+        </if>
+        <if test="params.completeTimeStart != null">
+            <![CDATA[ AND pos.complete_time >= #{params.completeTimeStart} ]]>
+        </if>
+        <if test="params.completeTimeEnd != null">
+            <![CDATA[ AND pos.complete_time <= #{params.completeTimeEnd} ]]>
+        </if>
+        <if test="params.processProgressStatusList != null and params.processProgressStatusList.size() > 0">
+            AND (
+            <foreach collection="params.processProgressStatusList" item="processProgressStatus" separator="OR">
+                <choose>
+                    <when test="processProgressStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessProgressStatus@UN_START">
+                        receipt_user = ''
+                    </when>
+                    <when test="processProgressStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessProgressStatus@PROCESSING">
+                        (receipt_user != '' AND complete_user = '')
+                    </when>
+                    <when test="processProgressStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessProgressStatus@COMPLETED">
+                        complete_user != ''
+                    </when>
+                </choose>
+            </foreach>
+            )
+        </if>
+    </sql>
+
+    <sql id="containConditions">
+        del_timestamp=0
+        <if test="processCode != null and processCode != ''">
+            AND process_code = #{processCode}
+        </if>
+        <if test="completeUser != null and completeUser != ''">
+            AND complete_user = #{completeUser}
+        </if>
+        <if test="completeTimeBegin != null">
+            <![CDATA[ AND complete_time >= #{completeTimeBegin} ]]>
+        </if>
+        <if test="completeTimeEnd != null">
+            <![CDATA[ AND complete_time <= #{completeTimeEnd} ]]>
+        </if>
+    </sql>
+
+    <select id="getByPage" resultType="com.hete.supply.scm.server.scm.process.entity.vo.ProcessOrderScanVo">
+        SELECT
+        pos.process_order_scan_id as processOrderScanId,
+        pos.process_order_no as processOrderNo,
+        pos.process_code as processCode,
+        pos.process_name as processName,
+        pos.process_commission as processCommission,
+        pos.receipt_num as receiptNum,
+        pos.quality_goods_cnt as qualityGoodsCnt,
+        pos.defective_goods_cnt as defectiveGoodsCnt,
+        pos.platform as platform,
+        pos.order_time as orderTime,
+        pos.order_username as orderUsername,
+        pos.receipt_time as receiptTime,
+        pos.receipt_user as receiptUser,
+        pos.receipt_username as receiptUsername,
+        pos.create_time as createTime,
+        pos.complete_time as completeTime,
+        pos.complete_user as completeUser,
+        pos.complete_username as completeUsername,
+        pos.version as version
+        FROM process_order_scan as pos
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY pos.process_order_scan_id DESC
+    </select>
+
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT
+        count(pos.process_order_scan_id) as total
+        FROM process_order_scan as pos
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.ProcessOrderScanExportVo">
+        SELECT
+        pos.process_order_scan_id as processOrderScanId,
+        pos.create_time as createTime,
+        pos.complete_time as completeTime,
+        pos.complete_username as completeUsername,
+        pos.process_code as processCode,
+        pos.process_first as processFirst,
+        pos.process_name as processName,
+        pos.quality_goods_cnt as qualityGoodsCnt,
+        pos.defective_goods_cnt as defectiveGoodsCnt,
+        pos.process_commission as processCommission,
+        pos.process_order_no as processOrderNo,
+        pos.platform as platform,
+        pos.order_username as orderUsername,
+        pos.receipt_username as receiptUsername,
+        pos.receipt_num as receiptNum,
+        pos.receipt_time as receiptTime
+        FROM process_order_scan as pos
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY pos.process_order_scan_id DESC
+    </select>
+
+    <select id="statNumByMonth"
+            resultType="com.hete.supply.scm.server.scm.process.entity.bo.ScanRecordDataStatisticsBo">
+        SELECT
+        sum(pos.quality_goods_cnt) as totalQualityGoodsCnt,
+        sum(pos.quality_goods_cnt * pos.process_commission) as totalProcessCommission
+        FROM process_order_scan as pos
+        <where>
+            pos.del_timestamp = 0
+            <if test="params.completeUser != null and params.completeUser != ''">
+                AND pos.complete_user = #{params.completeUser}
+            </if>
+            <if test="params.completeTimeStart != null">
+                <![CDATA[ AND pos.complete_time >= #{params.completeTimeStart} ]]>
+            </if>
+            <if test="params.completeTimeEnd != null">
+                <![CDATA[ AND pos.complete_time <= #{params.completeTimeEnd} ]]>
+            </if>
+        </where>
+    </select>
+
+    <select id="statList" resultType="com.hete.supply.scm.server.scm.process.entity.vo.ProcessOrderScanStatListVo">
+        SELECT
+        pos.process_order_scan_id,
+        pos.complete_time as completeTime,
+        pos.complete_username as completeUsername,
+        pos.process_code,
+        pos.process_name as processName,
+        pos.quality_goods_cnt as qualityGoodsCnt,
+        pos.defective_goods_cnt as defectiveGoodsCnt,
+        pos.process_commission as processCommission,
+        pos.extra_commission as extraCommission,
+        pos.process_order_no as processOrderNo
+        FROM process_order_scan as pos
+        <where>
+            pos.del_timestamp = 0
+            <if test="params.completeUser != null and params.completeUser != ''">
+                AND pos.complete_user = #{params.completeUser}
+            </if>
+            <if test="params.completeTimeStart != null">
+                <![CDATA[ AND pos.complete_time >= #{params.completeTimeStart} ]]>
+            </if>
+            <if test="params.completeTimeEnd != null">
+                <![CDATA[ AND pos.complete_time <= #{params.completeTimeEnd} ]]>
+            </if>
+        </where>
+        ORDER BY pos.complete_time DESC
+    </select>
+
+    <select id="getMonthScanStaticCount" resultType="java.lang.Integer">
+        SELECT
+        count(distinct complete_username)
+        FROM process_order_scan pos
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <select id="getMonthStatisticsExportList"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.ProcessOrderScanMonthStatisticsExportVo">
+        SELECT
+        complete_username,
+        eg.grade_type,
+        ${sqlColumn}
+        FROM process_order_scan pos
+        LEFT JOIN employee_grade_relation egr on pos.complete_user= egr.employee_no and egr.del_timestamp=0
+        LEFT JOIN employee_grade eg on egr.employee_grade_id= eg.employee_grade_id and eg.del_timestamp=0
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        GROUP BY complete_username, eg.grade_type
+    </select>
+
+    <select id="statScanIdsNumByMonth" resultType="java.lang.Long">
+        SELECT pos.process_order_scan_id
+        FROM process_order_scan as pos
+        <where>
+            pos.del_timestamp = 0
+            <if test="params.completeUser != null and params.completeUser != ''">
+                AND pos.complete_user = #{params.completeUser}
+            </if>
+            <if test="params.completeTimeStart != null">
+                <![CDATA[ AND pos.complete_time >= #{params.completeTimeStart} ]]>
+            </if>
+            <if test="params.completeTimeEnd != null">
+                <![CDATA[ AND pos.complete_time <= #{params.completeTimeEnd} ]]>
+            </if>
+        </where>
+    </select>
+
+    <select id="sumQualityGoodsCnt" resultType="java.lang.Integer">
+        SELECT sum(quality_goods_cnt)
+        FROM process_order_scan
+        <where>
+            <include refid="containConditions"></include>
+        </where>
+    </select>
+
+    <select id="listByLabelsAndTime" resultType="com.hete.supply.scm.server.scm.process.entity.po.ProcessOrderScanPo">
+        SELECT p.process_label, process_order_scan_id, quality_goods_cnt
+        FROM process_order_scan pos
+        join process p on pos.process_code = p.process_code and p.del_timestamp = 0 and p.del_timestamp = 0
+        WHERE pos.del_timestamp = 0
+        <if test="calProcessLabels.size() >0">
+            AND p.process_label in
+            <foreach collection="calProcessLabels" item="calProcessLabel" open="(" close=")"
+                     separator=",">
+                #{calProcessLabel}
+            </foreach>
+        </if>
+        AND YEAR(pos.complete_time) > 1970
+        AND pos.complete_user != ''
+        <if test="startUtc != null">
+            <![CDATA[ AND pos.complete_time >= #{startUtc} ]]>
+        </if>
+        <if test="endUtc != null">
+            <![CDATA[ AND pos.complete_time <= #{endUtc} ]]>
+        </if>
+    </select>
+
+    <!-- ProcessOrderScanMapper.xml -->
+
+    <select id="countDistinctCompleteUser" resultType="int">
+        SELECT COUNT(DISTINCT complete_user)
+        FROM process_order_scan
+        WHERE del_timestamp = 0
+        AND YEAR(complete_time) > 1970
+        AND complete_user != ''
+        <if test="startUtc != null">
+            <![CDATA[ AND complete_time >= #{startUtc} ]]>
+        </if>
+        <if test="endUtc != null">
+            <![CDATA[ AND complete_time <= #{endUtc} ]]>
+        </if>
+    </select>
+
+    <select id="selectWorkbenchPage" resultType="com.hete.supply.scm.server.scm.process.entity.vo.H5WorkbenchVo">
+        SELECT
+        pos.process_order_scan_id
+        FROM process_order_scan as pos
+        <where>
+            pos.del_timestamp = 0
+            <if test="dto.processProgressStatus!=null">
+                <choose>
+                    <when test="dto.processProgressStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessProgressStatus@UN_START">
+                        AND pos.receipt_user = ''
+                    </when>
+                    <when test="dto.processProgressStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessProgressStatus@PROCESSING">
+                        AND pos.receipt_user != '' AND pos.complete_user = '' AND pos.receipt_user = #{userKey}
+                    </when>
+                    <when test="dto.processProgressStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessProgressStatus@COMPLETED">
+                        AND pos.complete_user != '' AND pos.complete_user = #{userKey}
+                    </when>
+                </choose>
+            </if>
+            <if test="dto.completeTimeStart != null">
+                <![CDATA[ AND pos.complete_time >= #{dto.completeTimeStart} ]]>
+            </if>
+            <if test="dto.completeTimeEnd != null">
+                <![CDATA[ AND pos.complete_time <= #{dto.completeTimeEnd} ]]>
+            </if>
+        </where>
+
+        <if test="dto.processProgressStatus!=null">
+            <choose>
+                <when test="dto.processProgressStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessProgressStatus@UN_START">
+
+                </when>
+                <when test="dto.processProgressStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessProgressStatus@PROCESSING">
+                    ORDER by pos.process_order_scan_id ASC
+                </when>
+                <when test="dto.processProgressStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessProgressStatus@COMPLETED">
+                    ORDER by pos.process_order_scan_id DESC
+                </when>
+            </choose>
+        </if>
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

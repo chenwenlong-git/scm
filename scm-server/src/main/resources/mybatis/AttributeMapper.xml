@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.production.dao.AttributeMapper">
+    <select id="getIdsByAttrIdsAndScope" resultType="java.lang.Long">
+        select a.attribute_id
+        from attribute a
+        where a.del_timestamp=0
+        <if test="attrIds != null and attrIds.size() > 0">
+            and a.attribute_id in
+            <foreach collection="attrIds" item="attrId" open="(" separator="," close=")">
+                #{attrId}
+            </foreach>
+        </if>
+        <if test="scope != null">
+            and a.scope = #{scope}
+        </if>
+        <if test="status != null">
+            and a.status = #{status}
+        </if>
+    </select>
+
+    <select id="getByPage" resultType="com.hete.supply.scm.server.scm.production.entity.vo.AttributePageVo">
+        select
+        a.attribute_id as attrId,
+        a.attribute_name as attrName,
+        a.attribute_category_id as secondAttrCategoryId,
+        a.input_type as attributeInputType,
+        a.is_required as attributeIsRequired,
+        a.status as attributeStatus,
+        a.scope as attributeScope,
+        a.version as version
+        from attribute a
+        where a.del_timestamp = 0
+        <if test="dto.attrName != null and dto.attrName != ''">
+            and a.attribute_name like concat('%', #{dto.attrName}, '%')
+        </if>
+        <if test="dto.attrIdList != null and dto.attrIdList.size() > 0">
+            and a.attribute_id in
+            <foreach collection="dto.attrIdList" item="attrId" open="(" separator="," close=")">
+                #{attrId}
+            </foreach>
+        </if>
+        <if test="dto.secondAttrCategoryId != null">
+            and a.attribute_category_id = #{dto.secondAttrCategoryId}
+        </if>
+        <if test="dto.secondAttrCategoryIdList != null and dto.secondAttrCategoryIdList.size() > 0">
+            and a.attribute_category_id in
+            <foreach collection="dto.secondAttrCategoryIdList" item="secondAttrCategoryId" open="(" separator=","
+                     close=")">
+                #{secondAttrCategoryId}
+            </foreach>
+        </if>
+        <if test="dto.attributeStatus != null">
+            and a.status = #{dto.attributeStatus}
+        </if>
+        <if test="dto.attributeInputType != null">
+            and a.input_type = #{dto.attributeInputType}
+        </if>
+        order by a.attribute_id desc
+    </select>
+
+    <select id="listIdsByIdsAndInputType" resultType="java.lang.Long">
+        select attribute_id
+        from attribute
+        where del_timestamp = 0
+        <if test="attrIds != null and attrIds.size() > 0">
+            and attribute_id in
+            <foreach collection="attrIds" item="attrId" open="(" separator="," close=")">
+                #{attrId}
+            </foreach>
+        </if>
+        <if test="attributeInputTypeList != null and attributeInputTypeList.size() > 0">
+            and input_type in
+            <foreach collection="attributeInputTypeList" item="attributeInputType" open="(" separator="," close=")">
+                #{attributeInputType}
+            </foreach>
+        </if>
+        <if test="attrStatus != null">
+            and status = #{attrStatus}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,79 @@
+provider:
+  generic-export-map:
+    scm_produce_data_attr_export:
+      biz-system-code: SCM
+      file-prefix: 生产资料的生产属性信息
+      resource-name: SCM系统-生产资料的生产属性信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.ProduceDataFacade
+      method-name-count: getSkuAttrExportTotals
+      method-name-record: getSkuAttrExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.ProduceDataSearchDto
+      header-alias:
+        sku: 商品SKU
+        skuEncode: 产品名称
+        weight: 克重
+        color: 颜色
+        laceArea: 蕾丝面积
+        fileLengthSize: 档长尺寸
+        completeLongSize: 完成长尺寸
+        netCapSize: 网帽大小
+        partedBangs: 刘海分式
+        parting: Parting分式
+        material: 材料
+        contour: 廓形
+        colorSystem: 颜色色系
+        colorMixPartition: 颜色混合分区
+        leftSideLength: 左侧档长尺寸
+        leftFinish: 左侧完成长
+        rightSideLength: 右侧档长尺寸
+        rightFinish: 右侧完成长
+        symmetry: 是否对称
+        preselectionLace: 预剪蕾丝
+
+
+
+  generic-import-map:
+    scm_produce_data_item_raw_import:
+      biz-system-code: SCM
+      resource-name: 导入生产信息原料SKU
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.ProduceDataImportationFacade
+      method-name-record: importProduceDataItemRaw
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.ProduceDataItemRawImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[BOM名称]": bomName
+        "[供应商代码]": supplierCodeList
+        "[SKU]": sku
+        "[原料SKU1]": rawSku1
+        "[单件用量1]": skuCnt1
+        "[原料SKU2]": rawSku2
+        "[单件用量2]": skuCnt2
+        "[原料SKU3]": rawSku3
+        "[单件用量3]": skuCnt3
+        "[原料SKU4]": rawSku4
+        "[单件用量4]": skuCnt4
+        "[原料SKU5]": rawSku5
+        "[单件用量5]": skuCnt5
+        "[原料SKU6]": rawSku6
+        "[单件用量6]": skuCnt6
+        "[原料SKU7]": rawSku7
+        "[单件用量7]": skuCnt7
+        "[工序1]": process1
+        "[二级工序名1]": processSecond1
+        "[工序2]": process2
+        "[二级工序名2]": processSecond2
+        "[工序3]": process3
+        "[二级工序名3]": processSecond3
+        "[工序4]": process4
+        "[二级工序名4]": processSecond4
+        "[工序5]": process5
+        "[二级工序名5]": processSecond5
+      cell-extends-map:
+        "[供应商代码]":
+          comment: 多供应商用/隔开

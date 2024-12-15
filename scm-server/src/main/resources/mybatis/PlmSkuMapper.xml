@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.dao.PlmSkuMapper">
+
+    <sql id="produce_data_where">
+        ps.del_timestamp = 0 AND ps.spu != ''
+        <if test="dto.plmSkuIdList != null and dto.plmSkuIdList.size() > 0">
+            AND ps.plm_sku_id IN
+            <foreach collection="dto.plmSkuIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND ps.sku IN
+            <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.notSkuList != null and dto.notSkuList.size() > 0">
+            AND ps.sku NOT IN
+            <foreach collection="dto.notSkuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sku != null and dto.sku != ''">
+            AND ps.sku LIKE concat('%',#{dto.sku}, '%')
+        </if>
+        <if test="dto.spu != null and dto.spu != ''">
+            AND ps.spu LIKE concat('%',#{dto.spu}, '%')
+        </if>
+        <if test="dto.spuList != null and dto.spuList.size() > 0">
+            AND ps.spu IN
+            <foreach collection="dto.spuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+
+    <select id="selectSupplierProductPage"
+            resultType="com.hete.supply.scm.server.scm.supplier.entity.vo.SupplierProductComparePageVo">
+        SELECT plm.plm_sku_id AS plmSkuId,
+        plm.version AS version,
+        plm.sku as sku,
+        plm.spu as spu,
+        plm.cycle as cycle,
+        plm.binding_supplier_product as bindingSupplierProduct
+        FROM plm_sku AS plm
+        <where>
+            plm.del_timestamp = 0
+            <if test="dto.plmSkuIdList != null and dto.plmSkuIdList.size() > 0">
+                AND plm.plm_sku_id IN
+                <foreach collection="dto.plmSkuIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="dto.bindingSupplierProductList != null and dto.bindingSupplierProductList.size() > 0">
+                AND plm.binding_supplier_product IN
+                <foreach collection="dto.bindingSupplierProductList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="dto.skuList != null and dto.skuList.size() > 0">
+                AND plm.sku IN
+                <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="dto.bindingSupplierProduct != null">
+                AND plm.binding_supplier_product = #{dto.bindingSupplierProduct}
+            </if>
+        </where>
+        ORDER BY plm.create_time DESC
+    </select>
+
+    <select id="selectProduceDataPage"
+            resultType="com.hete.supply.scm.server.scm.process.entity.vo.ProduceDataSearchVo">
+        SELECT
+        ps.spu as spu
+        FROM plm_sku AS ps
+        <include refid="search_plm_sku_where"></include>
+        GROUP BY ps.spu
+    </select>
+    <select id="getExportSkuProcessTotals" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*) AS total
+        FROM produce_data_item_raw AS pdir
+        INNER JOIN produce_data_item AS pdi ON pdi.produce_data_item_id = pdir.produce_data_item_id
+        INNER JOIN plm_sku AS ps ON pdi.sku = ps.sku
+        <include refid="search_plm_sku_where"></include>
+        AND pdir.del_timestamp = 0 AND pdi.del_timestamp = 0
+        ORDER BY pdir.produce_data_item_id DESC
+    </select>
+    <select id="getSkuProcessExportList"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.ProduceDataExportSkuProcessVo">
+        SELECT
+        ps.spu AS spu,
+        ps.sku AS sku,
+        pdir.sku AS rawSku,
+        pdir.sku_cnt AS skuCnt,
+        pdir.produce_data_item_id AS produceDataItemId
+        FROM produce_data_item_raw AS pdir
+        INNER JOIN produce_data_item AS pdi ON pdi.produce_data_item_id = pdir.produce_data_item_id
+        INNER JOIN plm_sku AS ps ON pdi.sku = ps.sku
+        <include refid="search_plm_sku_where"></include>
+        AND pdir.del_timestamp = 0 AND pdi.del_timestamp = 0
+        ORDER BY pdir.produce_data_item_id DESC
+    </select>
+
+    <select id="getExportSkuAttrTotals" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*) AS total
+        FROM plm_sku AS ps
+        <include refid="search_plm_sku_where"></include>
+        ORDER BY ps.plm_sku_id DESC
+    </select>
+    <select id="getSkuAttrExportList"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.ProduceDataExportSkuAttrVo">
+        SELECT
+        ps.sku AS sku
+        FROM plm_sku AS ps
+        <include refid="search_plm_sku_where"></include>
+        ORDER BY ps.plm_sku_id DESC
+    </select>
+    <select id="searchGoodsPricePage"
+            resultType="com.hete.supply.scm.server.scm.adjust.entity.vo.GoodsPriceSearchVo">
+        SELECT ps.sku as sku,
+        ps.spu as spu
+        FROM plm_sku AS ps
+        <include refid="goods_price_where"></include>
+        ORDER BY ps.plm_sku_id DESC
+    </select>
+    <select id="getGoodsPriceExportTotals" resultType="java.lang.Integer">
+        SELECT count(*) AS total
+        FROM plm_sku AS ps
+        LEFT JOIN goods_price AS gp ON gp.sku = ps.sku
+        <if test="dto.effectiveTimeGt != null">
+            AND gp.effective_time > #{dto.effectiveTimeGt}
+        </if>
+        <include refid="goods_price_where"></include>
+        ORDER BY ps.plm_sku_id,gp.goods_price_id DESC
+    </select>
+    <select id="getGoodsPriceExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.GoodsPriceExportVo">
+        SELECT ps.sku as sku,
+        ps.spu as spu,
+        gp.supplier_code as supplierCode,
+        gp.channel_name as channelName,
+        gp.channel_price as channelPrice,
+        gp.effective_time as effectiveTime
+        FROM plm_sku AS ps
+        LEFT JOIN goods_price AS gp ON gp.sku = ps.sku
+        <if test="dto.effectiveTimeGt != null">
+            AND gp.effective_time > #{dto.effectiveTimeGt}
+        </if>
+        <include refid="goods_price_where"></include>
+        ORDER BY ps.plm_sku_id,gp.goods_price_id DESC
+    </select>
+    <sql id="goods_price_where">
+        WHERE ps.del_timestamp = 0
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND ps.sku IN
+            <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.notSkuList != null and dto.notSkuList.size() > 0">
+            AND ps.sku NOT IN
+            <foreach collection="dto.notSkuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND EXISTS (SELECT 1 FROM goods_price AS gp
+            WHERE gp.sku = ps.sku
+            AND gp.del_timestamp = 0
+            AND gp.supplier_code IN
+            <foreach item="item" collection="dto.supplierCodeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            LIMIT 1
+            )
+        </if>
+        <if test="dto.channelIdList != null and dto.channelIdList.size() > 0">
+            AND EXISTS (SELECT 1 FROM goods_price AS gp
+            WHERE gp.sku = ps.sku
+            AND gp.del_timestamp = 0
+            AND gp.channel_id IN
+            <foreach item="item" collection="dto.channelIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            LIMIT 1
+            )
+        </if>
+    </sql>
+
+    <select id="listByProduceCycleBo" resultType="com.hete.supply.scm.server.scm.supplier.entity.bo.SkuCycleBo">
+        SELECT
+        ps.sku AS sku,
+        ps.cycle AS cycleDays
+        FROM plm_sku AS ps
+        WHERE ps.del_timestamp = 0
+        <if test="skuList != null and skuList.size() > 0">
+            AND ps.sku IN
+            <foreach collection="skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <sql id="search_plm_sku_where">
+        WHERE ps.del_timestamp = 0 AND ps.spu != ''
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND ps.sku IN
+            <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.plmSkuIdList != null and dto.plmSkuIdList.size() > 0">
+            AND ps.plm_sku_id IN
+            <foreach collection="dto.plmSkuIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.notSkuList != null and dto.notSkuList.size() > 0">
+            AND ps.sku NOT IN
+            <foreach collection="dto.notSkuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sku != null and dto.sku != ''">
+            AND ps.sku LIKE concat('%',#{dto.sku}, '%')
+        </if>
+        <if test="dto.spu != null and dto.spu != ''">
+            AND ps.spu LIKE concat('%',#{dto.spu}, '%')
+        </if>
+        <if test="dto.spuList != null and dto.spuList.size() > 0">
+            AND ps.spu IN
+            <foreach collection="dto.spuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.skuRiskList != null and dto.skuRiskList.size() > 0">
+            AND EXISTS (SELECT 1 FROM sku_risk AS sr
+            WHERE sr.sku = ps.sku
+            AND sr.del_timestamp = 0
+            AND sr.level IN
+            <foreach item="item" collection="dto.skuRiskList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            LIMIT 1
+            )
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND EXISTS (SELECT 1 FROM supplier_product_compare AS spc
+            WHERE spc.sku = ps.sku
+            AND spc.del_timestamp = 0
+            AND spc.supplier_code IN
+            <foreach item="item" collection="dto.supplierCodeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            LIMIT 1
+            )
+        </if>
+        <if test="dto.supplierProductName != null and dto.supplierProductName != ''">
+            AND EXISTS (SELECT 1 FROM supplier_product_compare AS spc
+            WHERE spc.sku = ps.sku
+            AND spc.del_timestamp = 0
+            AND spc.supplier_product_name LIKE concat('%',#{dto.supplierProductName}, '%')
+            LIMIT 1
+            )
+        </if>
+        <if test="dto.supplierProductNameList != null and dto.supplierProductNameList.size() > 0">
+            AND EXISTS (SELECT 1 FROM supplier_product_compare AS spc
+            WHERE spc.sku = ps.sku
+            AND spc.del_timestamp = 0
+            AND spc.supplier_product_name IN
+            <foreach item="item" collection="dto.supplierProductNameList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            LIMIT 1
+            )
+        </if>
+    </sql>
+    <select id="searchPlmSku" resultType="com.hete.supply.scm.server.scm.production.entity.vo.PlmSkuSearchVo">
+        SELECT
+        ps.sku as sku,
+        ps.spu as spu,
+        ps.cycle as cycle,
+        ps.binding_supplier_product as bindingSupplierProduct
+        FROM plm_sku AS ps
+        <include refid="search_plm_sku_where"></include>
+        ORDER BY ps.plm_sku_id DESC
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT
+        COUNT(1) AS total
+        FROM plm_sku AS ps
+        <include refid="search_plm_sku_where"></include>
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.SkuProdSkuExportVo">
+        SELECT
+        ps.sku as sku,
+        ps.spu as spu,
+        ps.cycle as cycle,
+        ps.binding_supplier_product as bindingSupplierProduct
+        FROM plm_sku AS ps
+        <include refid="search_plm_sku_where"></include>
+    </select>
+</mapper>

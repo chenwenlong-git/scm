@@ -1,0 +1,74 @@
+provider:
+  generic-export-map:
+    scm_goods_price_export:
+      biz-system-code: SCM
+      file-prefix: SCM商品价格导出列表信息
+      resource-name: SCM系统-商品价格列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.GoodsPriceFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.GoodsPriceDto
+      header-alias:
+        sku: 商品sku
+        skuEncode: 产品名称
+        supplierCode: 供应商代码
+        channelName: 渠道
+        channelPrice: 渠道价格
+        effectiveTimeStr: 生效日期-渠道价格
+
+  generic-import-map:
+    scm_goods_price_import:
+      biz-system-code: SCM
+      resource-name: 导入商品价格信息
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.GoodsPriceImportationFacade
+      method-name-record: importGoodsPrice
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.GoodsPriceImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[*供应商代码]": supplierCode
+        "[*商品sku]": sku
+        "[*通用渠道]": universalChannelName
+        "[渠道名称1]": channelName1
+        "[渠道价格1]": channelPrice1
+        "[渠道名称2]": channelName2
+        "[渠道价格2]": channelPrice2
+        "[渠道名称3]": channelName3
+        "[渠道价格3]": channelPrice3
+        "[渠道名称4]": channelName4
+        "[渠道价格4]": channelPrice4
+        "[渠道名称5]": channelName5
+        "[渠道价格5]": channelPrice5
+        "[渠道名称6]": channelName6
+        "[渠道价格6]": channelPrice6
+        "[渠道名称7]": channelName7
+        "[渠道价格7]": channelPrice7
+        "[渠道名称8]": channelName8
+        "[渠道价格8]": channelPrice8
+        "[渠道名称9]": channelName9
+        "[渠道价格9]": channelPrice9
+        "[渠道名称10]": channelName10
+        "[渠道价格10]": channelPrice10
+    purchase_import_edit:
+      biz-system-code: SCM
+      resource-name: 导入修改子单数据
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.PurchaseChildImportationFacade
+      method-name-record: importEditPurchaseChild
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.PurchaseChildEditImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[采购订单号]": purchaseChildOrderNo
+        "[收货仓库编码]": warehouseCode
+        "[期望上架时间]": deliverDateStr
+        "[答交时间]": promiseDateStr
+
+

@@ -1,0 +1,18 @@
+provider:
+  generic-export-map:
+    scm_qc_order_config_export:
+      biz-system-code: SCM
+      file-prefix: SCM次品原因导出
+      resource-name: SCM系统-SCM次品原因导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.QcOrderDefectConfigFacade
+      method-name-count: getQcDefectConfigExportTotals
+      method-name-record: getQcDefectConfigExportList
+      param-type: com.hete.support.api.entity.dto.ComPageDto
+      header-alias:
+        defectCategory: 次品类别
+        defectCode: 次品代码
+        defectReason: 次品原因
+        reasonCode: 原因代码
+        defectStatusName: 状态

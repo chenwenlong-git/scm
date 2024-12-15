@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.supplier.purchase.dao.PurchaseDeliverOrderMapper">
+    <sql id="search_where">
+        WHERE pdoi.del_timestamp = 0
+        AND pdo.del_timestamp = 0
+        <if test="dto.purchaseDeliverOrderNo != null and dto.purchaseDeliverOrderNo != ''">
+            AND pdoi.purchase_deliver_order_no LIKE concat('%',#{dto.purchaseDeliverOrderNo}, '%')
+        </if>
+        <if test="dto.purchaseChildOrderNo != null and dto.purchaseChildOrderNo != ''">
+            AND pdo.purchase_child_order_no LIKE concat('%',#{dto.purchaseChildOrderNo}, '%')
+        </if>
+        <if test="dto.purchaseChildOrderNoList != null and dto.purchaseChildOrderNoList.size() > 0">
+            AND pdo.purchase_child_order_no IN
+            <foreach collection="dto.purchaseChildOrderNoList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.deliverUser != null and dto.deliverUser != ''">
+            AND pdo.deliver_user = #{dto.deliverUser}
+        </if>
+        <if test="dto.deliverUsername != null and dto.deliverUsername != ''">
+            AND pdo.deliver_username LIKE concat('%',#{dto.deliverUsername}, '%')
+        </if>
+        <if test="dto.deliverOrderStatusList != null and dto.deliverOrderStatusList.size() > 0">
+            AND pdo.deliver_order_status IN
+            <foreach collection="dto.deliverOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.deliverTimeStart != null">
+            <![CDATA[ AND pdo.deliver_time >= #{dto.deliverTimeStart} ]]>
+        </if>
+        <if test="dto.deliverTimeEnd != null">
+            <![CDATA[ AND pdo.deliver_time <= #{dto.deliverTimeEnd} ]]>
+        </if>
+        <if test="dto.logistics != null and dto.logistics != ''">
+            AND pdo.logistics LIKE concat('%',#{dto.logistics}, '%')
+        </if>
+        <if test="dto.trackingNo != null and dto.trackingNo != ''">
+            AND pdo.tracking_no LIKE concat('%',#{dto.trackingNo}, '%')
+        </if>
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND pdoi.sku IN
+            <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND pdo.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND pdo.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.purchaseDeliverOrderNoList != null and dto.purchaseDeliverOrderNoList.size() > 0">
+            AND pdoi.purchase_deliver_order_no IN
+            <foreach collection="dto.purchaseDeliverOrderNoList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND pdo.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND pdo.create_time <= #{dto.createTimeEnd} ]]>
+        </if>
+        <if test="dto.warehousingTimeStart != null">
+            <![CDATA[ AND pdo.warehousing_time >= #{dto.warehousingTimeStart} ]]>
+        </if>
+        <if test="dto.warehousingTimeEnd != null">
+            <![CDATA[ AND pdo.warehousing_time <= #{dto.warehousingTimeEnd} ]]>
+        </if>
+        <if test="dto.confirmUser != null and dto.confirmUser != ''">
+            AND pcoc.confirm_user = #{dto.confirmUser}
+        </if>
+    </sql>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM purchase_deliver_order_item AS pdoi
+        LEFT JOIN purchase_deliver_order AS pdo
+        ON pdoi.purchase_deliver_order_no = pdo.purchase_deliver_order_no
+        <include refid="search_where"></include>
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.PurchaseDeliverExportVo">
+        SELECT pdoi.purchase_deliver_order_no AS purchaseDeliverOrderNo,
+        pdo.purchase_child_order_no AS purchaseChildOrderNo,
+        pdo.deliver_order_status AS deliverOrderStatus,
+        pdo.supplier_name AS supplierName,
+        pdo.warehouse_name AS warehouseName,
+        pdo.deliver_username AS deliverUsername,
+        pdo.deliver_time AS deliverTime,
+        pdo.logistics AS logistics,
+        pdo.tracking_no AS trackingNo,
+        pdoi.sku AS sku,
+        pdoi.sku_batch_code AS skuBatchCode,
+        pdoi.deliver_cnt AS deliverCnt,
+        pdoi.receipt_cnt AS receiptCnt,
+        pdoi.quality_goods_cnt AS qualityGoodsCnt,
+        pdoi.defective_goods_cnt AS defectiveGoodsCnt,
+        pdo.receipt_time AS receiptTime,
+        pdo.supplier_code AS supplierCode,
+        pdo.deliver_order_type AS deliverOrderType,
+        pdo.deliver_date AS deliverDate,
+        pdo.warehousing_time AS wmsWarehousingTime
+        FROM purchase_deliver_order_item AS pdoi
+        LEFT JOIN purchase_deliver_order AS pdo
+        ON pdoi.purchase_deliver_order_no = pdo.purchase_deliver_order_no
+        <include refid="search_where"></include>
+        ORDER BY pdoi.create_time DESC
+    </select>
+    <select id="getListBySupplierProduct"
+            resultType="com.hete.supply.scm.server.supplier.purchase.entity.po.PurchaseDeliverOrderPo">
+        SELECT pdoi.purchase_deliver_order_no AS purchaseDeliverOrderNo,
+        pdo.supplier_code AS supplierCode
+        FROM purchase_deliver_order_item AS pdoi
+        JOIN purchase_deliver_order AS pdo
+        ON pdoi.purchase_deliver_order_no = pdo.purchase_deliver_order_no
+        <where>
+            pdo.del_timestamp = 0
+            <if test="list != null and list.size() > 0">
+                AND (pdoi.sku, pdo.supplier_code) IN
+                <foreach collection="list" item="item" separator="," open="(" close=")">
+                    (#{item.sku} , #{item.supplierCode})
+                </foreach>
+            </if>
+        </where>
+        ORDER BY pdoi.purchase_deliver_order_item_id DESC
+    </select>
+    <select id="getMonthGoodsPayment" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(pdoi.quality_goods_cnt * pcoi.settle_price), 0)
+        FROM purchase_deliver_order AS pdo
+        INNER JOIN purchase_deliver_order_item AS pdoi
+        ON pdo.purchase_deliver_order_no = pdoi.purchase_deliver_order_no
+        INNER JOIN purchase_child_order_item AS pcoi
+        ON pdo.purchase_child_order_no = pcoi.purchase_child_order_no
+        WHERE pdo.del_timestamp = 0
+        AND pdoi.del_timestamp = 0
+        AND pcoi.del_timestamp = 0
+        <![CDATA[ AND pdo.warehousing_time >= #{startTime} ]]>
+        <![CDATA[ AND pdo.warehousing_time <= #{endTime} ]]>
+        AND pdo.deliver_order_status = #{deliverOrderStatus}
+        AND pdo.supplier_code = #{supplierCode}
+    </select>
+    <select id="getInTransitMoney" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(pdoi.deliver_cnt * pcoi.settle_price), 0)
+        FROM purchase_deliver_order AS pdo
+        INNER JOIN purchase_deliver_order_item AS pdoi
+        ON pdo.purchase_deliver_order_no = pdoi.purchase_deliver_order_no
+        INNER JOIN purchase_child_order_item AS pcoi
+        ON pdo.purchase_child_order_no = pcoi.purchase_child_order_no
+        WHERE pdo.del_timestamp = 0
+        AND pdoi.del_timestamp = 0
+        AND pcoi.del_timestamp = 0
+        AND pdo.deliver_order_status IN
+        <foreach collection="deliverOrderStatusList" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        AND pdo.supplier_code = #{supplierCode}
+    </select>
+    <select id="getDeliverList"
+            resultType="com.hete.supply.scm.server.supplier.purchase.entity.vo.PurchaseDeliverVo">
+        SELECT pdo.purchase_deliver_order_id AS purchaseDeliverOrderId,
+        pdo.version AS version,
+        pdoi.purchase_deliver_order_item_id AS purchaseDeliverOrderItemId,
+        pdoi.purchase_deliver_order_no AS purchaseDeliverOrderNo,
+        pdo.deliver_order_status AS deliverOrderStatus,
+        pdo.deliver_order_status AS deliverOrderStatus,
+        pdo.logistics AS logistics,
+        pdo.tracking_no AS trackingNo,
+        pdoi.deliver_cnt AS deliverCnt,
+        pdo.deliver_user AS deliverUser,
+        pdo.deliver_username AS deliverUsername,
+        pdo.deliver_time AS deliverTime,
+        pdo.warehousing_time AS wmsWarehousingTime,
+        pdo.purchase_child_order_no AS purchaseChildOrderNo,
+        pdo.supplier_code AS supplierCode,
+        pdo.supplier_name AS supplierName,
+        pdo.create_time AS createTime,
+        pdo.shipping_mark_no AS shippingMarkNo,
+        pdo.deliver_order_type AS deliverOrderType,
+        pdo.warehouse_code AS warehouseCode,
+        pdo.warehouse_name AS warehouseName,
+        pco.purchase_total AS purchaseTotal,
+        pdo.purchase_receipt_order_no AS purchaseReceiptOrderNo,
+        pdoi.receipt_cnt AS receiptCnt,
+        pdoi.sku AS sku,
+        pdoi.purchase_cnt AS purchaseCnt,
+        pdoi.sku_batch_code AS skuBatchCode,
+        pcoc.confirm_user AS confirmUser,
+        pcoc.confirm_username AS confirmUsername
+        FROM purchase_deliver_order_item AS pdoi
+        LEFT JOIN purchase_deliver_order AS pdo
+        ON pdoi.purchase_deliver_order_no = pdo.purchase_deliver_order_no
+        INNER JOIN purchase_child_order AS pco
+        ON pco.purchase_child_order_no = pdo.purchase_child_order_no
+        INNER JOIN purchase_child_order_change AS pcoc
+        ON pcoc.purchase_child_order_no = pdo.purchase_child_order_no
+        <include refid="search_where"></include>
+        ORDER BY pdoi.create_time DESC
+    </select>
+</mapper>

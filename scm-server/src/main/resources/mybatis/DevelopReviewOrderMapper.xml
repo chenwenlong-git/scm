@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.develop.dao.DevelopReviewOrderMapper">
+    <sql id="search_where">
+        WHERE dro.del_timestamp = 0
+        <if test="dto.developChildOrderNo != null and dto.developChildOrderNo != ''">
+            AND dro.develop_child_order_no = #{dto.developChildOrderNo}
+        </if>
+        <if test="dto.developReviewOrderNo != null and dto.developReviewOrderNo != ''">
+            AND dro.develop_review_order_no = #{dto.developReviewOrderNo}
+        </if>
+        <if test="dto.platform != null and dto.platform != ''">
+            AND dro.platform LIKE concat('%',#{dto.platform}, '%')
+        </if>
+        <if test="dto.createUser != null and dto.createUser != ''">
+            AND dro.create_user = #{dto.createUser}
+        </if>
+        <if test="dto.createUsername != null and dto.createUsername != ''">
+            AND dro.create_username LIKE concat('%',#{dto.createUsername}, '%')
+        </if>
+        <if test="dto.reviewUser != null and dto.reviewUser != ''">
+            AND dro.review_user = #{dto.reviewUser}
+        </if>
+        <if test="dto.reviewUsername != null and dto.reviewUsername != ''">
+            AND dro.review_username LIKE concat('%',#{dto.reviewUsername}, '%')
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND dro.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND dro.create_time <= #{dto.createTimeEnd} ]]>
+        </if>
+        <if test="dto.reviewDateStart != null">
+            <![CDATA[ AND dro.review_date >= #{dto.reviewDateStart} ]]>
+        </if>
+        <if test="dto.reviewDateEnd != null">
+            <![CDATA[ AND dro.review_date <= #{dto.reviewDateEnd} ]]>
+        </if>
+        <if test="dto.reviewResult != null ">
+            AND dro.review_result = #{dto.reviewResult}
+        </if>
+        <if test="dto.supplierCode != null and dto.supplierCode != ''">
+            AND dro.supplier_code = #{dto.supplierCode}
+        </if>
+        <if test="dto.supplierName != null and dto.supplierName != ''">
+            AND dro.supplier_name LIKE concat('%',#{dto.supplierName}, '%')
+        </if>
+        <if test="dto.developReviewOrderType != null ">
+            AND dro.develop_review_order_type = #{dto.developReviewOrderType}
+        </if>
+        <if test="dto.prenatalSampleOrderNo != null ">
+            AND dro.prenatal_sample_order_no = #{dto.prenatalSampleOrderNo}
+        </if>
+        <if test="dto.developReviewOrderStatusList != null and dto.developReviewOrderStatusList.size() > 0">
+            AND dro.develop_review_order_status IN
+            <foreach collection="dto.developReviewOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.developReviewOrderNoList != null and dto.developReviewOrderNoList.size() > 0">
+            AND dro.develop_review_order_no IN
+            <foreach collection="dto.developReviewOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    <select id="searchDevelopReview"
+            resultType="com.hete.supply.scm.server.scm.develop.entity.vo.DevelopReviewSearchVo">
+        SELECT dro.develop_review_order_no AS developReviewOrderNo,
+        dro.develop_review_order_status AS developReviewOrderStatus,
+        dro.develop_child_order_no AS developChildOrderNo,
+        dro.develop_sample_num AS developSampleNum,
+        dro.develop_review_order_type AS developReviewOrderType,
+        dro.platform AS platform,
+        dro.supplier_code AS supplierCode,
+        dro.supplier_name AS supplierName,
+        dro.spu AS spu,
+        dro.category AS category,
+        dro.review_result AS reviewResult,
+        dro.create_user AS createUser,
+        dro.create_username AS createUsername,
+        dro.review_user AS reviewUser,
+        dro.review_username AS reviewUsername,
+        dro.create_time AS createTime,
+        dro.review_date AS reviewDate,
+        dro.pamphlet_times AS pamphletTimes,
+        dro.develop_parent_order_no AS developParentOrderNo
+        FROM develop_review_order AS dro
+        <include refid="search_where"></include>
+        ORDER BY dro.create_time DESC
+
+    </select>
+    <select id="getListByGroupByStatus"
+            resultType="com.hete.supply.scm.server.scm.develop.entity.bo.DevelopReviewGroupByStatusBo">
+        SELECT develop_review_order_status AS developReviewOrderStatus,
+        COUNT(DISTINCT (develop_child_order_no)) AS num
+        FROM develop_review_order
+        WHERE del_timestamp = 0
+        <if test="typeList != null and typeList.size() > 0">
+            AND develop_review_order_type IN
+            <foreach collection="typeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="supplierCodeList != null and supplierCodeList.size() > 0">
+            AND supplier_code IN
+            <foreach collection="supplierCodeList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        GROUP BY develop_review_order_status;
+    </select>
+    <select id="getReviewExportTotals" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM develop_review_order AS dro
+        <include refid="search_where"></include>
+    </select>
+</mapper>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.sample.dao.SampleReceiptOrderMapper">
+    <sql id="search_where">
+        WHERE sro.del_timestamp = 0
+        <if test="dto.receiptUser != null and dto.receiptUser != ''">
+            AND sro.receipt_user = #{dto.receiptUser}
+        </if>
+        <if test="dto.receiptUsername != null and dto.receiptUsername != ''">
+            AND sro.receipt_username = #{dto.receiptUsername}
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND sro.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierNameList != null and dto.supplierNameList.size() > 0">
+            AND sro.supplier_name IN
+            <foreach collection="dto.supplierNameList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sampleReceiptOrderNo != null and dto.sampleReceiptOrderNo != ''">
+            AND sro.sample_receipt_order_no = #{dto.sampleReceiptOrderNo}
+        </if>
+        <if test="dto.receiptTimeStart != null">
+            <![CDATA[ AND sro.receipt_time >= #{dto.receiptTimeStart} ]]>
+        </if>
+        <if test="dto.receiptTimeEnd != null">
+            <![CDATA[ AND sro.receipt_time <= #{dto.receiptTimeEnd} ]]>
+        </if>
+        <if test="sampleReceiptOrderNoList != null and sampleReceiptOrderNoList.size() > 0">
+            AND sro.sample_receipt_order_no IN
+            <foreach collection="sampleReceiptOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.receiptOrderStatusList != null and dto.receiptOrderStatusList.size() > 0">
+            AND sro.receipt_order_status IN
+            <foreach collection="dto.receiptOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.trackingNo != null and dto.trackingNo != ''">
+            AND sro.tracking_no = #{dto.trackingNo}
+        </if>
+        <if test="dto.logistics != null and dto.logistics != ''">
+            AND sro.logistics = #{dto.logistics}
+        </if>
+        <if test="dto.sampleDeliverOrderNo != null and dto.sampleDeliverOrderNo != ''">
+            AND sro.sample_deliver_order_no = #{dto.sampleDeliverOrderNo}
+        </if>
+    </sql>
+    <select id="searchSampleReceipt" resultType="com.hete.supply.scm.server.scm.sample.entity.vo.SampleReceiptSearchVo">
+        SELECT sro.sample_receipt_order_id AS sampleReceiptOrderId,
+        sro.version AS version,
+        sro.sample_receipt_order_no AS sampleReceiptOrderNo,
+        sro.receipt_order_status AS receiptOrderStatus,
+        sro.sample_deliver_order_no AS sampleDeliverOrderNo,
+        sro.tracking_no AS trackingNo,
+        sro.logistics AS logistics,
+        sro.total_deliver AS totalDeliver,
+        sro.deliver_time AS deliverTime,
+        sro.total_receipt AS totalReceipt,
+        sro.supplier_code AS supplierCode,
+        sro.supplier_name AS supplierName,
+        sro.receipt_user AS receiptUser,
+        sro.receipt_username AS receiptUsername,
+        sro.receipt_time AS receiptTime
+        FROM sample_receipt_order AS sro
+        <include refid="search_where"></include>
+        ORDER BY sro.create_time DESC
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sample_receipt_order_item AS sroi
+        LEFT JOIN sample_receipt_order AS sro
+        ON sroi.sample_receipt_order_no = sro.sample_receipt_order_no
+        <include refid="search_where"></include>
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.SampleReceiptExportVo">
+        SELECT sroi.sample_receipt_order_no AS sampleReceiptOrderNo,
+        sroi.sample_child_order_no AS sampleChildOrderNo,
+        sroi.spu AS spu,
+        sro.supplier_name AS supplierName,
+        sro.logistics AS logistics,
+        sro.tracking_no AS trackingNo,
+        sro.deliver_time AS deliverTime,
+        sroi.deliver_cnt AS deliverCnt,
+        sro.receipt_username AS receiptUsername,
+        sro.receipt_time AS receiptTime,
+        sroi.receipt_cnt AS receiptCnt
+        FROM sample_receipt_order_item AS sroi
+        LEFT JOIN sample_receipt_order AS sro
+        ON sroi.sample_receipt_order_no = sro.sample_receipt_order_no
+        <include refid="search_where"></include>
+        ORDER BY sroi.create_time DESC
+    </select>
+
+
+</mapper>

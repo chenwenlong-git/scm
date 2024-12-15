@@ -1,0 +1,28 @@
+provider:
+  generic-export-map:
+    scm_produce_data_process_export:
+      biz-system-code: SCM
+      file-prefix: SCM生产资料原料工序导出
+      resource-name: SCM系统-生产资料原料工序导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.ProduceDataFacade
+      method-name-count: getSkuProcessExportTotals
+      method-name-record: getSkuProcessExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.ProduceDataSearchDto
+      header-alias:
+        spu: SPU
+        sku: SKU
+        skuEncode: 产品名称
+        supplierCodeJoining: 供应商
+        sort: 优先级
+        rawSku: 原料SKU
+        rawSkuEncode: 产品名称
+        skuCnt: 原料配比
+        process1: 工序1
+        process2: 工序2
+        process3: 工序3
+        process4: 工序4
+        process5: 工序5
+        process6: 工序6
+        process7: 工序7

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.settle.dao.SupplementOrderMapper">
+
+    <sql id="common_where">
+        supp.del_timestamp = 0
+        <if test="dto.supplementOrderId != null">
+            AND supp.supplement_order_id = #{dto.supplementOrderId}
+        </if>
+        <if test="dto.supplementOrderIds != null and dto.supplementOrderIds.size() > 0">
+            AND supp.supplement_order_id IN
+            <foreach collection="dto.supplementOrderIds" item="ids" separator="," open="(" close=")">
+                #{ids}
+            </foreach>
+        </if>
+        <if test="dto.supplementStatusList != null and dto.supplementStatusList.size() > 0">
+            AND supp.supplement_status IN
+            <foreach collection="dto.supplementStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.notSupplementStatusList != null and dto.notSupplementStatusList.size() > 0">
+            AND supp.supplement_status NOT IN
+            <foreach collection="dto.notSupplementStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplementOrderNo != null and dto.supplementOrderNo != ''">
+            AND supp.supplement_order_no LIKE concat('%',#{dto.supplementOrderNo}, '%')
+        </if>
+        <if test="dto.submitUser != null and dto.submitUser != ''">
+            AND supp.submit_user LIKE concat('%',#{dto.submitUser}, '%')
+        </if>
+        <if test="dto.submitUsername != null and dto.submitUsername != ''">
+            AND supp.submit_username LIKE concat('%',#{dto.submitUsername}, '%')
+        </if>
+        <if test="dto.examineUser != null and dto.examineUser != ''">
+            AND supp.examine_user LIKE concat('%',#{dto.examineUser}, '%')
+        </if>
+        <if test="dto.examineUsername != null and dto.examineUsername != ''">
+            AND supp.examine_username LIKE concat('%',#{dto.examineUsername}, '%')
+        </if>
+        <if test="dto.confirmUser != null and dto.confirmUser != ''">
+            AND supp.confirm_user LIKE concat('%',#{dto.confirmUser}, '%')
+        </if>
+        <if test="dto.confirmUsername != null and dto.confirmUsername != ''">
+            AND supp.confirm_username LIKE concat('%',#{dto.confirmUsername}, '%')
+        </if>
+        <if test="dto.supplementUser != null and dto.supplementUser != ''">
+            AND supp.supplement_user LIKE concat('%',#{dto.supplementUser}, '%')
+        </if>
+        <if test="dto.supplementUsername != null and dto.supplementUsername != ''">
+            AND supp.supplement_username LIKE concat('%',#{dto.supplementUsername}, '%')
+        </if>
+        <if test="dto.createUser != null and dto.createUser != ''">
+            AND supp.create_user LIKE concat('%',#{dto.createUser}, '%')
+        </if>
+        <if test="dto.createUsername != null and dto.createUsername != ''">
+            AND supp.create_username LIKE concat('%',#{dto.createUsername}, '%')
+        </if>
+        <if test="dto.supplierName != null and dto.supplierName != ''">
+            AND supp.supplier_name = #{dto.supplierName}
+        </if>
+        <if test="dto.supplierCode != null">
+            AND supp.supplier_code = #{dto.supplierCode}
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND supp.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.submitTimeStart != null">
+            <![CDATA[ AND supp.submit_time >= #{dto.submitTimeStart} ]]>
+        </if>
+        <if test="dto.submitTimeEnd != null">
+            <![CDATA[ AND supp.submit_time <= #{dto.submitTimeEnd}  ]]>
+        </if>
+        <if test="dto.confirmTimeStart != null">
+            <![CDATA[ AND supp.confirm_time >= #{dto.confirmTimeStart} ]]>
+        </if>
+        <if test="dto.confirmTimeEnd != null">
+            <![CDATA[ AND supp.confirm_time <= #{dto.confirmTimeEnd} ]]>
+        </if>
+        <if test="dto.payTimeStart != null">
+            <![CDATA[ AND supp.pay_time >= #{dto.payTimeStart} ]]>
+        </if>
+        <if test="dto.payTimeEnd != null">
+            <![CDATA[ AND supp.pay_time <= #{dto.payTimeEnd}  ]]>
+        </if>
+        <if test="dto.examineTimeStart != null">
+            <![CDATA[ AND supp.examine_time >= #{dto.examineTimeStart} ]]>
+        </if>
+        <if test="dto.examineTimeEnd != null">
+            <![CDATA[ AND supp.examine_time <= #{dto.examineTimeEnd}  ]]>
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND supp.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND supp.create_time <= #{dto.createTimeEnd}  ]]>
+        </if>
+        <if test="dto.supplementTypeList != null and dto.supplementTypeList.size() > 0">
+            AND supp.supplement_type IN
+            <foreach collection="dto.supplementTypeList" item="supplementType" separator="," open="(" close=")">
+                #{supplementType}
+            </foreach>
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND supp.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.handleUser != null and dto.handleUser != ''">
+            AND supp.handle_user = #{dto.handleUser}
+        </if>
+        <if test="dto.handleUsername != null and dto.handleUsername != ''">
+            AND supp.handle_username LIKE concat('%',#{dto.handleUsername}, '%')
+        </if>
+    </sql>
+
+    <select id="selectSupplementOrderPage"
+            resultType="com.hete.supply.scm.server.scm.settle.entity.vo.SupplementOrderVo"
+            parameterType="com.hete.supply.scm.server.scm.settle.entity.vo.SupplementOrderVo">
+        SELECT supp.supplement_order_id AS supplementOrderId,
+        supp.version AS version,
+        supp.supplement_order_no as supplementOrderNo,
+        supp.supplement_type as supplementType,
+        supp.supplement_status as supplementStatus,
+        supp.supplier_code as supplierCode,
+        supp.supplier_name as supplierName,
+        supp.supplement_price as supplementPrice,
+        supp.submit_time as submitTime,
+        supp.confirm_time as confirmTime,
+        supp.examine_time AS examineTime,
+        supp.pay_time AS payTime,
+        supp.create_time AS createTime,
+        supp.supplement_user AS supplementUser,
+        supp.supplement_username AS supplementUsername,
+        supp.handle_user AS handleUser,
+        supp.handle_username AS handleUsername
+        FROM supplement_order AS supp
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY supp.create_time DESC
+    </select>
+
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT count(supp.supplement_order_id) AS total
+        FROM supplement_order AS supp
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.SupplementOrderExportVo">
+        SELECT
+        supp.supplement_order_no as supplementOrderNo,
+        supp.supplement_type as supplementType,
+        supp.supplement_status as supplementStatus,
+        supp.supplier_code as supplierCode,
+        supp.supplier_name as supplierName,
+        supp.supplement_price as supplementPrice,
+        supp.supplement_user AS supplementUser,
+        supp.supplement_username AS supplementUsername,
+        supp.create_time as createTime,
+        supp.submit_time as submitTime,
+        supp.confirm_time as confirmTime,
+        supp.examine_time AS examineTime,
+        supp.settle_order_no AS settleOrderNo,
+        supp.pay_time AS payTime,
+        supp.handle_user AS handleUser,
+        supp.handle_username AS handleUsername
+        FROM supplement_order AS supp
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY supp.create_time DESC
+    </select>
+    <select id="getPurchaseBatchSupplementOrderNo"
+            resultType="com.hete.supply.scm.server.scm.settle.entity.bo.SupplementOrderPurchaseExportBo">
+        SELECT
+        supp.supplement_order_id as supplementOrderId,
+        supp.supplement_order_no as supplementOrderNo,
+        purchase.spu as spu,
+        purchase.sku as sku,
+        purchase.supplement_price as supplementPrice,
+        purchase.supplement_remarks as supplementRemarks
+        FROM supplement_order AS supp
+        INNER JOIN supplement_order_purchase as purchase on supp.supplement_order_id = purchase.supplement_order_id
+        <where>
+            supp.del_timestamp = 0
+            AND purchase.del_timestamp = 0
+            <if test="supplementOrderNoList != null and supplementOrderNoList.size() > 0">
+                AND supp.supplement_order_no IN
+                <foreach collection="supplementOrderNoList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY purchase.supplement_order_purchase_id,purchase.create_time DESC
+    </select>
+
+    <select id="getExportSkuTotals" resultType="java.lang.Integer">
+        SELECT count(supp.supplement_order_id) AS total
+        FROM supplement_order AS supp
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <select id="getExportSkuList" resultType="com.hete.supply.scm.server.scm.settle.entity.po.SupplementOrderPo">
+        SELECT
+        supp.supplement_order_id as supplementOrderId,
+        supp.supplement_order_no as supplementOrderNo,
+        supp.supplement_type as supplementType,
+        supp.supplement_status as supplementStatus,
+        supp.supplier_code as supplierCode,
+        supp.supplier_name as supplierName,
+        supp.supplement_price as supplementPrice,
+        supp.supplement_user AS supplementUser,
+        supp.supplement_username AS supplementUsername,
+        supp.create_time as createTime,
+        supp.submit_time as submitTime,
+        supp.confirm_time as confirmTime,
+        supp.examine_time AS examineTime,
+        supp.settle_order_no AS settleOrderNo,
+        supp.pay_time AS payTime,
+        supp.handle_user AS handleUser,
+        supp.handle_username AS handleUsername
+        FROM supplement_order AS supp
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY supp.create_time DESC
+    </select>
+
+
+</mapper>

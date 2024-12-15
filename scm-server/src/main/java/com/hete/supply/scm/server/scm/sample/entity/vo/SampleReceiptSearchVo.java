@@ -1,0 +1,64 @@
+package com.hete.supply.scm.server.scm.sample.entity.vo;
+
+import com.hete.supply.scm.api.scm.entity.enums.SampleReceiptOrderStatus;
+import com.hete.supply.scm.api.scm.entity.vo.SupplierSimpleVo;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+/**
+ * @author weiwenxin
+ * @date 2022/11/2 23:36
+ */
+@EqualsAndHashCode(callSuper = true)
+@Data
+@NoArgsConstructor
+public class SampleReceiptSearchVo extends SupplierSimpleVo {
+    @ApiModelProperty(value = "id")
+    private Long sampleReceiptOrderId;
+
+    @ApiModelProperty(value = "version")
+    private Integer version;
+
+    @ApiModelProperty(value = "样品收货单号")
+    private String sampleReceiptOrderNo;
+
+
+    @ApiModelProperty(value = "样品收货单状态")
+    private SampleReceiptOrderStatus receiptOrderStatus;
+
+
+    @ApiModelProperty(value = "样品发货单号")
+    private String sampleDeliverOrderNo;
+
+    @ApiModelProperty(value = "运单号")
+    private String trackingNo;
+
+    @ApiModelProperty(value = "物流")
+    private String logistics;
+
+    @ApiModelProperty(value = "总发货数")
+    private Integer totalDeliver;
+
+    @ApiModelProperty(value = "发货时间")
+    private LocalDateTime deliverTime;
+
+    @ApiModelProperty(value = "总收货数")
+    private Integer totalReceipt;
+
+    @ApiModelProperty(value = "收货人id")
+    private String receiptUser;
+
+    @ApiModelProperty(value = "收货人名称")
+    private String receiptUsername;
+
+    @ApiModelProperty(value = "收货时间")
+    private LocalDateTime receiptTime;
+
+    @ApiModelProperty(value = "参照图片")
+    private String contrastFileUrl;
+
+}

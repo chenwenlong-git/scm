@@ -1,0 +1,5 @@
+#batch-code可放在scm.process同级目录下
+scm:
+  batch-code:
+    abnormalPriceTipsUsers:
+      - "U247848"

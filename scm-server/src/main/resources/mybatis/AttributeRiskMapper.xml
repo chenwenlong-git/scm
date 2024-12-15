@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.production.dao.AttributeRiskMapper">
+    <select id="listAll" resultType="com.hete.supply.scm.server.scm.production.entity.po.AttributeRiskPo">
+        select attribute_risk_id,
+               attribute_id,
+               attribute_name,
+               coefficient,
+               del_timestamp
+        from attribute_risk
+        where del_timestamp = 0
+        limit #{maxLimit}
+    </select>
+</mapper>

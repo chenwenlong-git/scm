@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.cost.dao.CostOfGoodsMapper">
+
+    <select id="searchGoodsOfCost" resultType="com.hete.supply.scm.server.scm.cost.entity.vo.GoodsCostVo">
+        SELECT cog.cost_of_goods_id AS costOfGoodsId,
+        cog.version AS version,
+        cog.sku AS sku,
+        cog.inventory AS inventory,
+        cog.inventory_price AS inventoryPrice,
+        cog.weighting_price AS weightingPrice,
+        cog.warehouse_code AS warehouseCode,
+        cog.warehouse_name AS warehouseName,
+        cog.polymerize_warehouse AS polymerizeWarehouse,
+        cog.update_time AS updateTime,
+        cog.cost_time AS costTime,
+        cog.cost_time_type AS costTimeType
+        FROM cost_of_goods AS cog
+        <if test="dto.isExport != null and dto.isExport == true">
+            FORCE INDEX(idx_cost_of_goods_1)
+        </if>
+        <include refid="search_where"></include>
+        <if test="dto.isExport == null or dto.isExport != true">
+            ORDER BY cog.update_time DESC,cog.cost_of_goods_id DESC
+        </if>
+        <if test="dto.isExport != null and dto.isExport == true">
+            ORDER BY cog.cost_of_goods_id DESC
+        </if>
+    </select>
+    <select id="getRelatedCostData" resultType="com.hete.supply.scm.server.scm.cost.entity.bo.GoodsCostBo">
+        SELECT cog.sku AS sku,
+        cog.inventory AS inventory,
+        cog.inventory_price AS inventoryPrice,
+        cog.weighting_price AS weightingPrice,
+        cog.warehouse_code AS warehouseCode,
+        cog.polymerize_warehouse AS polymerizeWarehouse,
+        cog.update_time AS updateTime
+        FROM cost_of_goods AS cog
+        WHERE cog.del_timestamp = 0
+        AND cog.cost_time = #{timeStr}
+        AND cog.cost_time_type = #{costTimeType}
+        AND cog.polymerize_type = #{polymerizeType}
+        AND
+        <foreach collection="goodsCostVoList" item="item" open="(" separator="or" close=")">
+            cog.sku = #{item.sku} AND cog.warehouse_code = #{item.warehouseCode}
+        </foreach>
+    </select>
+    <select id="searchGoodsOfCostLogs" resultType="com.hete.supply.scm.server.scm.cost.entity.vo.GoodsCostLogItemVo">
+        SELECT cog.sku AS sku,
+        cog.inventory AS inventory,
+        cog.inventory_price AS inventoryPrice,
+        cog.weighting_price AS weightingPrice,
+        cog.warehouse_code AS warehouseCode,
+        cog.update_time AS updateTime,
+        cog.update_username AS updateUsername
+        FROM cost_of_goods AS cog
+        WHERE cog.del_timestamp = 0
+        AND cog.sku = #{sku}
+        <if test="costTimeType != null">
+            AND cog.cost_time_type = #{costTimeType}
+        </if>
+        <if test="polymerizeType != null">
+            AND cog.polymerize_type = #{polymerizeType}
+        </if>
+        <if test="polymerizeWarehouse != null">
+            AND cog.polymerize_warehouse = #{polymerizeWarehouse}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND cog.warehouse_code = #{warehouseCode}
+        </if>
+        ORDER BY cog.cost_of_goods_id DESC
+    </select>
+    <select id="searchGoodsOfCostExport"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.GoodsOfCostExportVo">
+        SELECT cog.cost_of_goods_id AS costOfGoodsId,
+        cog.version AS version,
+        cog.sku AS sku,
+        cog.inventory AS yestInventory,
+        cog.inventory_price AS yestInventoryPrice,
+        cog.weighting_price AS yestWeightingPrice,
+        cog.warehouse_code AS warehouseCode,
+        cog.warehouse_name AS warehouseName,
+        cog.update_time AS updateTime
+        FROM cost_of_goods AS cog
+        <include refid="search_where"></include>
+        ORDER BY cog.cost_of_goods_id DESC
+    </select>
+    <select id="getSkuCostBySkuAndWarehouse"
+            resultType="com.hete.supply.scm.server.scm.cost.entity.po.CostOfGoodsPo">
+        SELECT cog.cost_of_goods_id AS costOfGoodsId,
+        cog.sku AS sku,
+        cog.warehouse_code AS warehouseCode,
+        cog.warehouse_name AS warehouseName,
+        cog.warehouse_types AS warehouseTypes,
+        cog.polymerize_type AS polymerizeType,
+        cog.polymerize_warehouse AS polymerizeWarehouse,
+        cog.cost_time_type AS costTimeType,
+        cog.cost_time AS costTime,
+        cog.inventory AS inventory,
+        cog.inventory_price AS inventoryPrice,
+        cog.weighting_price AS weightingPrice,
+        cog.create_time AS createTime,
+        cog.create_user AS createUser,
+        cog.create_username AS createUsername,
+        cog.update_time AS updateTime,
+        cog.update_user AS updateUser,
+        cog.update_username AS updateUsername,
+        cog.del_timestamp AS delTimestamp,
+        cog.version AS version
+        FROM cost_of_goods AS cog
+        WHERE cog.del_timestamp = 0
+        AND cog.cost_time = #{timeStr}
+        AND cog.cost_time_type = #{costTimeType}
+        AND cog.polymerize_type = #{polymerizeType}
+        AND
+        <foreach collection="dtoList" item="item" open="(" separator="or" close=")">
+            cog.sku = #{item.sku} AND cog.warehouse_code = #{item.warehouseCode}
+        </foreach>
+    </select>
+    <select id="getMonthCostNotExist" resultType="com.hete.supply.scm.server.scm.cost.entity.po.CostOfGoodsPo">
+        SELECT sku                  AS sku,
+               warehouse_code       AS warehouseCode,
+               warehouse_name       AS warehouseName,
+               warehouse_types      AS warehouseTypes,
+               polymerize_type      AS polymerizeType,
+               polymerize_warehouse AS polymerizeWarehouse,
+               cost_time_type       AS costTimeType,
+               weighting_price      AS weightingPrice
+        FROM cost_of_goods
+        WHERE cost_time = #{lastMonthStr}
+          AND sku NOT IN (SELECT sku
+                          FROM cost_of_goods
+                          WHERE cost_time = #{currentMonthString});
+    </select>
+    <select id="getMonthCostBySkuAndWarehouse"
+            resultType="com.hete.supply.scm.server.scm.cost.entity.po.CostOfGoodsPo">
+        SELECT cog.sku AS sku,
+        cog.warehouse_code AS warehouseCode,
+        cog.polymerize_warehouse AS polymerizeWarehouse,
+        cog.weighting_price AS weightingPrice
+        FROM cost_of_goods AS cog
+        WHERE cog.del_timestamp = 0
+        AND cog.cost_time = #{costTime}
+        AND cog.weighting_price != 0
+        AND
+        <foreach collection="costOfGoodsPoList" item="item" open="(" separator="or" close=")">
+            (cog.sku = #{item.sku}
+            <if test="item.warehouseCode != null and item.warehouseCode != ''">
+                AND cog.warehouse_code = #{item.warehouseCode}
+            </if>
+            <if test="item.polymerizeWarehouse != null">
+                AND cog.polymerize_warehouse = #{item.polymerizeWarehouse.name}
+            </if>
+            )
+        </foreach>
+    </select>
+    <select id="getMoDataByBatchBo" resultType="com.hete.supply.scm.server.scm.cost.entity.po.CostOfGoodsPo">
+        SELECT cog.cost_of_goods_id AS costOfGoodsId,
+        cog.sku AS sku,
+        cog.warehouse_code AS warehouseCode,
+        cog.warehouse_name AS warehouseName,
+        cog.warehouse_types AS warehouseTypes,
+        cog.polymerize_type AS polymerizeType,
+        cog.polymerize_warehouse AS polymerizeWarehouse,
+        cog.cost_time_type AS costTimeType,
+        cog.cost_time AS costTime,
+        cog.inventory AS inventory,
+        cog.inventory_price AS inventoryPrice,
+        cog.weighting_price AS weightingPrice,
+        cog.create_time AS createTime,
+        cog.create_user AS createUser,
+        cog.create_username AS createUsername,
+        cog.update_time AS updateTime,
+        cog.update_user AS updateUser,
+        cog.update_username AS updateUsername,
+        cog.del_timestamp AS delTimestamp,
+        cog.version AS version
+        FROM cost_of_goods AS cog
+        WHERE cog.del_timestamp = 0
+        <if test="boList != null and boList.size() > 0">
+            AND (cog.sku,cog.warehouse_code,cog.polymerize_type,cog.cost_time) IN
+            <foreach collection="boList" item="item" separator="," open="(" close=")">
+                (#{item.sku} , #{item.warehouseCode}, #{item.polymerizeType}, #{item.costTime})
+            </foreach>
+        </if>
+    </select>
+    <sql id="search_where">
+        WHERE cog.del_timestamp = 0
+        <if test="dto.costTime == null  and dto.costTime != ''">
+            AND cog.cost_time = #{dto.costTime}
+        </if>
+        <if test="dto.costTimeType != null">
+            AND cog.cost_time_type = #{dto.costTimeType}
+        </if>
+        <if test="dto.polymerizeType != null">
+            AND cog.polymerize_type = #{dto.polymerizeType}
+        </if>
+        <if test="dto.sku != null and dto.sku != ''">
+            AND cog.sku LIKE concat('%',#{dto.sku}, '%')
+        </if>
+        <if test="dto.warehouseCode != null and dto.warehouseCode != ''">
+            AND cog.warehouse_code = #{dto.warehouseCode}
+        </if>
+        <if test="dto.warehouseName != null and dto.warehouseName != ''">
+            AND cog.warehouse_name = #{dto.warehouseName}
+        </if>
+        <if test="dto.costTime != null and dto.costTime != ''">
+            AND cog.cost_time = #{dto.costTime}
+        </if>
+        <if test="dto.polymerizeWarehouse != null">
+            AND cog.polymerize_warehouse = #{dto.polymerizeWarehouse}
+        </if>
+        <if test="dto.yestInventoryMin != null">
+            <![CDATA[ and cog.inventory >= #{dto.yestInventoryMin} ]]>
+        </if>
+        <if test="dto.yestInventoryMax != null">
+            <![CDATA[ and cog.inventory <= #{dto.yestInventoryMax} ]]>
+        </if>
+        <if test="dto.yestInventoryPriceMin != null">
+            <![CDATA[ and cog.inventory_price >= #{dto.yestInventoryPriceMin} ]]>
+        </if>
+        <if test="dto.yestInventoryPriceMax != null">
+            <![CDATA[ and cog.inventory_price <= #{dto.yestInventoryPriceMax} ]]>
+        </if>
+        <if test="dto.yestWeightingPriceMin != null">
+            <![CDATA[ and cog.weighting_price >= #{dto.yestWeightingPriceMin} ]]>
+        </if>
+        <if test="dto.yestWeightingPriceMax != null">
+            <![CDATA[ and cog.weighting_price <= #{dto.yestWeightingPriceMax} ]]>
+        </if>
+
+        <if test="dto.moInventoryMin != null">
+            <![CDATA[ and cog.inventory >= #{dto.moInventoryMin} ]]>
+        </if>
+        <if test="dto.moInventoryMax != null">
+            <![CDATA[ and cog.inventory <= #{dto.moInventoryMax} ]]>
+        </if>
+        <if test="dto.moInventoryPriceMin != null">
+            <![CDATA[ and cog.inventory_price >= #{dto.moInventoryPriceMin} ]]>
+        </if>
+        <if test="dto.moInventoryPriceMax != null">
+            <![CDATA[ and cog.inventory_price <= #{dto.moInventoryPriceMax} ]]>
+        </if>
+        <if test="dto.moWeightingPriceMin != null">
+            <![CDATA[ and cog.weighting_price >= #{dto.moWeightingPriceMin} ]]>
+        </if>
+        <if test="dto.moWeightingPriceMax != null">
+            <![CDATA[ and cog.weighting_price <= #{dto.moWeightingPriceMax} ]]>
+        </if>
+        <if test="dto.warehouseNameList != null and dto.warehouseNameList.size() > 0">
+            AND cog.warehouse_name IN
+            <foreach collection="dto.warehouseNameList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+
+</mapper>

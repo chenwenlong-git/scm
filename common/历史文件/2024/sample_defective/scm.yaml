@@ -1,0 +1,4 @@
+#process可放在scm.finance同级目录下
+scm:
+  process:
+    createBatchCodeSupplierCode: "99"

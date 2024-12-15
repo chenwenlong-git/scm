@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.supplier.dao.SupplierPaymentAccountMapper">
+
+    <sql id="common_where">
+        spa.del_timestamp = 0
+        <if test="dto.account != null and dto.account != ''">
+            AND spa.account LIKE concat('%',#{dto.account}, '%')
+        </if>
+        <if test="dto.createUsername != null and dto.createUsername != ''">
+            AND spa.create_username LIKE concat('%',#{dto.createUsername}, '%')
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND spa.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND spa.create_time <= #{dto.createTimeEnd}  ]]>
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND spa.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.supplierPaymentAccountStatusList != null and dto.supplierPaymentAccountStatusList.size() > 0">
+            AND spa.supplier_payment_account_status IN
+            <foreach collection="dto.supplierPaymentAccountStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND spa.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </sql>
+
+    <select id="selectSupplierPaymentAccountPage"
+            resultType="com.hete.supply.scm.server.scm.supplier.entity.vo.SupplierPaymentAccountSearchVo"
+            parameterType="com.hete.supply.scm.server.scm.supplier.entity.vo.SupplierPaymentAccountSearchVo">
+        SELECT spa.supplier_payment_account_id AS supplierPaymentAccountId,
+        spa.version AS version,
+        spa.account as account,
+        spa.supplier_code as supplierCode,
+        spa.supplier_payment_account_status as supplierPaymentAccountStatus,
+        spa.supplier_payment_account_type as supplierPaymentAccountType,
+        spa.supplier_payment_currency_type as supplierPaymentCurrencyType,
+        spa.bank_name as bankName,
+        spa.account_username as accountUsername,
+        spa.bank_subbranch_name as bankSubbranchName,
+        spa.swift_code AS swiftCode,
+        spa.bank_province AS bankProvince,
+        spa.bank_city AS bankCity,
+        spa.bank_area AS bankArea,
+        spa.is_default AS isDefault,
+        spa.remarks AS remarks,
+        spa.feishu_audit_order_no AS feishuAuditOrderNo,
+        spa.create_time AS createTime,
+        spa.create_username AS createUsername,
+        spa.update_username AS updateUsername,
+        spa.subject AS subject
+        FROM supplier_payment_account AS spa
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY spa.create_time DESC
+    </select>
+</mapper>

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.ibfs.dao.FinanceRecoOrderMapper">
+    <sql id="search_where">
+        WHERE fro.del_timestamp = 0
+        <if test="dto.financeRecoOrderNo != null and dto.financeRecoOrderNo != ''">
+            AND fro.finance_reco_order_no = #{dto.financeRecoOrderNo}
+        </if>
+        <if test="dto.financeRecoOrderNoList != null and dto.financeRecoOrderNoList.size() > 0">
+            AND fro.finance_reco_order_no IN
+            <foreach collection="dto.financeRecoOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierCode != null and dto.supplierCode != ''">
+            AND fro.supplier_code = #{dto.supplierCode}
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND fro.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.ctrlUser != null and dto.ctrlUser != ''">
+            AND (fro.ctrl_user = #{dto.ctrlUser}
+            OR fro.follow_user = #{dto.ctrlUser}
+            <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+                OR fro.supplier_code IN
+                <foreach collection="dto.authSupplierCode" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            )
+        </if>
+        <if test="dto.approveUser != null and dto.approveUser != ''">
+            AND fro.ctrl_user = #{dto.approveUser}
+        </if>
+        <if test="dto.spmAuthSupplierCode != null and dto.spmAuthSupplierCode.size() > 0">
+            AND fro.supplier_code IN
+            <foreach collection="dto.spmAuthSupplierCode" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.financeRecoOrderStatusList != null and dto.financeRecoOrderStatusList.size() > 0">
+            AND fro.finance_reco_order_status IN
+            <foreach collection="dto.financeRecoOrderStatusList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.collectOrderNo != null and dto.collectOrderNo != ''">
+            AND EXISTS (
+            SELECT 1
+            FROM finance_reco_order_item AS froi
+            WHERE fro.finance_reco_order_no = froi.finance_reco_order_no
+            AND froi.collect_order_no = #{dto.collectOrderNo}
+            AND froi.del_timestamp = 0
+            )
+        </if>
+        <if test="dto.sku != null and dto.sku != ''">
+            AND EXISTS (
+            SELECT 1
+            FROM finance_reco_order_item_sku AS frois
+            WHERE fro.finance_reco_order_no = frois.finance_reco_order_no
+            AND frois.sku = #{dto.sku}
+            AND frois.del_timestamp = 0
+            )
+        </if>
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND EXISTS (SELECT 1 FROM finance_reco_order_item_sku AS frois
+            WHERE fro.finance_reco_order_no = frois.finance_reco_order_no
+            AND frois.del_timestamp = 0
+            AND frois.sku IN
+            <foreach item="item" collection="dto.skuList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            LIMIT 1
+            )
+        </if>
+        <if test="dto.reconciliationStartTimeStart != null">
+            <![CDATA[ AND fro.reconciliation_start_time >= #{dto.reconciliationStartTimeStart} ]]>
+        </if>
+        <if test="dto.reconciliationStartTimeEnd != null">
+            <![CDATA[ AND fro.reconciliation_start_time <= #{dto.reconciliationStartTimeEnd}  ]]>
+        </if>
+    </sql>
+    <sql id="search_where_item">
+        <if test="dto.collectOrderNo != null and dto.collectOrderNo != ''">
+            AND frois.collect_order_no = #{dto.collect_order_no}
+        </if>
+        <if test="dto.collectOrderNoList != null and dto.collectOrderNoList.size() > 0">
+            AND frois.collect_order_no IN
+            <foreach item="item" collection="dto.collectOrderNoList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sku != null and dto.sku != ''">
+            AND frois.sku = #{dto.sku}
+        </if>
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND frois.sku IN
+            <foreach item="item" collection="dto.skuList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.financeRecoOrderItemSkuId != null and dto.financeRecoOrderItemSkuId.size() > 0">
+            AND frois.finance_reco_order_item_sku_id IN
+            <foreach item="item" collection="dto.financeRecoOrderItemSkuId" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.collectOrderTypeList != null and dto.collectOrderTypeList.size() > 0">
+            AND frois.collect_order_type IN
+            <foreach item="item" collection="dto.collectOrderTypeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.financeRecoFundTypeList != null and dto.financeRecoFundTypeList.size() > 0">
+            AND frois.finance_reco_fund_type IN
+            <foreach item="item" collection="dto.financeRecoFundTypeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.financeRecoPayTypeList != null and dto.financeRecoPayTypeList.size() > 0">
+            AND frois.finance_reco_pay_type IN
+            <foreach item="item" collection="dto.financeRecoPayTypeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.recoOrderItemSkuStatusList != null and dto.recoOrderItemSkuStatusList.size() > 0">
+            AND frois.reco_order_item_sku_status IN
+            <foreach item="item" collection="dto.recoOrderItemSkuStatusList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    <select id="searchRecoOrderPage"
+            resultType="com.hete.supply.scm.server.scm.ibfs.entity.vo.RecoOrderSearchVo">
+        SELECT fro.finance_reco_order_id AS financeRecoOrderId,
+        fro.version AS version,
+        fro.finance_reco_order_no AS financeRecoOrderNo,
+        fro.supplier_code AS supplierCode,
+        fro.finance_reco_order_status AS financeRecoOrderStatus,
+        fro.reconciliation_start_time AS reconciliationStartTime,
+        fro.reconciliation_end_time AS reconciliationEndTime,
+        fro.settle_price AS settlePrice,
+        fro.receive_price AS receivePrice,
+        fro.pay_price AS payPrice,
+        fro.supplier_confirm_time AS supplierConfirmTime,
+        fro.collect_order_time AS collectOrderTime,
+        fro.complete_time AS completeTime,
+        fro.create_time AS createTime,
+        fro.finance_settle_order_no AS financeSettleOrderNo,
+        fro.ctrl_user AS ctrlUser,
+        fro.task_id AS taskid
+        FROM finance_reco_order AS fro
+        <include refid="search_where"></include>
+        ORDER BY fro.finance_reco_order_id DESC
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT count(fro.finance_reco_order_id) AS total
+        FROM finance_reco_order AS fro
+        <include refid="search_where"></include>
+        ORDER BY fro.finance_reco_order_id DESC
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.RecoOrderExportVo">
+        SELECT fro.finance_reco_order_id AS financeRecoOrderId,
+        fro.version AS version,
+        fro.finance_reco_order_no AS financeRecoOrderNo,
+        fro.supplier_code AS supplierCode,
+        fro.finance_reco_order_status AS financeRecoOrderStatus,
+        fro.reconciliation_start_time AS reconciliationStartTime,
+        fro.reconciliation_end_time AS reconciliationEndTime,
+        fro.settle_price AS settlePrice,
+        fro.receive_price AS receivePrice,
+        fro.pay_price AS payPrice,
+        fro.supplier_confirm_time AS supplierConfirmTime,
+        fro.collect_order_time AS collectOrderTime,
+        fro.complete_time AS completeTime,
+        fro.create_time AS createTime,
+        fro.confirm_time AS confirmTime,
+        fro.confirm_user AS confirmUser,
+        fro.confirm_username AS confirmUsername,
+        fro.reconciliation_cycle AS reconciliationCycle,
+        fro.finance_settle_order_no AS financeSettleOrderNo,
+        fro.ctrl_user AS ctrlUser
+        FROM finance_reco_order AS fro
+        <include refid="search_where"></include>
+        ORDER BY fro.finance_reco_order_id DESC
+    </select>
+    <select id="getExportTotalsItem" resultType="java.lang.Integer">
+        SELECT count(frois.finance_reco_order_item_sku_id) AS total
+        FROM finance_reco_order_item_sku AS frois
+        INNER JOIN finance_reco_order AS fro ON fro.finance_reco_order_no = frois.finance_reco_order_no
+        AND frois.del_timestamp = 0
+        <include refid="search_where"></include>
+        <include refid="search_where_item"></include>
+        ORDER BY frois.finance_reco_order_item_sku_id DESC
+    </select>
+    <select id="getExportListItem" resultType="com.hete.supply.scm.api.scm.entity.vo.RecoOrderExportItemVo">
+        SELECT fro.finance_reco_order_id AS financeRecoOrderId,
+        fro.version AS version,
+        fro.finance_reco_order_no AS financeRecoOrderNo,
+        fro.supplier_code AS supplierCode,
+        fro.finance_reco_order_status AS financeRecoOrderStatus,
+        fro.reconciliation_start_time AS reconciliationStartTime,
+        fro.reconciliation_end_time AS reconciliationEndTime,
+        fro.settle_price AS settlePrice,
+        fro.finance_settle_order_no AS financeSettleOrderNo,
+        fro.reconciliation_cycle AS reconciliationCycle,
+        frois.collect_order_no AS collectOrderNo,
+        frois.reco_order_item_sku_status AS recoOrderItemSkuStatus,
+        frois.sku AS sku,
+        frois.price AS price,
+        frois.num AS num,
+        frois.total_price AS totalPrice,
+        frois.finance_reco_fund_type AS financeRecoFundType,
+        frois.collect_order_type AS collectOrderType,
+        frois.finance_reco_pay_type AS financeRecoPayType,
+        frois.sku_batch_code AS skuBatchCode,
+        frois.finance_reco_order_item_sku_id AS financeRecoOrderItemSkuId,
+        frois.collect_order_item_id AS collectOrderItemId,
+        frois.association_time AS associationTime,
+        frois.remarks AS remarks
+        FROM finance_reco_order_item_sku AS frois
+        INNER JOIN finance_reco_order AS fro ON fro.finance_reco_order_no = frois.finance_reco_order_no
+        AND frois.del_timestamp = 0
+        <include refid="search_where"></include>
+        <include refid="search_where_item"></include>
+        ORDER BY frois.finance_reco_order_item_sku_id DESC
+    </select>
+    <select id="getSupplierList" resultType="java.lang.String">
+        SELECT DISTINCT (fro.supplier_code)
+        FROM finance_reco_order AS fro
+        <include refid="search_where"></include>
+    </select>
+    <update id="updateInfoByBatchId">
+        update finance_reco_order as fro
+        <set>
+            <if test="bo.delTimestamp!=null">
+                fro.del_timestamp = #{bo.delTimestamp},
+            </if>
+            <if test="bo.updateUser!=null and bo.updateUser!=''">
+                fro.update_user = #{bo.updateUser},
+            </if>
+            <if test="bo.updateUsername!=null and bo.updateUsername!=''">
+                fro.update_username = #{bo.updateUsername},
+            </if>
+            fro.version = fro.version + 1
+        </set>
+        <where>
+            fro.finance_reco_order_id in
+            <foreach collection="idList" open="(" separator="," close=")" item="id">
+                #{id}
+            </foreach>
+            and fro.del_timestamp = 0
+        </where>
+
+    </update>
+</mapper>

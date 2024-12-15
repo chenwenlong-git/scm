@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.process.dao.ProcessProcedureEmployeePlanMapper">
+
+    <sql id="commonFields">
+        process_procedure_employee_plan_id
+        ,
+        production_pool_code,
+        process_order_no,
+        process_order_procedure_id,
+        process_id,
+        process_name,
+        employee_no,
+        employee_name,
+        process_num,
+        commission,
+        receive_material_time,
+        expect_begin_time,
+        act_begin_time,
+        expect_end_time,
+        act_end_time
+    </sql>
+
+    <select id="getEmployeePlanCountBo"
+            resultType="com.hete.supply.scm.server.scm.process.entity.bo.EmployeePlanCountBo">
+        SELECT employee_no, count(1) as completePlanCount
+        from process_procedure_employee_plan
+        where del_timestamp=0
+        <if test="employeeNos !=null and employeeNos.size() >0">
+            AND employee_no in
+            <foreach collection="employeeNos" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        group by employee_no
+    </select>
+
+    <select id="getByPage" resultType="com.hete.supply.scm.server.scm.process.entity.vo.ProcessOrderPlanVo">
+        select
+        po.process_order_no ,
+        po.process_order_type ,
+        po.total_process_num,
+        po.deliver_date ,
+        po.over_plan,
+        po.process_order_status,
+        po.is_receive_material,
+        po.create_time ,
+        po.process_plan_time,
+        po.process_plan_delay,
+        po.process_plan_earliest_expect_begin_time as processPlanEarliestExpectBeginTime,
+        po.process_plan_latest_expect_end_time as processPlanLatestExpectEndTime,
+        po.process_completion_time
+        from process_order po
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        <if test="params.processOrderStatus != null
+        and params.processOrderStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessOrderStatus@WAIT_PLAN">
+            order by po.create_time desc, po.process_order_no desc
+        </if>
+        <if test="params.processOrderStatus != null
+        and params.processOrderStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessOrderStatus@WAIT_PRODUCE">
+            <![CDATA[ and po.process_plan_earliest_expect_begin_time > #{defaultLocalDateTime} ]]>
+            order by po.process_plan_earliest_expect_begin_time desc, po.process_order_no desc
+        </if>
+        <if test="params.processOrderStatus != null
+        and params.processOrderStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessOrderStatus@PROCESSING">
+            <![CDATA[ and po.process_plan_earliest_expect_begin_time > #{defaultLocalDateTime} ]]>
+            order by po.process_plan_earliest_expect_begin_time desc , po.process_order_no desc
+        </if>
+        <if test="params.processOrderStatus != null
+        and params.processOrderStatus == @com.hete.supply.scm.api.scm.entity.enums.ProcessOrderStatus@WAIT_MOVING">
+            <![CDATA[ AND po.process_completion_time >= #{params.systemProcessPlanLatestExpectEndTimeStart} ]]>
+            <![CDATA[ AND po.process_completion_time <= #{params.systemProcessPlanLatestExpectEndTimeEnd} ]]>
+            <![CDATA[ and po.process_plan_time != #{defaultLocalDateTime} ]]>
+            order by po.process_completion_time desc , po.process_order_no desc
+        </if>
+    </select>
+    <sql id="common_where">
+        po.del_timestamp=0
+        <if test="bo.processOrderNosBySku != null and bo.processOrderNosBySku.size() >0">
+            AND po.process_order_no in
+            <foreach collection="bo.processOrderNosBySku" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bo.processOrderNosByMaterialSku != null and bo.processOrderNosByMaterialSku.size() >0">
+            AND po.process_order_no in
+            <foreach collection="bo.processOrderNosByMaterialSku" item="item" index="index" open="(" close=")"
+                     separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.processOrderNoList != null and params.processOrderNoList.size() >0">
+            AND po.process_order_no in
+            <foreach collection="params.processOrderNoList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.missingInformationList !=null and params.missingInformationList.size() >0">
+            AND(
+            <foreach collection="params.missingInformationList" item="item" index="index" separator="or">
+                FIND_IN_SET(#{item},po.missing_information)
+            </foreach>
+            )
+        </if>
+        <if test="params.isReceiveMaterial != null">
+            AND po.is_receive_material = #{params.isReceiveMaterial}
+        </if>
+        <if test="params.createUser != null and params.createUser != ''">
+            AND po.create_user = #{params.createUser}
+        </if>
+        <if test="params.createUsername != null and params.createUsername != ''">
+            AND po.create_username = #{params.createUsername}
+        </if>
+
+        <if test="params.createTimeStart != null">
+            <![CDATA[ AND po.create_time >= #{params.createTimeStart} ]]>
+        </if>
+        <if test="params.createTimeEnd != null">
+            <![CDATA[ AND po.create_time <= #{params.createTimeEnd} ]]>
+        </if>
+
+        <if test="params.processPlanTimeStart != null">
+            <![CDATA[ AND po.process_plan_time >= #{params.processPlanTimeStart} ]]>
+        </if>
+        <if test="params.processPlanTimeEnd != null">
+            <![CDATA[ AND po.process_plan_time <= #{params.processPlanTimeEnd} ]]>
+        </if>
+
+        <if test="params.processPlanEarliestExpectBeginTimeStart != null">
+            <![CDATA[ AND po.process_plan_earliest_expect_begin_time >= #{params.processPlanEarliestExpectBeginTimeStart} ]]>
+        </if>
+        <if test="params.processPlanEarliestExpectBeginTimeEnd != null">
+            <![CDATA[ AND po.process_plan_earliest_expect_begin_time <= #{params.processPlanEarliestExpectBeginTimeEnd} ]]>
+        </if>
+
+        <if test="params.processPlanLatestExpectEndTimeStart != null">
+            <![CDATA[ AND po.process_plan_latest_expect_end_time >= #{params.processPlanLatestExpectEndTimeStart} ]]>
+        </if>
+        <if test="params.processPlanLatestExpectEndTimeEnd != null">
+            <![CDATA[ AND po.process_plan_latest_expect_end_time <= #{params.processPlanLatestExpectEndTimeEnd} ]]>
+        </if>
+        <if test="params.overPlan != null">
+            AND po.over_plan = #{params.overPlan}
+        </if>
+        <if test="params.processPlanDelay != null">
+            AND po.process_plan_delay = #{params.processPlanDelay}
+        </if>
+        <if test="params.processOrderStatus != null">
+            AND po.process_order_status = #{params.processOrderStatus}
+        </if>
+    </sql>
+
+    <select id="getEmployeePlansByCreateTimeAndDefaultTime"
+            resultType="com.hete.supply.scm.server.scm.process.entity.po.ProcessProcedureEmployeePlanPo">
+        select
+        <include refid="commonFields"/>
+        from process_procedure_employee_plan
+        WHERE del_timestamp = 0
+        and DATE(create_time) = DATE(#{today})
+        and (YEAR(act_begin_time) = YEAR(#{defaultDate}) OR YEAR(act_end_time) = YEAR(#{defaultDate}))
+    </select>
+
+    <select id="getProcessProcedureEmployeePlans"
+            resultType="com.hete.supply.scm.server.scm.process.entity.po.ProcessProcedureEmployeePlanPo">
+        SELECT
+        <include refid="commonFields"/>
+        FROM
+        process_procedure_employee_plan
+        where del_timestamp=0
+        <if test="params != null and params.size() > 0">
+            and
+            <foreach collection="params" item="param" open="(" separator="or" close=")">
+                (
+                employee_no = #{param.employeeNo} AND
+                <![CDATA[  (expect_begin_time <= #{param.expectEndTime} and expect_end_time >= #{param.expectBeginTime}) ]]>
+                )
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getSchedulingPlansByPoolIdAndSchedulingDate"
+            resultType="com.hete.supply.scm.server.scm.process.entity.po.ProcessProcedureEmployeePlanPo">
+        SELECT
+        <include refid="commonFields"/>
+        FROM process_procedure_employee_plan
+        WHERE del_timestamp = 0
+        <if test="poolCode!=null and poolCode!=''">
+            and production_pool_code=#{poolCode}
+        </if>
+        <if test="processPlanDates != null and !processPlanDates.isEmpty()">
+            and
+            (
+            <foreach item="processPlanDate" collection="processPlanDates" open="(" close=")" separator="or">
+                <![CDATA[   DATE(expect_begin_time) <= DATE(#{processPlanDate}) and DATE(expect_end_time) >= DATE(#{processPlanDate}) ]]>
+            </foreach>
+            )
+        </if>
+    </select>
+
+    <select id="getSchedulingPlansByPoolIdAndEmployeeIdAndSchedulingDate"
+            resultType="com.hete.supply.scm.server.scm.process.entity.po.ProcessProcedureEmployeePlanPo">
+        SELECT
+        <include refid="commonFields"/>
+        FROM process_procedure_employee_plan
+        WHERE del_timestamp=0
+        <if test="poolCode!=null and poolCode!=''">
+            and production_pool_code= #{poolCode}
+        </if>
+        <if test="employeeNos != null and !employeeNos.isEmpty()">
+            and employee_no in
+            <foreach item="employeeNo" collection="employeeNos" open="(" close=")" separator=",">
+                #{employeeNo}
+            </foreach>
+        </if>
+        <if test="processPlanDates != null and !processPlanDates.isEmpty()">
+            and
+            (
+            <foreach item="processPlanDate" collection="processPlanDates" open="(" close=")" separator="or">
+                <![CDATA[   DATE(expect_begin_time) <= DATE(#{processPlanDate}) and DATE(expect_end_time) >= DATE(#{processPlanDate}) ]]>
+            </foreach>
+            )
+        </if>
+    </select>
+
+    <select id="getDistinctByProcessOrderNos"
+            resultType="com.hete.supply.scm.server.scm.process.entity.po.ProcessProcedureEmployeePlanPo">
+        SELECT distinct process_order_no, create_username
+        FROM process_procedure_employee_plan
+        WHERE del_timestamp = 0
+        <if test="processOrderNos != null and processOrderNos.size() >0">
+            AND process_order_no in
+            <foreach collection="processOrderNos" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+</mapper>

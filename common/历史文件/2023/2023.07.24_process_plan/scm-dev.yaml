@@ -1,0 +1,64 @@
+spm:
+  employee:
+    processing:
+      orgChain: "ORG3938_ORG4106_ORG7690"
+
+# 产能池配置
+production-pool-config:
+  - production-pool-code: "capacity-pool-001"
+
+# 产能池信息1
+capacity-pool-001:
+  # 订单类型列表
+  order-types:
+    - "NORMAL"
+  # 员工编号列表
+  employee-nos:
+    - "U011304"  # 简铨
+    - "U207912"  # 杨鹏
+    - "U515112"  # 王浩祺
+    - "U227368"  # 熊豪
+    - "U489512"  # 郭羿凌
+    - "U096296"  # 李刘杰
+    - "U358440"  # 高昌锋
+    - "U178216"  # 劳玉锋
+    - "U047144"  # 黄斌英
+    - "U309288"  # 陈泓树
+    - "U243752"  # 耿晓阳
+    - "U505896"  # 王涛
+    - "U407592"  # 彭奕仲
+    - "U342056"  # 唐运龙
+    - "U131112"  # 张记生
+    - "U163880"  # 董华
+    - "U344104"  # 段建伦
+    - "U426024"  # 刘燕
+    - "U098344"  # 李平
+    - "U229416"  # 张艳
+    - "U079912"  # 马凤云
+    - "U294952"  # 李梅霞
+    - "U360488"  # 钱勋伟
+    - "U032808"  # 李秀春
+    - "U426024"  # 刘恒秀
+    - "U393256"  # 余雪花
+
+  # 排产周期（天）
+  production-cycle: "2"
+  # 上班时间
+  start-time: "09:30:00"
+  # 下班时间
+  end-time: "18:30:00"
+  # 节假日列表
+  holidays:
+    - "2023/9/10"
+    - "2023/9/17"
+    - "2023/9/24"
+  # 休息时间段列表
+  break-time-segments:
+    - start-time: "12:00:00"
+      end-time: "13:30:00"
+  # 工作时长（小时）
+  work-duration: "7.5"
+  # 最大排产单量
+  max-production-orders: "30"
+
+stringBuilderLogLimit: "3000"

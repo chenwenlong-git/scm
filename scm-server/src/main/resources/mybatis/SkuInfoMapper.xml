@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.dao.SkuInfoMapper">
+    <select id="listByCapBo" resultType="com.hete.supply.scm.server.scm.supplier.entity.bo.SkuCapBo">
+        select
+        sku,
+        single_capacity as capacityDays
+        from sku_info
+        where del_timestamp=0
+        <if test="skuList != null and skuList.size() > 0">
+            and sku in
+            <foreach collection="skuList" item="sku" open="(" separator="," close=")">
+                #{sku}
+            </foreach>
+        </if>
+    </select>
+</mapper>

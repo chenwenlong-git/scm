@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.adjust.dao.GoodsPriceMapper">
+
+    <select id="getGoodsPriceList"
+            resultType="com.hete.supply.scm.server.scm.adjust.entity.vo.GoodsPriceGetListVo">
+        SELECT gp.goods_price_id AS goodsPriceId,
+        gp.version AS version,
+        gp.sku AS sku,
+        gp.supplier_code AS supplierCode,
+        gp.channel_id AS channelId,
+        gp.channel_name AS channelName,
+        gp.channel_price AS channelPrice,
+        gp.effective_time AS effectiveTime,
+        gp.effective_remark AS effectiveRemark,
+        gp.goods_price_universal AS goodsPriceUniversal
+        FROM goods_price AS gp
+        <where>
+            gp.del_timestamp = 0
+            <if test="dto.getGoodsPriceGetListItemList != null and dto.getGoodsPriceGetListItemList.size() > 0">
+                AND (gp.sku, gp.supplier_code,gp.channel_id) IN
+                <foreach collection="dto.getGoodsPriceGetListItemList" item="item" separator="," open="(" close=")">
+                    (#{item.sku} , #{item.supplierCode}, #{item.channelId})
+                </foreach>
+            </if>
+        </where>
+        ORDER BY gp.goods_price_id DESC
+    </select>
+    <select id="getGoodsPricePurchaseList"
+            resultType="com.hete.supply.scm.server.scm.adjust.entity.vo.GoodsPriceGetPurchaseListVo">
+        SELECT
+        gp.sku AS sku,
+        gp.supplier_code AS supplierCode,
+        gp.channel_id AS channelId,
+        gp.channel_name AS channelName,
+        gp.channel_price AS channelPrice,
+        gp.effective_time AS effectiveTime,
+        gp.effective_remark AS effectiveRemark,
+        gp.goods_price_universal AS goodsPriceUniversal
+        FROM goods_price AS gp
+        <where>
+            gp.del_timestamp = 0
+            <if test="dto.goodsPriceGetListPurchaseItemList != null and dto.goodsPriceGetListPurchaseItemList.size() > 0">
+                AND (gp.sku, gp.supplier_code) IN
+                <foreach collection="dto.goodsPriceGetListPurchaseItemList" item="item" separator="," open="("
+                         close=")">
+                    (#{item.sku} , #{item.supplierCode})
+                </foreach>
+            </if>
+            <if test="dto.skuUniversalList != null and dto.skuUniversalList.size() > 0">
+                AND (gp.sku, gp.goods_price_universal,gp.supplier_code) IN
+                <foreach collection="dto.skuUniversalList" item="item" separator="," open="(" close=")">
+                    (#{item.sku} , #{item.goodsPriceUniversal} , #{item.supplierCode})
+                </foreach>
+            </if>
+        </where>
+        ORDER BY gp.goods_price_id DESC
+    </select>
+</mapper>

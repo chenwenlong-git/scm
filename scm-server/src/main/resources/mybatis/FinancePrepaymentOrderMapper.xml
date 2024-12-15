@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.ibfs.dao.FinancePrepaymentOrderMapper">
+
+    <select id="searchPrepayment"
+            resultType="com.hete.supply.scm.server.scm.ibfs.entity.vo.PrepaymentSearchVo">
+        SELECT fpo.finance_prepayment_order_id AS financePrepaymentOrderId,
+        fpo.version AS version,
+        fpo.prepayment_order_no AS prepaymentOrderNo,
+        fpo.supplier_code AS supplierCode,
+        fpo.prepayment_order_status AS prepaymentOrderStatus,
+        fpo.prepayment_type AS prepaymentType,
+        fpo.apply_date AS applyDate,
+        fpo.prepayment_money AS prepaymentMoney,
+        fpo.currency AS currency,
+        fpo.target_payment_money AS targetPaymentMoney,
+        fpo.ctrl_user AS ctrlUser,
+        fpo.task_id AS taskId
+        FROM finance_prepayment_order AS fpo
+        <include refid="search_where"></include>
+        ORDER BY fpo.create_time DESC
+    </select>
+    <select id="getAllCanDeductionMoney" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(fpo.can_deduction_money), 0)
+        FROM finance_prepayment_order AS fpo
+        WHERE fpo.del_timestamp = 0
+          AND fpo.supplier_code = #{supplierCode}
+          AND fpo.prepayment_order_status != #{prepaymentOrderStatus}
+    </select>
+    <select id="getSupplierList" resultType="java.lang.String">
+        SELECT DISTINCT (fpo.supplier_code)
+        FROM finance_prepayment_order AS fpo
+        <include refid="search_where"></include>
+    </select>
+    <select id="getRecentlyPrepaymentMoney" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(fpo.prepayment_money),0)
+        FROM finance_prepayment_order AS fpo
+        WHERE fpo.del_timestamp = 0
+        AND fpo.supplier_code = #{supplierCode}
+        AND fpo.prepayment_order_status != #{prepaymentOrderStatus}
+        <if test="startTime != null">
+            <![CDATA[ AND fpo.create_time >= #{startTime} ]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[ AND fpo.create_time <= #{endTime} ]]>
+        </if>
+    </select>
+    <select id="getApproveFailTimesByFollowUser" resultType="java.lang.Long">
+        SELECT COUNT(fao.feishu_audit_order_id)
+        FROM feishu_audit_order AS fao
+                 INNER JOIN finance_prepayment_order AS fpo
+                            ON fao.business_id = fpo.finance_prepayment_order_id
+        WHERE fao.del_timestamp = 0
+          AND fpo.del_timestamp = 0
+         <![CDATA[ AND fpo.create_time >= #{startTime} ]]>
+         <![CDATA[ AND fpo.create_time <= #{endTime} ]]>
+          AND fao.feishu_audit_order_type = #{feishuAuditOrderType}
+          AND fpo.follow_user = #{followUser}
+          AND fao.workflow_result = #{workflowResult}
+    </select>
+    <select id="getApproveFailTimesBySupplier" resultType="java.lang.Long">
+        SELECT COUNT(fao.feishu_audit_order_id)
+        FROM feishu_audit_order AS fao
+                 INNER JOIN finance_prepayment_order AS fpo
+                            ON fao.business_id = fpo.finance_prepayment_order_id
+        WHERE fao.del_timestamp = 0
+          AND fpo.del_timestamp = 0
+         <![CDATA[ AND fpo.create_time >= #{startTime} ]]>
+         <![CDATA[ AND fpo.create_time <= #{endTime} ]]>
+          AND fao.feishu_audit_order_type = #{feishuAuditOrderType}
+          AND fpo.supplier_code = #{supplierCode}
+          AND fao.workflow_result = #{workflowResult}
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1) AS total
+        FROM finance_prepayment_order AS fpo
+        <include refid="search_where"></include>
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.PrepaymentExportVo">
+        SELECT fpo.prepayment_order_no AS prepaymentOrderNo,
+        fpo.prepayment_order_status AS prepaymentOrderStatus,
+        fpo.supplier_code AS supplierCode,
+        fpo.create_time AS createTime,
+        fpo.workflow_no AS workflowNo,
+        fpo.prepayment_type AS prepaymentType,
+        fpo.prepayment_reason AS prepaymentReason,
+        fpo.prepayment_money AS prepaymentMoney,
+        fpo.prepayment_remark AS prepaymentRemark
+        FROM finance_prepayment_order AS fpo
+        <include refid="search_where"></include>
+        ORDER BY fpo.finance_prepayment_order_id DESC
+    </select>
+    <sql id="search_where">
+        WHERE fpo.del_timestamp = 0
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND fpo.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.prepaymentOrderNoList != null and dto.prepaymentOrderNoList.size() > 0">
+            AND fpo.prepayment_order_no IN
+            <foreach collection="dto.prepaymentOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.prepaymentOrderNo != null and dto.prepaymentOrderNo != ''">
+            AND fpo.prepayment_order_no = #{dto.prepaymentOrderNo}
+        </if>
+        <if test="dto.prepaymentOrderStatusList != null and dto.prepaymentOrderStatusList.size() > 0">
+            AND fpo.prepayment_order_status IN
+            <foreach collection="dto.prepaymentOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.ctrlUser != null and dto.ctrlUser != ''">
+            AND (fpo.ctrl_user = #{dto.ctrlUser}
+            OR fpo.follow_user = #{dto.ctrlUser}
+            <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+                OR fpo.supplier_code IN
+                <foreach collection="dto.authSupplierCode" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            )
+        </if>
+        <if test="dto.approveUser != null and dto.approveUser != ''">
+            AND fpo.ctrl_user = #{dto.approveUser}
+        </if>
+        <if test="dto.spmAuthSupplierCode != null and dto.spmAuthSupplierCode.size() > 0">
+            AND fpo.supplier_code IN
+            <foreach collection="dto.spmAuthSupplierCode" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.applyDateStart != null">
+            <![CDATA[ AND fpo.apply_date >= #{dto.applyDateStart} ]]>
+        </if>
+        <if test="dto.applyDateEnd != null">
+            <![CDATA[ AND fpo.apply_date <= #{dto.applyDateEnd} ]]>
+        </if>
+    </sql>
+</mapper>

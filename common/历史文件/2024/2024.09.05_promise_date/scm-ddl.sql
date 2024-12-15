@@ -1,0 +1,2 @@
+ALTER TABLE `cn_scm`.`purchase_child_order`
+    ADD COLUMN `promise_date_chg` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '答交时间是否变更' AFTER `place_order_username`;

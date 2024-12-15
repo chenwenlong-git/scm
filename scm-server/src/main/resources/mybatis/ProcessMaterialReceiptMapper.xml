@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.process.dao.ProcessMaterialReceiptMapper">
+    <sql id="common_where">
+        pmr.del_timestamp = 0
+        <if test="params.processOrderNo != null and params.processOrderNo != ''">
+            AND pmr.process_order_no LIKE concat('',#{params.processOrderNo}, '%')
+        </if>
+        <if test="params.repairOrderNo != null and params.repairOrderNo != ''">
+            AND pmr.repair_order_no LIKE concat('',#{params.repairOrderNo}, '%')
+        </if>
+        <if test="params.deliveryNo != null and params.deliveryNo != ''">
+            AND pmr.delivery_no LIKE concat('',#{params.deliveryNo}, '%')
+        </if>
+        <if test="params.placeOrderUser != null and params.placeOrderUser != ''">
+            AND pmr.place_order_user = #{params.placeOrderUser}
+        </if>
+        <if test="params.placeOrderUsername != null and params.placeOrderUsername != ''">
+            AND pmr.place_order_username = #{params.placeOrderUsername}
+        </if>
+        <if test="params.platformList !=null and params.platformList.size() >0">
+            AND pmr.platform in
+            <foreach collection="params.platformList" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.placeOrderTimeStart != null">
+            <![CDATA[ AND pmr.place_order_time >= #{params.placeOrderTimeStart} ]]>
+        </if>
+        <if test="params.placeOrderTimeEnd != null">
+            <![CDATA[ AND pmr.place_order_time <= #{params.placeOrderTimeEnd} ]]>
+        </if>
+        <if test="params.deliveryTimeStart != null">
+            <![CDATA[ AND pmr.delivery_time >= #{params.deliveryTimeStart} ]]>
+        </if>
+        <if test="params.deliveryTimeEnd != null">
+            <![CDATA[ AND pmr.delivery_time <= #{params.deliveryTimeEnd} ]]>
+        </if>
+        <if test="params.receiptTimeStart != null">
+            <![CDATA[ AND pmr.receipt_time >= #{params.receiptTimeStart} ]]>
+        </if>
+        <if test="params.receiptTimeEnd != null">
+            <![CDATA[ AND pmr.receipt_time <= #{params.receiptTimeEnd} ]]>
+        </if>
+        <if test="params.processMaterialReceiptIds !=null and params.processMaterialReceiptIds.size() >0">
+            AND pmr.process_material_receipt_id in
+            <foreach collection="params.processMaterialReceiptIds" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.processMaterialReceiptStatuses !=null and params.processMaterialReceiptStatuses.size() >0">
+            AND pmr.process_material_receipt_status in
+            <foreach collection="params.processMaterialReceiptStatuses" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.materialReceiptTypes != null and params.materialReceiptTypes.size() > 0">
+            AND pmr.material_receipt_type in
+            <foreach collection="params.materialReceiptTypes" item="item" index="index" open="(" close=")"
+                     separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+
+    <select id="getByPage" resultType="com.hete.supply.scm.server.scm.process.entity.vo.ProcessMaterialReceiptVo">
+        SELECT pmr.process_material_receipt_id as processMaterialReceiptId,
+        pmr.process_order_no as processOrderNo,
+        pmr.repair_order_no as repairOrderNo,
+        pmr.material_receipt_type as materialReceiptType,
+        pmr.delivery_no as deliveryNo,
+        pmr.process_material_receipt_status as processMaterialReceiptStatus,
+        pmr.delivery_num as deliveryNum,
+        pmr.delivery_time as deliveryTime,
+        pmr.receipt_username as receiptUsername,
+        pmr.receipt_time as receiptTime,
+        pmr.delivery_warehouse_code as deliveryWarehouseCode,
+        pmr.delivery_warehouse_name as deliveryWarehouseName,
+        pmr.delivery_note as deliveryNote,
+        pmr.place_order_time as placeOrderTime,
+        pmr.place_order_username as placeOrderUsername,
+        pmr.platform as platform,
+        pmr.version as version
+        FROM process_material_receipt as pmr
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY pmr.place_order_time DESC
+    </select>
+
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT
+        count(pmr.process_material_receipt_id) as total
+        FROM process_material_receipt as pmr
+        RIGHT join process_material_receipt_item as pmri on
+        pmr.process_material_receipt_id=pmri.process_material_receipt_id
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.ProcessMaterialReceiptExportVo">
+        SELECT pmr.delivery_no as deliveryNo,
+        pmr.process_material_receipt_status as processMaterialReceiptStatus,
+        pmr.process_order_no as processOrderNo,
+        pmr.repair_order_no as repairOrderNo,
+        pmr.material_receipt_type as materialReceiptType,
+        pmr.place_order_time as placeOrderTime,
+        pmr.place_order_username as placeOrderUsername,
+        pmr.delivery_warehouse_code as deliveryWarehouseCode,
+        pmr.delivery_warehouse_name as deliveryWarehouseName,
+        pmr.delivery_time as deliveryTime,
+        pmr.receipt_username as receiptUsername,
+        pmr.receipt_time as receiptTime,
+        pmr.platform as platform,
+        pmr.delivery_num as totalDeliveryNum,
+        pmri.sku as sku,
+        pmri.delivery_num as deliveryNum,
+        pmri.receipt_num as receiptNum,
+        pmr.delivery_note as deliveryNote
+        FROM process_material_receipt as pmr
+        RIGHT join process_material_receipt_item as pmri on
+        pmr.process_material_receipt_id=pmri.process_material_receipt_id
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY pmri.process_material_receipt_item_id DESC
+    </select>
+</mapper>

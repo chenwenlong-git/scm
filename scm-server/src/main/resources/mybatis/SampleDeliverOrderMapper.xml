@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.supplier.sample.dao.SampleDeliverOrderMapper">
+    <sql id="search_where">
+        WHERE sdo.del_timestamp = 0
+        <if test="dto.deliverUsername != null and dto.deliverUsername != ''">
+            AND sdo.deliver_username LIKE concat('%',#{dto.deliverUsername}, '%')
+        </if>
+        <if test="dto.sampleDeliverOrderStatusList != null and dto.sampleDeliverOrderStatusList.size() > 0">
+            AND sdo.sample_deliver_order_status IN
+            <foreach collection="dto.sampleDeliverOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.deliverTimeStart != null">
+            <![CDATA[ AND sdo.deliver_time >= #{dto.deliverTimeStart} ]]>
+        </if>
+        <if test="dto.deliverTimeEnd != null">
+            <![CDATA[ AND sdo.deliver_time <= #{dto.deliverTimeEnd} ]]>
+        </if>
+        <if test="dto.logistics != null and dto.logistics != ''">
+            AND sdo.logistics LIKE concat('%',#{dto.logistics}, '%')
+        </if>
+        <if test="dto.trackingNo != null and dto.trackingNo != ''">
+            AND sdo.tracking_no LIKE concat('%',#{dto.trackingNo}, '%')
+        </if>
+        <if test="deliverNoList != null and deliverNoList.size() > 0">
+            AND sdo.sample_deliver_order_no IN
+            <foreach collection="deliverNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sampleDeliverOrderNo != null and dto.sampleDeliverOrderNo != ''">
+            AND sdo.sample_deliver_order_no LIKE concat('%',#{dto.sampleDeliverOrderNo}, '%')
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND sdo.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND sdo.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierNameList != null and dto.supplierNameList.size() > 0">
+            AND sdo.supplier_name IN
+            <foreach collection="dto.supplierNameList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sampleDeliverOrderNoList != null and dto.sampleDeliverOrderNoList.size() > 0">
+            AND sdo.sample_deliver_order_no IN
+            <foreach collection="dto.sampleDeliverOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    <select id="searchDeliver" resultType="com.hete.supply.scm.server.supplier.sample.entity.vo.SampleDeliverVo">
+        SELECT sdo.sample_deliver_order_id AS sampleDeliverOrderId,
+        sdo.version AS version,
+        sdo.sample_deliver_order_no AS sampleDeliverOrderNo,
+        sdo.sample_deliver_order_status AS sampleDeliverOrderStatus,
+        sdo.logistics AS logistics,
+        sdo.tracking_no AS trackingNo,
+        sdo.total_deliver AS deliverCnt,
+        sdo.deliver_user AS deliverUser,
+        sdo.deliver_username AS deliverUsername,
+        sdo.deliver_time AS deliverTime,
+        sdo.supplier_code AS supplierCode,
+        sdo.supplier_name AS supplierName,
+        sdo.warehouse_code AS warehouseCode,
+        sdo.warehouse_name AS warehouseName,
+        sdo.warehouse_types AS warehouseTypes,
+        sdo.shipping_mark_no AS shippingMarkNo
+        FROM sample_deliver_order AS sdo
+        <include refid="search_where"></include>
+        ORDER BY sdo.create_time DESC
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sample_deliver_order_item AS sdoi
+        LEFT JOIN sample_deliver_order AS sdo
+        ON sdoi.sample_deliver_order_no = sdo.sample_deliver_order_no
+        <include refid="search_where"></include>
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.SampleDeliverExportVo">
+        SELECT sdoi.sample_deliver_order_no AS sampleDeliverOrderNo,
+        sdo.sample_deliver_order_status AS sampleDeliverOrderStatus,
+        sdo.supplier_name AS supplierName,
+        sdo.deliver_username AS deliverUsername,
+        sdo.deliver_time AS deliverTime,
+        sdo.logistics AS logistics,
+        sdo.tracking_no AS trackingNo,
+        sdoi.spu AS spu,
+        sdoi.sample_child_order_no AS sampleChildOrderNo,
+        sdoi.deliver_cnt AS deliverCnt
+        FROM sample_deliver_order_item AS sdoi
+        LEFT JOIN sample_deliver_order AS sdo
+        ON sdoi.sample_deliver_order_no = sdo.sample_deliver_order_no
+        <include refid="search_where"></include>
+        ORDER BY sdo.create_time DESC
+    </select>
+</mapper>

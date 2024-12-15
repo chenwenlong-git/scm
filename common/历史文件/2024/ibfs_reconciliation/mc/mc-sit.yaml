@@ -1,0 +1,9 @@
+mc:
+  workflow:
+    map:
+      ibfsPrepaymentApprove:
+        fei-shu-approval-code: "26822A3C-218F-477C-8BD2-CF5BB74A68E5"
+      ibfsRecoOrderApprove:
+        fei-shu-approval-code: "ADF3D84D-5EF7-47BD-B31E-81DC2103487E"
+      ibfsSettlementApprove:
+        fei-shu-approval-code: "C0F0C9CC-295A-40CB-A6F0-AD1FA24F0A92"

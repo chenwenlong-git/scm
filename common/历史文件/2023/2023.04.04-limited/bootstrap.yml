@@ -1,0 +1,10 @@
+hete:
+  mq-info:
+    wmsWaveCreateResultHandler:
+      topic: topic_scm
+      tag: tag_process_wave_create_result_event
+scm:
+  processOrder:
+    deliveryWarehouseCode: JY01
+    deliveryWarehouseName: 金塬01仓
+

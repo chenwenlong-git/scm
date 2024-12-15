@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.purchase.dao.PurchaseChildOrderMapper">
+
+    <sql id="search_where">
+        WHERE pco.del_timestamp = 0
+        <if test="dto.purchaseChildOrderNoList != null and dto.purchaseChildOrderNoList.size() > 0">
+            AND pco.purchase_child_order_no IN
+            <foreach collection="dto.purchaseChildOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.purchaseParentOrderNoList != null and dto.purchaseParentOrderNoList.size() > 0">
+            AND pco.purchase_parent_order_no IN
+            <foreach collection="dto.purchaseParentOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.purchaseBizTypeList != null and dto.purchaseBizTypeList.size() > 0">
+            AND pco.purchase_biz_type IN
+            <foreach collection="dto.purchaseBizTypeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.shippableCnt != null and dto.shippableCnt > 0">
+            AND pco.shippable_cnt > 0
+        </if>
+        <if test="dto.shippableCnt != null and dto.shippableCnt == 0">
+            AND pco.shippable_cnt = 0
+        </if>
+        <if test="dto.supplierCode != null">
+            AND pco.supplier_code = #{dto.supplierCode}
+        </if>
+        <if test="dto.supplierName != null">
+            AND pco.supplier_name = #{dto.supplierName}
+        </if>
+        <if test="dto.isUrgentOrder != null">
+            AND pco.is_urgent_order = #{dto.isUrgentOrder}
+        </if>
+
+        <if test="dto.purchaseOrderType != null">
+            AND pco.purchase_order_type = #{dto.purchaseOrderType}
+        </if>
+        <if test="dto.expectedOnShelvesDateStart != null">
+            <![CDATA[ AND pco.expected_on_shelves_date >= #{dto.expectedOnShelvesDateStart} ]]>
+        </if>
+        <if test="dto.expectedOnShelvesDateEnd != null">
+            <![CDATA[ AND pco.expected_on_shelves_date <= #{dto.expectedOnShelvesDateEnd} ]]>
+        </if>
+        <if test="dto.deliverDateStart != null">
+            <![CDATA[ AND pco.deliver_date >= #{dto.deliverDateStart} ]]>
+        </if>
+        <if test="dto.deliverDateEnd != null">
+            <![CDATA[ AND pco.deliver_date <= #{dto.deliverDateEnd} ]]>
+        </if>
+        <if test="dto.placeOrderTimeStart != null">
+            <![CDATA[ AND pcoc.place_order_time >= #{dto.placeOrderTimeStart} ]]>
+        </if>
+        <if test="dto.placeOrderTimeEnd != null">
+            <![CDATA[ AND pcoc.place_order_time <= #{dto.placeOrderTimeEnd} ]]>
+        </if>
+        <if test="dto.purchaseOrderStatusList != null and dto.purchaseOrderStatusList.size() > 0">
+            AND pco.purchase_order_status IN
+            <foreach collection="dto.purchaseOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.confirmUsername != null and dto.confirmUsername != ''">
+            AND pcoc.confirm_username LIKE concat('%',#{dto.confirmUsername}, '%')
+        </if>
+        <if test="dto.spu != null and dto.spu != ''">
+            AND pco.spu LIKE concat('%',#{dto.spu}, '%')
+        </if>
+        <if test="dto.purchaseReceiptOrderNo != null and dto.purchaseReceiptOrderNo != ''">
+            AND pcoc.purchase_receipt_order_no LIKE concat('%',#{dto.purchaseReceiptOrderNo}, '%')
+        </if>
+        <if test="dto.confirmTimeStart != null">
+            <![CDATA[ AND pcoc.confirm_time >= #{dto.confirmTimeStart} ]]>
+        </if>
+        <if test="dto.confirmTimeEnd != null">
+            <![CDATA[ AND pcoc.confirm_time <= #{dto.confirmTimeEnd} ]]>
+        </if>
+        <if test="dto.placeOrderTimeStart != null">
+            <![CDATA[ AND pcoc.place_order_time >= #{dto.placeOrderTimeStart} ]]>
+        </if>
+        <if test="dto.placeOrderTimeEnd != null">
+            <![CDATA[ AND pcoc.place_order_time <= #{dto.placeOrderTimeEnd} ]]>
+        </if>
+        <if test="dto.deliverTimeStart != null">
+            <![CDATA[ AND pcoc.deliver_time >= #{dto.deliverTimeStart} ]]>
+        </if>
+        <if test="dto.deliverTimeEnd != null">
+            <![CDATA[ AND pcoc.deliver_time <= #{dto.deliverTimeEnd} ]]>
+        </if>
+        <if test="dto.qcTimeStart != null">
+            <![CDATA[ AND pcoc.qc_time >= #{dto.qcTimeStart} ]]>
+        </if>
+        <if test="dto.qcTimeEnd != null">
+            <![CDATA[ AND pcoc.qc_time <= #{dto.qcTimeEnd} ]]>
+        </if>
+        <if test="dto.warehousingTimeStart != null">
+            <![CDATA[ AND pcoc.warehousing_time >= #{dto.warehousingTimeStart} ]]>
+        </if>
+        <if test="dto.warehousingTimeEnd != null">
+            <![CDATA[ AND pcoc.warehousing_time <= #{dto.warehousingTimeEnd} ]]>
+        </if>
+        <if test="dto.receiveOrderTimeStart != null">
+            <![CDATA[ AND pcoc.receive_order_time >= #{dto.receiveOrderTimeStart} ]]>
+        </if>
+        <if test="dto.receiveOrderTimeEnd != null">
+            <![CDATA[ AND pcoc.receive_order_time <= #{dto.receiveOrderTimeEnd} ]]>
+        </if>
+        <if test="dto.promiseDateStart != null">
+            <![CDATA[ AND pco.promise_date >= #{dto.promiseDateStart} ]]>
+        </if>
+        <if test="dto.promiseDateEnd != null">
+            <![CDATA[ AND pco.promise_date <= #{dto.promiseDateEnd} ]]>
+        </if>
+        <if test="dto.commissioningTimeStart != null">
+            <![CDATA[ AND pcoc.commissioning_time >= #{dto.commissioningTimeStart} ]]>
+        </if>
+        <if test="dto.commissioningTimeEnd != null">
+            <![CDATA[ AND pcoc.commissioning_time <= #{dto.commissioningTimeEnd} ]]>
+        </if>
+        <if test="dto.rawRemainTab != null">
+            AND pco.raw_remain_tab = #{dto.rawRemainTab}
+            AND pco.purchase_biz_type = "PROCESS"
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND pco.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND pco.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.platformList != null and dto.platformList.size() > 0">
+            AND pco.platform IN
+            <foreach collection="dto.platformList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.warehouseCode != null">
+            AND pco.warehouse_code = #{dto.warehouseCode}
+        </if>
+        <if test="dto.hasUnDeliverCnt != null">
+            <if test="dto.hasUnDeliverCnt.name() == 'TRUE'">
+                <![CDATA[ AND pcoi.undelivered_cnt > 0 ]]>
+            </if>
+            <if test="dto.hasUnDeliverCnt.name() == 'FALSE'">
+                <![CDATA[ AND pcoi.undelivered_cnt = 0 ]]>
+            </if>
+        </if>
+        <if test="dto.purchaseRawBizType != null">
+            AND pcor.purchase_raw_biz_type = #{dto.purchaseRawBizType}
+        </if>
+        <if test="dto.purchaseRawBizTypeList != null and dto.purchaseRawBizTypeList.size() > 0">
+            AND pcor.purchase_raw_biz_type IN
+            <foreach collection="dto.purchaseRawBizTypeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.delayDays == 1">
+            <![CDATA[ AND pco.delay_days > 0 ]]>
+        </if>
+        <if test="dto.delayDays == 0">
+            <![CDATA[ AND pco.delay_days = 0 ]]>
+        </if>
+        <if test="dto.delayDays == -1">
+            <![CDATA[ AND pco.delay_days < 0 ]]>
+        </if>
+        <if test="dto.purchaseSort == null">
+            ORDER BY pco.expected_on_shelves_date DESC,pco.purchase_child_order_id DESC
+        </if>
+        <if test="dto.purchaseSort != null and dto.purchaseSort.sortNum == 1">
+            ORDER BY pco.create_time,pco.purchase_child_order_id DESC
+        </if>
+        <if test="dto.purchaseSort != null and dto.purchaseSort.sortNum == 2">
+            ORDER BY pco.create_time DESC,pco.purchase_child_order_id DESC
+        </if>
+        <if test="dto.purchaseSort != null and dto.purchaseSort.sortNum == 3">
+            ORDER BY pco.deliver_date,pco.purchase_child_order_id DESC
+        </if>
+        <if test="dto.purchaseSort != null and dto.purchaseSort.sortNum == 4">
+            ORDER BY pco.deliver_date DESC,pco.purchase_child_order_id DESC
+        </if>
+        <if test="dto.purchaseSort != null and dto.purchaseSort.sortNum == 5">
+            ORDER BY pco.expected_on_shelves_date,pco.purchase_child_order_id DESC
+        </if>
+        <if test="dto.purchaseSort != null and dto.purchaseSort.sortNum == 6">
+            ORDER BY pco.expected_on_shelves_date DESC,pco.purchase_child_order_id DESC
+        </if>
+        <if test="dto.purchaseSort != null and dto.purchaseSort.sortNum == 7">
+            ORDER BY pcoc.place_order_time,pco.purchase_child_order_id DESC
+        </if>
+        <if test="dto.purchaseSort != null and dto.purchaseSort.sortNum == 8">
+            ORDER BY pcoc.place_order_time DESC,pco.purchase_child_order_id DESC
+        </if>
+        <if test="dto.purchaseSort != null and dto.purchaseSort.sortNum == 9">
+            ORDER BY pco.purchase_child_order_id
+        </if>
+        <if test="dto.purchaseSort != null and dto.purchaseSort.sortNum == 10">
+            ORDER BY pco.purchase_child_order_id DESC
+        </if>
+    </sql>
+
+    <select id="searchProductPurchase"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.vo.PurchaseProductSearchVo">
+        SELECT pco.purchase_child_order_id AS purchaseChildOrderId,
+        pco.version AS version,
+        pco.purchase_child_order_no AS purchaseChildOrderNo,
+        pco.purchase_parent_order_no AS purchaseParentOrderNo,
+        pco.purchase_biz_type AS purchaseBizType,
+        pco.is_urgent_order AS isUrgentOrder,
+        pco.purchase_order_type AS purchaseOrderType,
+        pco.purchase_order_status AS purchaseOrderStatus,
+        pco.shippable_cnt AS shippableCnt,
+        pco.purchase_total AS purchaseTotal,
+        pco.platform AS platform,
+        pco.expected_on_shelves_date AS expectedOnShelvesDate,
+        pco.deliver_date AS deliverDate,
+        pco.warehouse_code AS warehouseCode,
+        pco.warehouse_name AS warehouseName,
+        pco.warehouse_types AS warehouseTypes,
+        pcoc.place_order_time AS placeOrderTime,
+        pcoc.receive_order_time AS receiveOrderTime,
+        pco.timely_delivery_time AS timelyDeliveryTime,
+        pcoc.receipt_time AS receiptTime,
+        pcoc.warehousing_time AS warehousingTime,
+        pco.create_time AS createTime,
+        pcoc.confirm_user AS confirmUser,
+        pcoc.confirm_username AS confirmUsername,
+        pco.supplier_code AS supplierCode,
+        pco.spu AS spu,
+        pco.place_order_username AS createUsername,
+        pco.order_remarks AS orderRemarks,
+        pcoc.plan_confirm_user AS planConfirmUser,
+        pcoc.plan_confirm_username AS planConfirmUsername,
+        pcoc.plan_confirm_time AS planConfirmTime,
+        pcoc.confirm_time AS confirmTime,
+        pco.sku_type AS skuType,
+        pco.delay_days AS delayDays,
+        pco.promise_date AS promiseDate,
+        pcoc.commissioning_time AS commissioningTime,
+        pco.adjust_price_approve_no AS adjustPriceApproveNo
+        FROM purchase_child_order AS pco
+        INNER JOIN purchase_child_order_change AS pcoc
+        ON pco.purchase_child_order_id = pcoc.purchase_child_order_id
+        INNER JOIN purchase_child_order_item AS pcoi
+        ON pco.purchase_child_order_no = pcoi.purchase_child_order_no
+        <include refid="search_where"></include>
+    </select>
+
+
+    <select id="purchaseChildOrderChangeSearch"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.vo.PurchaseChildOrderChangeSearchVo">
+        SELECT pco.purchase_child_order_no AS purchaseChildOrderNo,
+        pco.purchase_order_status AS purchaseOrderStatus,
+        pco.supplier_code AS supplierCode,
+        pco.supplier_name AS supplierName,
+        pco.sku_cnt AS skuCnt,
+        pco.total_settle_price AS totalSettlePrice,
+        pco.purchase_biz_type AS purchaseBizType,
+        pcoc.warehousing_time AS warehousingTime
+        FROM purchase_child_order AS pco
+        INNER JOIN purchase_child_order_change AS pcoc
+        ON pco.purchase_child_order_id = pcoc.purchase_child_order_id
+        WHERE pco.del_timestamp = 0
+        <if test="purchaseBizTypeList != null and purchaseBizTypeList.size() > 0">
+            AND pco.purchase_biz_type IN
+            <foreach collection="purchaseBizTypeList" item="purchaseBizType" separator="," open="(" close=")">
+                #{purchaseBizType}
+            </foreach>
+        </if>
+        <if test="supplierCodeList != null and supplierCodeList.size() > 0">
+            AND pco.supplier_code IN
+            <foreach collection="supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="warehousingTime != null">
+            <![CDATA[ AND pcoc.warehousing_time <= #{warehousingTime} ]]>
+        </if>
+        <if test="purchaseOrderStatus != null">
+            AND pco.purchase_order_status = #{purchaseOrderStatus}
+        </if>
+        <if test="warehousingTimeStart != null">
+            <![CDATA[ AND pcoc.warehousing_time >= #{warehousingTimeStart} ]]>
+        </if>
+        <if test="warehousingTimeEnd != null">
+            <![CDATA[ AND pcoc.warehousing_time <= #{warehousingTimeEnd} ]]>
+        </if>
+        ORDER BY pco.create_time DESC
+    </select>
+    <select id="getChildExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM purchase_child_order AS pco
+        INNER JOIN purchase_child_order_change AS pcoc
+        ON pco.purchase_child_order_id = pcoc.purchase_child_order_id
+        INNER JOIN purchase_parent_order AS ppo
+        ON ppo.purchase_parent_order_no = pco.purchase_parent_order_no
+        INNER JOIN purchase_child_order_item AS pcoi
+        ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        <include refid="search_where"></include>
+    </select>
+    <select id="getChildExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.PurchaseChildExportVo">
+        SELECT pco.purchase_parent_order_no AS purchaseParentOrderNo,
+        pco.purchase_child_order_no AS purchaseChildOrderNo,
+        pco.purchase_order_status AS purchaseOrderStatus,
+        pco.warehouse_name AS warehouseName,
+        pco.spu AS spu,
+        pco.supplier_code AS supplierCode,
+        pco.total_settle_price AS totalSettlePrice,
+        pco.purchase_total AS purchaseTotal,
+        pco.platform AS platform,
+        pcoc.confirm_username AS confirmUsername,
+        pcoc.receive_order_time AS receiveOrderTime,
+        pcoc.deliver_time AS deliverTime,
+        pcoc.receipt_time AS receiptTime,
+        pcoc.warehousing_time AS warehousingTime,
+        pco.expected_on_shelves_date AS expectedOnShelvesDate,
+        pcoc.confirm_time AS confirmTime,
+        pco.timely_delivery_cnt AS timelyDeliveryCnt,
+        pco.timely_delivery_rate AS timelyDeliveryRate,
+        pco.timely_delivery_time AS timelyDeliveryTime,
+        pcoc.last_modify_time AS lastModifyTime,
+        pco.shippable_cnt AS shippableCnt,
+        pco.deliver_date AS deliverDate,
+        pcoc.commissioning_time AS commissioningTime
+        FROM purchase_child_order AS pco
+        INNER JOIN purchase_child_order_change AS pcoc
+        ON pco.purchase_child_order_id = pcoc.purchase_child_order_id
+        INNER JOIN purchase_parent_order AS ppo
+        ON ppo.purchase_parent_order_no = pco.purchase_parent_order_no
+        INNER JOIN purchase_child_order_item AS pcoi
+        ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        <include refid="search_where"></include>
+    </select>
+    <select id="getSkuParentExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM purchase_child_order_item AS pcoi
+        INNER JOIN purchase_child_order AS pco
+        ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        INNER JOIN purchase_child_order_change AS pcoc
+        ON pco.purchase_child_order_id = pcoc.purchase_child_order_id
+        <include refid="search_where"></include>
+    </select>
+    <select id="getSkuChildExportList"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.PurchaseChildSkuExportVo">
+        SELECT pco.purchase_parent_order_no AS purchaseParentOrderNo,
+        pco.purchase_child_order_no AS purchaseChildOrderNo,
+        pco.purchase_order_status AS purchaseOrderStatus,
+        pco.warehouse_name AS warehouseName,
+        pco.spu AS spu,
+        pco.supplier_code AS supplierCode,
+        pco.platform AS platform,
+        pcoi.sku AS sku,
+        pcoi.sku_batch_code AS skuBatchCode,
+        pcoi.purchase_price AS purchasePrice,
+        pcoi.discount_type AS discountType,
+        pcoi.substract_price AS substractPrice,
+        pcoi.settle_price AS settlePrice,
+        pcoi.purchase_cnt AS purchaseCnt,
+        pcoi.deliver_cnt AS deliverCnt,
+        pcoi.quality_goods_cnt AS qualityGoodsCnt,
+        pcoi.defective_goods_cnt AS defectiveGoodsCnt,
+        pcoc.confirm_username AS confirmUsername,
+        pcoc.receive_order_time AS receiveOrderTime,
+        pcoc.deliver_time AS deliverTime,
+        pcoc.receipt_time AS receiptTime,
+        pcoc.wms_warehousing_time AS wmsWarehousingTime,
+        pcoc.warehousing_time AS warehousingTime,
+        pco.expected_on_shelves_date AS expectedOnShelvesDate,
+        pcoc.confirm_time AS confirmTime,
+        ppo.create_time AS parentCreateTime,
+        pco.create_time AS childCreateTime,
+        pcoc.place_order_time AS placeOrderTime,
+        pcoc.qc_time AS qcTime,
+        pco.order_remarks AS orderRemarks,
+        pco.timely_delivery_cnt AS timelyDeliveryCnt,
+        pco.timely_delivery_rate AS timelyDeliveryRate,
+        pco.timely_delivery_time AS timelyDeliveryTime,
+        pcoc.last_modify_time AS lastModifyTime,
+        pcoi.undelivered_cnt AS undeliveredCnt,
+        pco.source_purchase_child_order_no AS sourcePurchaseChildOrderNo,
+        pco.purchase_biz_type AS purchaseBizType,
+        pco.purchase_order_type AS purchaseOrderType,
+        pco.is_urgent_order AS isUrgentOrder,
+        pco.promise_date AS promiseDate,
+        pco.shippable_cnt AS shippableCnt,
+        pcoc.commissioning_time AS commissioningTime,
+        pco.promise_date_chg AS promiseDateChg
+        FROM purchase_child_order_item AS pcoi
+        INNER JOIN purchase_child_order AS pco
+        ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        INNER JOIN purchase_child_order_change AS pcoc
+        ON pco.purchase_child_order_id = pcoc.purchase_child_order_id
+        INNER JOIN purchase_parent_order AS ppo
+        ON ppo.purchase_parent_order_no = pco.purchase_parent_order_no
+        <include refid="search_where"></include>
+    </select>
+    <select id="getRawParentExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM purchase_child_order_raw AS pcor
+        INNER JOIN purchase_child_order AS pco
+        ON pcor.purchase_child_order_no = pco.purchase_child_order_no
+        INNER JOIN purchase_child_order_change AS pcoc
+        ON pco.purchase_child_order_id = pcoc.purchase_child_order_id
+        INNER JOIN purchase_child_order_item AS pcoi
+        ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        <include refid="search_where"></include>
+    </select>
+    <select id="getRawChildExportList"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.PurchaseChildRawExportVo">
+        SELECT pco.purchase_parent_order_no AS purchaseParentOrderNo,
+        pco.purchase_child_order_no AS purchaseChildOrderNo,
+        pco.purchase_order_status AS purchaseOrderStatus,
+        pcor.raw_warehouse_code AS rawWarehouseCode,
+        pcor.raw_warehouse_name AS rawWarehouseName,
+        pcor.sku AS sku,
+        pcor.sku_batch_code AS skuBatchCode,
+        pcor.dispense_cnt AS dispenseCnt,
+        pcor.raw_supplier AS rawSupplier,
+        pco.supplier_name AS supplierName,
+        pcor.delivery_cnt AS deliveryCnt,
+        pcor.actual_consume_cnt AS actualConsumeCnt,
+        pcor.extra_cnt AS extraCnt
+        FROM purchase_child_order_raw AS pcor
+        INNER JOIN purchase_child_order AS pco
+        ON pcor.purchase_child_order_no = pco.purchase_child_order_no
+        AND pcor.del_timestamp = 0
+        INNER JOIN purchase_child_order_change AS pcoc
+        ON pco.purchase_child_order_id = pcoc.purchase_child_order_id
+        INNER JOIN purchase_child_order_item AS pcoi
+        ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        <include refid="search_where"></include>
+    </select>
+    <select id="getPurchaseChildListIgnoreDelete"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.vo.PurchaseChildOrderVo">
+        SELECT pco.purchase_child_order_id AS purchaseChildOrderId,
+        pco.version AS version,
+        pco.purchase_child_order_no AS purchaseChildOrderNo,
+        pco.purchase_order_status AS purchaseOrderStatus,
+        pco.supplier_code AS supplierCode,
+        pco.supplier_name AS supplierName,
+        pco.total_settle_price AS totalSettlePrice,
+        pco.purchase_total AS purchaseTotal,
+        pco.purchase_biz_type AS purchaseBizType,
+        pco.del_timestamp AS deleteStatus,
+        pco.platform AS platform,
+        pco.order_remarks AS orderRemarks
+        FROM purchase_child_order AS pco
+        <where>
+            <if test="purchaseParentOrderNo != null and purchaseParentOrderNo != ''">
+                AND pco.purchase_parent_order_no = #{purchaseParentOrderNo}
+            </if>
+            <if test="purchaseOrderStatusList != null and purchaseOrderStatusList.size() > 0">
+                AND pco.purchase_order_status IN
+                <foreach collection="purchaseOrderStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="authSupplierCode != null and authSupplierCode.size() > 0">
+                AND pco.supplier_code IN
+                <foreach collection="authSupplierCode" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="authSupplierCode != null and authSupplierCode.size() > 0">
+                AND pco.del_timestamp = 0
+            </if>
+        </where>
+    </select>
+    <select id="getItemBatchPurchaseChildOrderNo"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.bo.PurchaseChildOrderExportBo">
+        SELECT pco.purchase_child_order_id AS purchaseChildOrderId,
+        pco.purchase_child_order_no AS purchaseChildOrderNo,
+        pco.supplier_code AS supplierCode,
+        pco.supplier_name AS supplierName,
+        pco.total_settle_price AS totalSettlePrice,
+        pco.warehouse_name AS warehouseName,
+        pco.purchase_biz_type AS purchaseBizType,
+        item.sku_batch_code AS skuBatchCode,
+        item.settle_price AS settlePrice,
+        item.quality_goods_cnt AS qualityGoodsCnt,
+        item.defective_goods_cnt AS defectiveGoodsCnt,
+        item.sku AS sku
+        FROM purchase_child_order AS pco
+        LEFT JOIN purchase_child_order_item as item on pco.purchase_child_order_no = item.purchase_child_order_no
+        <where>
+            pco.del_timestamp = 0
+            <if test="purchaseChildOrderNoList != null and purchaseChildOrderNoList.size() > 0">
+                AND pco.purchase_child_order_no IN
+                <foreach collection="purchaseChildOrderNoList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY pco.create_time DESC
+    </select>
+    <select id="getPurchasePriceBySkuAndSupplier"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.vo.PurchaseSkuPriceVo">
+        SELECT pcoi.sku AS sku,
+        pcoi.purchase_price AS purchasePrice,
+        pco.supplier_code AS supplierCode,
+        pcoc.receive_order_time AS receiveOrderTime
+        FROM purchase_child_order_item AS pcoi
+        INNER JOIN purchase_child_order AS pco
+        ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        INNER JOIN purchase_child_order_change AS pcoc
+        ON pco.purchase_child_order_no = pcoc.purchase_child_order_no
+        WHERE 1=1
+        AND pcoc.receive_order_time != #{defaultTime}
+        AND pco.purchase_biz_type = #{purchaseBizType}
+        <if test="notInStatusList != null and notInStatusList.size() > 0">
+            AND pco.purchase_order_status NOT IN
+            <foreach collection="notInStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND (
+        <foreach collection="purchaseSkuAndSupplierItemList" item="item" separator="OR">
+            (pcoi.sku = #{item.sku} AND pco.supplier_code = #{item.supplierCode})
+        </foreach>
+        )
+    </select>
+    <select id="getListBySupplierProduct"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.po.PurchaseChildOrderPo">
+        SELECT pco.purchase_child_order_id AS purchaseChildOrderId,
+        pco.purchase_child_order_no AS purchaseChildOrderNo,
+        pco.supplier_code AS supplierCode,
+        pco.supplier_name AS supplierName
+        FROM purchase_child_order AS pco
+        JOIN purchase_child_order_item as pcoi on pco.purchase_child_order_no = pcoi.purchase_child_order_no
+        <where>
+            pco.del_timestamp = 0
+            <if test="list != null and list.size() > 0">
+                AND (pcoi.sku, pco.supplier_code) IN
+                <foreach collection="list" item="item" separator="," open="(" close=")">
+                    (#{item.sku} , #{item.supplierCode})
+                </foreach>
+            </if>
+        </where>
+        ORDER BY pcoi.purchase_child_order_item_id DESC
+    </select>
+    <select id="getListByLastFewDays"
+            resultType="com.hete.supply.scm.server.scm.entity.vo.PurchaseCheckSupplierCodeVo">
+        SELECT pco.purchase_child_order_no AS purchaseChildOrderNo,
+        pcoi.sku_batch_code AS skuBatchCode,
+        pco.supplier_code AS supplierCode
+        FROM purchase_child_order AS pco
+        INNER JOIN purchase_child_order_item AS pcoi
+        ON pco.purchase_child_order_no = pcoi.purchase_child_order_no
+        INNER JOIN purchase_child_order_change AS pcoc
+        ON pco.purchase_child_order_no = pcoc.purchase_child_order_no
+        WHERE pcoc.receive_order_time >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+    </select>
+    <select id="getSplitPurchase"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.po.PurchaseChildOrderPo">
+        select purchase_child_order_id AS purchaseChildOrderId,
+        version AS version,
+        purchase_child_order_no AS purchaseChildOrderNo,
+        supplier_code AS supplierCode,
+        expected_on_shelves_date AS expectedOnShelvesDate
+        from `purchase_child_order`
+        where `source_purchase_child_order_no` != ''
+        and `del_timestamp` = 0
+    </select>
+    <select id="getPurchaseUndeliveredCntBySku"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.SkuUndeliveredCntVo">
+        SELECT pcoi.sku, SUM(pcoi.undelivered_cnt) AS undeliveredCnt
+        FROM purchase_child_order_item AS pcoi
+        INNER JOIN purchase_child_order AS pco
+        ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        WHERE pcoi.del_timestamp = 0
+        AND pco.del_timestamp = 0
+        AND pco.purchase_order_status != #{purchaseOrderStatus}
+        <if test="skuList != null and skuList.size() > 0">
+            AND pcoi.sku IN
+            <foreach collection="skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY pcoi.sku
+    </select>
+    <select id="getCanFinishPurchase"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.po.PurchaseChildOrderPo">
+        SELECT DISTINCT(pco.purchase_child_order_id) AS purchaseChildOrderId,
+        pco.version AS version,
+        pco.purchase_child_order_no AS purchaseChildOrderNo
+        FROM purchase_child_order_item AS pcoi
+        INNER JOIN purchase_child_order AS pco
+        ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        WHERE pcoi.del_timestamp = 0
+        AND pco.del_timestamp = 0
+        <![CDATA[ AND pcoi.purchase_cnt <= pcoi.quality_goods_cnt ]]>
+        AND pco.purchase_order_status != 'FINISH';
+    </select>
+    <select id="getDefaultPriceByNoList"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.vo.PurchaseDefaultPriceItemVo">
+        SELECT pcoi.settle_price AS settlePrice,
+        pcoi.sku AS sku,
+        pcoi.purchase_child_order_no AS purchaseChildOrderNo,
+        pco.supplier_code AS supplierCode,
+        pco.purchase_parent_order_no AS purchaseParentOrderNo
+        FROM purchase_child_order AS pco
+        INNER JOIN purchase_child_order_item AS pcoi
+        ON pco.purchase_child_order_no = pcoi.purchase_child_order_no
+        INNER JOIN purchase_child_order_change AS pcoc
+        ON pcoc.purchase_child_order_no = pco.purchase_child_order_no
+        WHERE pco.del_timestamp = 0
+        AND pcoi.del_timestamp = 0
+        AND pcoc.del_timestamp = 0
+        AND YEAR(pcoc.confirm_time) > 1970
+        <foreach collection="dtoList" item="item" open="AND (" close=")" separator="OR">
+            (pco.purchase_parent_order_no = #{item.purchaseParentOrderNo} AND pcoi.sku = #{item.sku} AND
+            pco.supplier_code = #{item.supplierCode})
+        </foreach>
+        ORDER BY pcoc.confirm_time
+    </select>
+
+    <select id="getPurchasePriceBySkuList"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.bo.PurchaseLatestPriceItemBo">
+        SELECT pcoi.purchase_price AS purchasePrice,
+        pcoi.sku AS sku,
+        pcoi.purchase_child_order_no AS purchaseChildOrderNo,
+        pco.supplier_code AS supplierCode,
+        pcoc.confirm_time AS confirmTime
+        FROM purchase_child_order_item AS pcoi
+        INNER JOIN purchase_child_order AS pco ON pco.purchase_child_order_no = pcoi.purchase_child_order_no
+        INNER JOIN purchase_child_order_change AS pcoc ON pcoc.purchase_child_order_no = pco.purchase_child_order_no
+        WHERE pco.del_timestamp = 0
+        AND pcoi.del_timestamp = 0
+        AND pcoc.del_timestamp = 0
+        AND YEAR(pcoc.confirm_time) > 1970
+        <if test="skuList != null and skuList.size() > 0">
+            AND pcoi.sku IN
+            <foreach collection="skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY pcoc.confirm_time DESC
+    </select>
+    <select id="getRawSkuChildExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM purchase_child_order_item AS pcoi
+        INNER JOIN purchase_child_order AS pco ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        INNER JOIN purchase_child_order_change AS pcoc ON pco.purchase_child_order_id = pcoc.purchase_child_order_id
+        INNER JOIN purchase_parent_order AS ppo ON ppo.purchase_parent_order_no = pco.purchase_parent_order_no
+        <include refid="search_where"></include>
+    </select>
+    <select id="getRawSkuChildExportList"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.PurchaseChildSkuRawExportVo">
+        SELECT pco.purchase_parent_order_no AS purchaseParentOrderNo,
+        pco.purchase_child_order_no AS purchaseChildOrderNo,
+        pco.purchase_order_status AS purchaseOrderStatus,
+        pco.spu AS spu,
+        pcoi.sku AS sku,
+        pcoi.purchase_price AS purchasePrice
+        FROM purchase_child_order_item AS pcoi
+        INNER JOIN purchase_child_order AS pco ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        INNER JOIN purchase_child_order_change AS pcoc ON pco.purchase_child_order_id = pcoc.purchase_child_order_id
+        INNER JOIN purchase_parent_order AS ppo ON ppo.purchase_parent_order_no = pco.purchase_parent_order_no
+        <include refid="search_where"></include>
+    </select>
+
+
+</mapper>

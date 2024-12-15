@@ -1,0 +1,28 @@
+provider:
+  generic-export-map:
+    spm_supplier_inventory_record_export:
+      biz-system-code: SPM
+      file-prefix: SPM供应商库存记录导出
+      resource-name: SPM系统-SPM供应商库存记录导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.SupplierInventoryRecordFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.InventoryRecordDto
+      header-alias:
+        supplierCode: 供应商代码
+        sku: SKU
+        skuEncode: 产品名称
+        supplierProductName: 供应商产品名称
+        categoryName: 商品二级类目
+        supplierWarehouseStr: 仓库
+        supplierInventoryCtrlTypeStr: 供应商库存操作类型
+        supplierInventoryRecordStatusStr: 状态
+        beforeInventory: 操作前库存
+        ctrlCnt: 操作数量
+        afterInventory: 操作后库存
+        supplierInventoryCtrlReasonStr: 供应商库存操作原因
+        relateNo: 关联单据号
+        createTimeStr: 操作时间
+        createUsername: 操作人

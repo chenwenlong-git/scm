@@ -1,0 +1,19 @@
+provider:
+  generic-export-map:
+
+
+  generic-import-map:
+    purchase_import_edit:
+      biz-system-code: SCM
+      resource-name: 导入修改子单数据
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.PurchaseChildImportationFacade
+      method-name-record: importEditPurchaseChild
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.PurchaseChildEditImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      #表头转字段名
+      header-alias:
+        "[采购子单单号]": purchaseChildOrderNo
+        "[收货仓库编码]": warehouseCode
+        "[采购约定交期]": deliverDateStr

@@ -1,0 +1,27 @@
+provider:
+  generic-export-map:
+    scm_purchase_sku_raw_export:
+      biz-system-code: SCM
+      file-prefix: SCM采购订单的BOM原料导出
+      resource-name: SCM系统-SCM采购订单的BOM原料导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.PurchaseChildFacade
+      method-name-count: getRawSkuExportTotals
+      method-name-record: getRawSkuExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.PurchaseProductSearchDto
+      header-alias:
+        purchaseChildOrderNo: 采购订单
+        purchaseOrderStatusName: 状态
+        sku: 成品sku
+        purchasePrice: 采购单价
+        materialSku1: 原料sku1
+        deliveryCnt1: 数量1
+        materialSku2: 原料sku2
+        deliveryCnt2: 数量2
+        materialSku3: 原料sku3
+        deliveryCnt3: 数量3
+        materialSku4: 原料sku4
+        deliveryCnt4: 数量4
+        materialSku5: 原料sku5
+        deliveryCnt5: 数量5

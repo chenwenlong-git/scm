@@ -1,0 +1,151 @@
+provider:
+  generic-import-map:
+    import_prod_attr:
+      biz-system-code: SCM
+      resource-name: 商品信息导入
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.ProduceDataImportationFacade
+      method-name-record: importProdDataAttr
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.entity.dto.ProduceDataAttrImportDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[*商品sku]": sku
+        "[生产周期]": cycle
+        "[单件产能]": singleCapacity
+        "[重量]": weight
+        "[公差]": tolerance
+        "[原料需管理]": rawManage
+        "[商品采购价格]": goodsPurchasePrice
+        "[属性名称1]": attrName1
+        "[属性值1]": attrValue1
+        "[属性名称2]": attrName2
+        "[属性值2]": attrValue2
+        "[属性名称3]": attrName3
+        "[属性值3]": attrValue3
+        "[属性名称4]": attrName4
+        "[属性值4]": attrValue4
+        "[属性名称5]": attrName5
+        "[属性值5]": attrValue5
+        "[属性名称6]": attrName6
+        "[属性值6]": attrValue6
+        "[属性名称7]": attrName7
+        "[属性值7]": attrValue7
+        "[属性名称8]": attrName8
+        "[属性值8]": attrValue8
+        "[属性名称9]": attrName9
+        "[属性值9]": attrValue9
+        "[属性名称10]": attrName10
+        "[属性值10]": attrValue10
+        "[属性名称11]": attrName11
+        "[属性值11]": attrValue11
+        "[属性名称12]": attrName12
+        "[属性值12]": attrValue12
+        "[属性名称13]": attrName13
+        "[属性值13]": attrValue13
+        "[属性名称14]": attrName14
+        "[属性值14]": attrValue14
+        "[属性名称15]": attrName15
+        "[属性值15]": attrValue15
+        "[属性名称16]": attrName16
+        "[属性值16]": attrValue16
+        "[属性名称17]": attrName17
+        "[属性值17]": attrValue17
+        "[属性名称18]": attrName18
+        "[属性值18]": attrValue18
+        "[属性名称19]": attrName19
+        "[属性值19]": attrValue19
+        "[属性名称20]": attrName20
+        "[属性值20]": attrValue20
+      cell-extends-map:
+        "[*商品sku]":
+          comment: 商品sku，必填
+        "[原料需管理]":
+          comment: 是/否
+        "[属性值1]":
+          comment: 多个值用/隔开
+        "[属性值2]":
+          comment: 多个值用/隔开
+        "[属性值3]":
+          comment: 多个值用/隔开
+        "[属性值4]":
+          comment: 多个值用/隔开
+        "[属性值5]":
+          comment: 多个值用/隔开
+        "[属性值6]":
+          comment: 多个值用/隔开
+        "[属性值7]":
+          comment: 多个值用/隔开
+        "[属性值8]":
+          comment: 多个值用/隔开
+        "[属性值9]":
+          comment: 多个值用/隔开
+        "[属性值10]":
+          comment: 多个值用/隔开
+        "[属性值11]":
+          comment: 多个值用/隔开
+        "[属性值12]":
+          comment: 多个值用/隔开
+        "[属性值13]":
+          comment: 多个值用/隔开
+        "[属性值14]":
+          comment: 多个值用/隔开
+        "[属性值15]":
+          comment: 多个值用/隔开
+        "[属性值16]":
+          comment: 多个值用/隔开
+        "[属性值17]":
+          comment: 多个值用/隔开
+        "[属性值18]":
+          comment: 多个值用/隔开
+        "[属性值19]":
+          comment: 多个值用/隔开
+        "[属性值20]":
+          comment: 多个值用/隔开
+    import_prod_raw_process:
+      biz-system-code: SCM
+      resource-name: 商品+供应商信息导入
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.ProduceDataImportationFacade
+      method-name-record: importProduceDataRawProcess
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.ProduceDataRawProcessImportDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[sku]": sku
+        "[供应商产品名称]": supplierProductName
+        "[供应商编码]": supplierCode
+        "[BOM名称]": bomName
+        "[原料SKU1]": rawSku1
+        "[单件用量1]": skuCnt1
+        "[原料SKU2]": rawSku2
+        "[单件用量2]": skuCnt2
+        "[原料SKU3]": rawSku3
+        "[单件用量3]": skuCnt3
+        "[原料SKU4]": rawSku4
+        "[单件用量4]": skuCnt4
+        "[原料SKU5]": rawSku5
+        "[单件用量5]": skuCnt5
+        "[原料SKU6]": rawSku6
+        "[单件用量6]": skuCnt6
+        "[原料SKU7]": rawSku7
+        "[单件用量7]": skuCnt7
+        "[工序1]": process1
+        "[二级工序名1]": processSecond1
+        "[工序2]": process2
+        "[二级工序名2]": processSecond2
+        "[工序3]": process3
+        "[二级工序名3]": processSecond3
+        "[工序4]": process4
+        "[二级工序名4]": processSecond4
+        "[工序5]": process5
+        "[二级工序名5]": processSecond5
+      cell-extends-map:
+        "[供应商编码]":
+          comment: 单个供应商
+
+

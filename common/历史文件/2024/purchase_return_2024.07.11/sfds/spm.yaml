@@ -1,0 +1,34 @@
+provider:
+  generic-export-map:
+    spm_return_order_export:
+      biz-system-code: SPM
+      file-prefix: 退货单列表信息
+      resource-name: SPM系统-退货单列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.PurchaseReturnFacade
+      method-name-count: getSupplierExportTotals
+      method-name-record: getSupplierExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.PurchaseReturnDto
+      header-alias:
+        returnOrderNo: 退货单号
+        returnOrderStatus: 退货单状态
+        returnType: 类型
+        returnBizNo: 来源单据号
+        purchaseChildOrderNo: 采购子单号
+        supplierCode: 供应商代码
+        sku: 商品sku
+        skuEncode: 产品名称
+        skuBatchCode: 批次码
+        expectedReturnCnt: 预计退货数量
+        realityReturnCnt: 实际退货数量
+        receiptCnt: 收货数量
+        logistics: 物流
+        trackingNo: 运单号
+        createUsername: 创建人
+        createTimeAsString: 创建时间
+        returnUsername: 退货人
+        returnTimeAsString: 退货时间
+        receiptTimeAsString: 收货时间
+        settleRecoOrderPrice: 预计结算单价
+        settleRecoOrderPriceTotal: 预计结算总价

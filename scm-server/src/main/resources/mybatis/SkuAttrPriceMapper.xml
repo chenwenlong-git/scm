@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.dao.SkuAttrPriceMapper">
+
+    <select id="searchSkuAttrPricePage" resultType="com.hete.supply.scm.server.scm.entity.vo.SkuAttrPricePageVo">
+        SELECT sap.sku_attr_price_id AS skuAttrPriceId,
+        sap.lace_attr_value AS laceAttrValue,
+        sap.size_attr_value AS sizeAttrValue,
+        sap.material_attr_value AS materialAttrValue,
+        sap.sku_price AS skuPrice,
+        sap.version AS version
+        FROM sku_attr_price AS sap
+        <include refid="search_where"></include>
+        ORDER BY sap.sku_attr_price_id DESC
+    </select>
+    <select id="getListBySkuAndAttr" resultType="com.hete.supply.scm.server.scm.entity.po.SkuAttrPricePo">
+        SELECT sap.sku_attr_price_id AS skuAttrPriceId,
+        sap.lace_attr_value AS laceAttrValue,
+        sap.size_attr_value AS sizeAttrValue,
+        sap.material_attr_value AS materialAttrValue,
+        sap.sku_price AS skuPrice,
+        sap.version AS version
+        FROM sku_attr_price AS sap
+        WHERE sap.del_timestamp = 0
+        <if test="dtoList != null and dtoList.size() > 0">
+            AND (sap.lace_attr_value, sap.size_attr_value,sap.material_attr_value) IN
+            <foreach collection="dtoList" item="item" separator="," open="(" close=")">
+                (#{item.laceAttrValue}, #{item.sizeAttrValue},#{item.materialAttrValue})
+            </foreach>
+        </if>
+    </select>
+
+    <sql id="search_where">
+        WHERE sap.del_timestamp = 0
+        <if test="dto.laceAttrValueList != null and dto.laceAttrValueList.size() > 0">
+            AND sap.lace_attr_value IN
+            <foreach collection="dto.laceAttrValueList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sizeAttrValueList != null and dto.sizeAttrValueList.size() > 0">
+            AND sap.size_attr_value IN
+            <foreach collection="dto.sizeAttrValueList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.materialValueList != null and dto.materialValueList.size() > 0">
+            AND sap.material_attr_value IN
+            <foreach collection="dto.materialValueList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+</mapper>

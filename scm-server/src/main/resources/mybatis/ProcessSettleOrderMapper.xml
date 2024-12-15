@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.settle.dao.ProcessSettleOrderMapper">
+    <sql id="common_where">
+        pro.del_timestamp = 0
+        <if test="dto.processSettleOrderId != null">
+            AND pro.process_settle_order_id = #{dto.processSettleOrderId}
+        </if>
+        <if test="dto.processSettleOrderNo != null and dto.processSettleOrderNo != ''">
+            AND pro.process_settle_order_no = #{dto.processSettleOrderNo}
+        </if>
+        <if test="dto.processSettleOrderIds != null and dto.processSettleOrderIds.size() > 0">
+            AND pro.process_settle_order_id IN
+            <foreach collection="dto.processSettleOrderIds" item="ids" separator="," open="(" close=")">
+                #{ids}
+            </foreach>
+        </if>
+        <if test="dto.processSettleStatusList != null and dto.processSettleStatusList.size() > 0">
+            AND pro.process_settle_status IN
+            <foreach collection="dto.processSettleStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.completeUser != null and dto.completeUser != ''">
+            AND pro.complete_user = #{dto.completeUser}
+        </if>
+        <if test="dto.completeUsername != null and dto.completeUsername != ''">
+            AND pro.complete_username = #{dto.completeUsername}
+        </if>
+        <if test="dto.examineUsername != null and dto.examineUsername != ''">
+            AND pro.examine_username = #{dto.examineUsername}
+        </if>
+        <if test="dto.examineUser != null and dto.examineUser != ''">
+            AND pro.examine_user = #{dto.examineUser}
+        </if>
+        <if test="dto.settleUsername != null and dto.settleUsername != ''">
+            AND pro.settle_username = #{dto.settleUsername}
+        </if>
+        <if test="dto.settleUser != null and dto.settleUser != ''">
+            AND pro.settle_user = #{dto.settleUser}
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND pro.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND pro.create_time <= #{dto.createTimeEnd}  ]]>
+        </if>
+        <if test="dto.examineTimeStart != null">
+            <![CDATA[ AND pro.examine_time >= #{dto.examineTimeStart} ]]>
+        </if>
+        <if test="dto.examineTimeEnd != null">
+            <![CDATA[ AND pro.examine_time <= #{dto.examineTimeEnd}  ]]>
+        </if>
+        <if test="dto.settleTimeStart != null">
+            <![CDATA[ AND pro.settle_time >= #{dto.settleTimeStart} ]]>
+        </if>
+        <if test="dto.settleTimeEnd != null">
+            <![CDATA[ AND pro.settle_time <= #{dto.settleTimeEnd}  ]]>
+        </if>
+    </sql>
+    <select id="selectProcessSettleOrderPage"
+            resultType="com.hete.supply.scm.server.scm.settle.entity.vo.ProcessSettleOrderVo"
+            parameterType="com.hete.supply.scm.server.scm.settle.entity.vo.ProcessSettleOrderVo">
+        SELECT pro.process_settle_order_id AS processSettleOrderId,
+        pro.version AS version,
+        pro.process_settle_order_no AS processSettleOrderNo,
+        pro.process_settle_status AS processSettleStatus,
+        pro.create_time AS createTime,
+        pro.examine_username AS examineUsername,
+        pro.examine_user AS examineUser,
+        pro.examine_time AS examineTime,
+        pro.settle_username AS settleUsername,
+        pro.settle_user AS settleUser,
+        pro.pay_price AS payPrice,
+        pro.settle_time AS settleTime
+        FROM process_settle_order AS pro
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY pro.create_time DESC
+    </select>
+
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT
+        count(pro.process_settle_order_id) as total
+        FROM process_settle_order as pro
+        LEFT JOIN process_settle_order_item as item on pro.process_settle_order_id = item.process_settle_order_id
+        <where>
+            <include refid="common_where"></include>
+            AND item.del_timestamp = 0
+        </where>
+    </select>
+
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.ProcessSettleOrderExportVo">
+        SELECT pro.process_settle_order_no AS processSettleOrderNo,
+        pro.process_settle_status AS processSettleStatus,
+        pro.create_time AS createTime,
+        item.complete_username AS completeUsername,
+        item.settle_price AS settlePrice,
+        item.process_num AS processNum,
+        item.sku_num AS skuNum,
+        pro.examine_time AS examineTime,
+        pro.examine_username AS examineUsername,
+        pro.settle_username AS settleUsername,
+        pro.settle_time AS settleTime
+        FROM process_settle_order AS pro
+        LEFT JOIN process_settle_order_item as item on pro.process_settle_order_id = item.process_settle_order_id
+        <where>
+            <include refid="common_where"></include>
+            AND item.del_timestamp = 0
+        </where>
+        ORDER BY item.process_settle_order_item_id,item.create_time DESC
+    </select>
+
+</mapper>

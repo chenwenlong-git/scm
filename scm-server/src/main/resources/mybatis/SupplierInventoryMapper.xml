@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.supplier.dao.SupplierInventoryMapper">
+    <update id="selfProvideInventoryChange" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE supplier_inventory AS si
+            SET si.self_provide_inventory = si.self_provide_inventory + #{item.inventoryChangeCnt}
+            WHERE si.del_timestamp = 0
+            AND si.supplier_code = #{item.supplierCode}
+            AND si.sku = #{item.sku}
+        </foreach>
+    </update>
+    <update id="stockUpInventoryChange" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE supplier_inventory AS si
+            SET si.stock_up_inventory = si.stock_up_inventory + #{item.inventoryChangeCnt}
+            WHERE si.del_timestamp = 0
+            AND si.supplier_code = #{item.supplierCode}
+            AND si.sku = #{item.sku}
+        </foreach>
+    </update>
+    <update id="defectiveInventoryChange" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE supplier_inventory AS si
+            SET si.defective_inventory = si.defective_inventory + #{item.inventoryChangeCnt}
+            WHERE si.del_timestamp = 0
+            AND si.supplier_code = #{item.supplierCode}
+            AND si.sku = #{item.sku}
+        </foreach>
+    </update>
+    <update id="returnGoodsStockUp">
+        UPDATE supplier_inventory AS si
+        SET si.stock_up_inventory = si.stock_up_inventory + #{warehousingCnt}
+        WHERE si.del_timestamp = 0
+        AND si.supplier_code = #{supplierCode}
+        AND si.sku = #{sku}
+    </update>
+    <update id="subInventoryBySkuAndSupplier">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE supplier_inventory AS si
+            SET si.self_provide_inventory = si.self_provide_inventory - #{item.selfProvideChangeInventory},
+            si.stock_up_inventory = si.stock_up_inventory - #{item.stockUpChangeInventory}
+            WHERE si.del_timestamp = 0
+            AND si.supplier_code = #{item.supplierCode}
+            AND si.sku = #{item.sku}
+            AND si.stock_up_inventory >= #{item.stockUpChangeInventory}
+        </foreach>
+    </update>
+    <update id="inventoryChange">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE supplier_inventory AS si
+            <trim prefix="SET" suffixOverrides=",">
+                <if test="item.stockUpInventory != null">
+                    si.stock_up_inventory = si.stock_up_inventory + #{item.stockUpInventory},
+                </if>
+                <if test="item.selfProvideInventory != null">
+                    si.self_provide_inventory = si.self_provide_inventory + #{item.selfProvideInventory},
+                </if>
+                <if test="item.defectiveInventory != null">
+                    si.defective_inventory = si.defective_inventory + #{item.defectiveInventory},
+                </if>
+                <if test="item.frzStockUpInventory != null">
+                    si.frz_stock_up_inventory = si.frz_stock_up_inventory + #{item.frzStockUpInventory},
+                </if>
+                <if test="item.frzSelfProvideInventory != null">
+                    si.frz_self_provide_inventory = si.frz_self_provide_inventory + #{item.frzSelfProvideInventory},
+                </if>
+                <if test="item.frzDefectiveInventory != null">
+                    si.frz_defective_inventory = si.frz_defective_inventory + #{item.frzDefectiveInventory},
+                </if>
+            </trim>
+            WHERE si.del_timestamp = 0
+            AND si.supplier_code = #{item.supplierCode}
+            AND si.sku = #{item.sku}
+        </foreach>
+    </update>
+
+    <select id="searchInventory"
+            resultType="com.hete.supply.scm.server.scm.supplier.entity.vo.SearchInventoryVo">
+        SELECT si.supplier_inventory_id AS supplierInventoryId,
+        si.version AS version,
+        si.supplier_code AS supplierCode,
+        si.supplier_name AS supplierName,
+        si.spu AS spu,
+        si.sku AS sku,
+        si.category_name AS categoryName,
+        si.stock_up_inventory AS stockUpInventory,
+        si.self_provide_inventory AS selfProvideInventory,
+        si.defective_inventory AS defectiveInventory,
+        si.frz_stock_up_inventory AS frzStockUpInventory,
+        si.frz_self_provide_inventory AS frzSelfProvideInventory,
+        si.frz_defective_inventory AS frzDefectiveInventory
+        FROM supplier_inventory AS si
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY si.supplier_inventory_id DESC,si.create_time DESC
+    </select>
+    <select id="getOtherSupplierInventory" resultType="java.lang.Integer">
+        SELECT SUM(si.stock_up_inventory + si.self_provide_inventory) AS otherSupplierInventory
+        FROM supplier_inventory AS si
+        WHERE si.del_timestamp = 0
+        AND si.sku = #{sku}
+        AND si.supplier_code != #{supplierCode};
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM supplier_inventory AS si
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.SupplierInventoryExportVo">
+        SELECT si.supplier_inventory_id AS supplierInventoryId,
+        si.version AS version,
+        si.supplier_code AS supplierCode,
+        si.supplier_name AS supplierName,
+        si.spu AS spu,
+        si.sku AS sku,
+        si.category_name AS categoryName,
+        si.stock_up_inventory AS stockUpInventory,
+        si.self_provide_inventory AS selfProvideInventory,
+        si.defective_inventory AS defectiveInventory,
+        si.frz_stock_up_inventory AS frzStockUpInventory,
+        si.frz_self_provide_inventory AS frzSelfProvideInventory,
+        si.frz_defective_inventory AS frzDefectiveInventory
+        FROM supplier_inventory AS si
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <sql id="common_where">
+        si.del_timestamp = 0
+        <if test="dto.supplierInventoryIdList != null and dto.supplierInventoryIdList.size() > 0">
+            AND si.supplier_inventory_id IN
+            <foreach collection="dto.supplierInventoryIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sku != null and dto.sku != ''">
+            AND si.sku LIKE concat('%',#{dto.sku}, '%')
+        </if>
+        <if test="dto.spu != null and dto.spu != ''">
+            AND si.spu = #{dto.spu}
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND si.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierNameList != null and dto.supplierNameList.size() > 0">
+            AND si.supplier_name IN
+            <foreach collection="dto.supplierNameList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.inventoryStatus != null and dto.inventoryStatus.name() == 'TO_BE_MAINTENANCE'">
+            <![CDATA[ AND (si.stock_up_inventory < 0 OR si.self_provide_inventory < 0 OR si.defective_inventory < 0) ]]>
+        </if>
+        <if test="dto.inventoryStatus != null and dto.inventoryStatus.name() == 'NO_MAINTENANCE'">
+            <![CDATA[ AND (si.stock_up_inventory >= 0 AND si.self_provide_inventory >= 0 AND si.defective_inventory >= 0) ]]>
+        </if>
+        <if test="dto.categoryIdList != null and dto.categoryIdList.size() > 0">
+            AND si.category_id IN
+            <foreach collection="dto.categoryIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND si.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND si.sku IN
+            <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.idList != null and dto.idList.size() > 0">
+            AND si.supplier_inventory_id IN
+            <foreach collection="dto.idList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+</mapper>

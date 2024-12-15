@@ -1,0 +1,114 @@
+scm:
+  produce-data-attr:
+    colorAttributeNameId: 1625490324525887489
+    colorSystemAttributeNameId: 1797596791252811776
+    colorSystemAttributeNameName: "颜色色系"
+    colorAttrRuleList:
+      - colorAttrValue: "NC"
+        colorSysAttrValue: "black"
+        priority: 4
+      - colorAttrValue: "1#色"
+        colorSysAttrValue: "black"
+        priority: 4
+      - colorAttrValue: "2#色"
+        colorSysAttrValue: "brown"
+        priority: 3
+      - colorAttrValue: "3#色"
+        colorSysAttrValue: "brown"
+        priority: 3
+      - colorAttrValue: "4#色"
+        colorSysAttrValue: "brown"
+        priority: 3
+      - colorAttrValue: "6#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "8#色"
+        colorSysAttrValue: "brown"
+        priority: 3
+      - colorAttrValue: "12#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "18#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "20#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "27#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "28#色"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "30#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "33#色"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "34#色"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "39#色"
+        colorSysAttrValue: "red"
+        priority: 1
+      - colorAttrValue: "60#色"
+        colorSysAttrValue: "grey"
+        priority: 1
+      - colorAttrValue: "135#色"
+        colorSysAttrValue: "red"
+        priority: 1
+      - colorAttrValue: "350#色"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "370#色"
+        colorSysAttrValue: "grey"
+        priority: 1
+      - colorAttrValue: "530#色"
+        colorSysAttrValue: "red"
+        priority: 1
+      - colorAttrValue: "613#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "99J#色"
+        colorSysAttrValue: "burgundy"
+        priority: 1
+      - colorAttrValue: "AH"
+        colorSysAttrValue: "red"
+        priority: 1
+      - colorAttrValue: "TH"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "BLZ"
+        colorSysAttrValue: "brown"
+        priority: 3
+      - colorAttrValue: "DP"
+        colorSysAttrValue: "burgundy"
+        priority: 1
+      - colorAttrValue: "ZH"
+        colorSysAttrValue: "red"
+        priority: 1
+      - colorAttrValue: "GT"
+        colorSysAttrValue: "brown"
+        priority: 3
+      - colorAttrValue: "purple"
+        colorSysAttrValue: "purple"
+        priority: 1
+      - colorAttrValue: "ginger"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "Orange"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "Silver"
+        colorSysAttrValue: "grey"
+        priority: 1
+      - colorAttrValue: "A99J"
+        colorSysAttrValue: "burgundy"
+        priority: 1
+      - colorAttrValue: "Green"
+        colorSysAttrValue: "green"
+        priority: 1
+      - colorAttrValue: "22#色"
+        colorSysAttrValue: "blonde"
+        priority: 2

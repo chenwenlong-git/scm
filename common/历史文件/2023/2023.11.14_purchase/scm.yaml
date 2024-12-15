@@ -1,0 +1,22 @@
+provider:
+  generic-import-map:
+    scm_deduct_order_import:
+      biz-system-code: SCM
+      resource-name: 导入生成扣款单
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.DeductOrderImportationFacade
+      method-name-record: importDeductOrder
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.DeductOrderImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      #表头转字段名
+      header-alias:
+        "[扣款类型]": deductType
+        "[供应商代码]": supplierCode
+        "[约定结算时间]": aboutSettleTime
+        "[单据类型]": deductOrderPurchaseType
+        "[单据号]": businessNo
+        "[sku]": sku
+        "[数量]": skuNum
+        "[扣款原因]": deductRemarks
+        "[扣款金额]": deductPrice

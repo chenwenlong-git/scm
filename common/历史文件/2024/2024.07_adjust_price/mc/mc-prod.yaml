@@ -1,0 +1,5 @@
+mc:
+  workflow:
+    map:
+      adjustPriceApprove:
+        fei-shu-approval-code: "B8F14F74-7AB9-44BC-AEBC-DAEFE3C13022"

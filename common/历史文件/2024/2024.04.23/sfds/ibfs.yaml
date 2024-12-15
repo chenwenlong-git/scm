@@ -1,0 +1,46 @@
+provider:
+  generic-export-map:
+    ibfs_goods_of_cost_one_export:
+      biz-system-code: IBFS
+      file-prefix: 商品成本列表信息
+      resource-name: IBFS系统-商品成本列表信息
+      partition-size: 200
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.CostFacade
+      method-name-count: getExportOneTotals
+      method-name-record: getExportOneList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.GoodsCostDto
+      header-alias:
+        warehouseName: 仓库
+        sku: 商品sku
+        skuEncode: 产品名称
+        inventory: 库存数量
+        inventoryPrice: 库存金额
+        weightingPrice: 加权单价
+        costTime: 成本时间
+        receiveOrderTimeStr: 最新接单时间
+        purchaseChildPurchasePrice: 最新采购单价
+        developPricingPurchasePrice: 最新核价单价
+        nuclearPriceTimeStr: 最新核价时间
+    ibfs_goods_of_cost_many_export:
+      biz-system-code: IBFS
+      file-prefix: 商品成本列表信息
+      resource-name: IBFS系统-商品成本列表信息
+      partition-size: 200
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.CostFacade
+      method-name-count: getExportManyTotals
+      method-name-record: getExportManyList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.GoodsCostDto
+      header-alias:
+        warehouseName: 多仓维度
+        sku: 商品sku
+        skuEncode: 产品名称
+        inventory: 库存数量
+        inventoryPrice: 库存金额
+        weightingPrice: 加权单价
+        costTime: 成本时间
+        receiveOrderTimeStr: 最新接单时间
+        purchaseChildPurchasePrice: 最新采购单价
+        developPricingPurchasePrice: 最新核价单价
+        nuclearPriceTimeStr: 最新核价时间

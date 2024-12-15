@@ -1,0 +1,4 @@
+# 退货返修单个产品提成金额
+repair:
+  preCommission: "10"
+  fixedCommission: "10"

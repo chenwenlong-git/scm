@@ -1,0 +1,7 @@
+# 飞书配置信息
+feishu:
+  skuStockOutTable: "EanTsIFULhRBGftVd42cpcXDnyd"
+  skuStockOutSheet: "2YglKi"
+  skuStockOutReasonSheet: "F3gTbs"
+  skuStockOutOrderReasonSheet: "EYrouT"
+  skuStockOutMonthReasonSheet: "qTnhc4"

@@ -1,0 +1,130 @@
+provider:
+  generic-import-map:
+    scm_product_compare_cycle_import:
+      biz-system-code: SCM
+      resource-name: 导入生产周期
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.SupplierProductImportationFacade
+      method-name-record: skuCycleImportation
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.SkuCycleImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[*商品sku]": sku
+        "[生产周期]": cycle
+        "[单件产能]": singleCapacity
+      cell-extends-map:
+        "[*商品sku]":
+          comment: 商品sku，必填
+    supplier_capacity_rule_import:
+      biz-system-code: SCM
+      resource-name: 初始化供应商标准产能
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.SupplierCapacityRuleImportationFacade
+      method-name-record: importCapacityRule
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.SupplierCapacityRuleImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[供应商代码]": supplierCode
+        "[日产能值]": capacityStr
+    supplier_capacity_import:
+      biz-system-code: SCM
+      resource-name: 更正供应商日剩余产能
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.SupplierCapacityImportationFacade
+      method-name-record: importCapacity
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.SupplierCapacityImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[供应商代码]": supplierCode
+        "[日期]": capacityDate
+        "[剩余产能]": normalAvailableCapacityStr
+    supplier_rest_import:
+      biz-system-code: SCM
+      resource-name: 导入供应商停工时间
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.SupplierRestImportationFacade
+      method-name-record: importRestTime
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.SupplierRestImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[供应商代码]": supplierCode
+        "[停工日期]": restDate
+  generic-export-map:
+    scm_supplier_inventory_export:
+      biz-system-code: SCM
+      file-prefix: SCM供应商库存导出
+      resource-name: SCM系统-SCM供应商库存导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.SupplierInventoryFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.SearchInventoryDto
+      header-alias:
+        supplierCode: 供应商代码
+        sku: SKU
+        skuEncode: 产品名称
+        categoryName: 商品二级类目
+        inventoryStatusStr: 库存状态
+        insStockUpInventory: 在库-备货库存
+        insSelfProvideInventory: 在库-自备库存
+        insDefectiveInventory: 在库-不良库存
+        stockUpInventory: 可用-备货库存
+        selfProvideInventory: 可用-自备库存
+        defectiveInventory: 可用-不良库存
+        frzStockUpInventory: 冻结-备货库存
+        frzSelfProvideInventory: 冻结-自备库存
+        frzDefectiveInventory: 冻结-不良库存
+    scm_supplier_capacity_export:
+      biz-system-code: SCM
+      file-prefix: 供应商产能导出
+      resource-name: SCM系统-供应商产能信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      param-type: com.hete.supply.scm.api.scm.entity.dto.SupCapacityPageDto
+      sheet-list:
+        - sheet-name: 供应商产能
+          interface-name: com.hete.supply.scm.api.scm.facade.SupplierCapacityFacade
+          method-name-count: getSupCapacityRuleExportTotal
+          method-name-record: getSupCapacityRuleExportList
+          header-alias:
+            supplierCode: 供应商代码
+            supplierStatus: 供应商状态
+            supplierGrade: 供应商等级
+            normalCapacity: 日产能
+            restCap30AvailCap: 30天剩余产能
+            restCap60AvailCap: 60天剩余产能
+            restCap90AvailCap: 90天剩余产能
+        - sheet-name: 供应商每日剩余产能
+          interface-name: com.hete.supply.scm.api.scm.facade.SupplierCapacityFacade
+          method-name-count: getSupCapacityExportTotal
+          method-name-record: getSupCapacityExportList
+          header-alias:
+            supplierCode: 供应商代码
+            capacityDateStr: 日期
+            normalAvailableCapacity: 剩余产能
+    scm_supplier_rest_export:
+      biz-system-code: SCM
+      file-prefix: 供应商停工时间
+      resource-name: SCM系统-供应商停工时间
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.SupplierCapacityFacade
+      method-name-count: getSupRestExportTotal
+      method-name-record: getSupRestExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.ExportSupplierRestDto
+      header-alias:
+        supplierCode: 供应商代码
+        restDateStr: 停工日期

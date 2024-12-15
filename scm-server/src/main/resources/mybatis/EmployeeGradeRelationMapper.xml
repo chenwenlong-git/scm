@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.supplier.dao.EmployeeGradeRelationMapper">
+
+    <select id="searchEmployee" resultType="com.hete.supply.scm.server.supplier.entity.vo.EmployeeSearchVo">
+        SELECT egr.employee_grade_relation_id AS employeeGradeRelationId,
+        egr.version AS version,
+        eg.employee_grade_id AS employeeGradeId,
+        egr.employee_name AS employeeName,
+        eg.grade_name AS gradeName,
+        egr.employee_no AS employeeNo
+        FROM employee_grade_relation AS egr
+        LEFT JOIN employee_grade AS eg
+        ON egr.employee_grade_id = eg.employee_grade_id
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY eg.grade_level DESC
+    </select>
+    <sql id="common_where">
+        egr.del_timestamp = 0
+        <if test="dto.employeeName != null and dto.employeeName != ''">
+            AND egr.employee_name LIKE concat('%',#{dto.employeeName}, '%')
+        </if>
+        <if test="dto.employeeGradeId != null">
+            AND eg.employee_grade_id = #{dto.employeeGradeId}
+        </if>
+        <if test="dto.employeeNos != null and dto.employeeNos.size() > 0">
+            AND egr.employee_no IN
+            <foreach collection="dto.employeeNos" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+
+    <select id="countDistinctEmployeesByGradeType"
+            resultType="com.hete.supply.scm.server.scm.process.entity.bo.GradeTypeCountBo">
+        SELECT eg.grade_type, COUNT(DISTINCT employee_no) AS employeeCount
+        FROM employee_grade_relation egr
+        JOIN employee_grade eg ON egr.employee_grade_id = eg.employee_grade_id
+        WHERE eg.del_timestamp = 0
+        <if test="gradeTypes.size() > 0">
+            AND eg.grade_type IN
+            <foreach collection="gradeTypes" item="gradeType" open="(" close=")" separator=",">
+                #{gradeType}
+            </foreach>
+        </if>
+        AND egr.del_timestamp = 0
+        GROUP BY eg.grade_type
+    </select>
+
+</mapper>

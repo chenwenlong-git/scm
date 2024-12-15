@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.develop.dao.DevelopPricingOrderInfoMapper">
+
+    <select id="getListBySampleOrderNoAndPriceTime"
+            resultType="com.hete.supply.scm.server.scm.develop.entity.bo.DevelopPricingOrderInfoByPriceTimeBo">
+        SELECT dpo.develop_pricing_order_no AS developPricingOrderNo,
+        dpoi.develop_sample_order_no AS developSampleOrderNo,
+        dpo.nuclear_price_time AS nuclearPriceTime,
+        dpoi.bulk_price AS bulkPrice
+        FROM develop_pricing_order_info AS dpoi
+        INNER JOIN develop_pricing_order as dpo on dpoi.develop_pricing_order_no = dpo.develop_pricing_order_no
+        <where>
+            <if test="developSampleOrderNoList != null and developSampleOrderNoList.size() > 0">
+                AND dpoi.develop_sample_order_no IN
+                <foreach collection="developSampleOrderNoList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY dpo.nuclear_price_time DESC
+    </select>
+</mapper>

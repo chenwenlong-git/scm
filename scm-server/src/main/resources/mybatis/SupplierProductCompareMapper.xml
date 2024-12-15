@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.supplier.dao.SupplierProductCompareMapper">
+    <select id="getInitData" resultType="com.hete.supply.scm.server.scm.supplier.entity.po.SupplierProductComparePo">
+        select distinct supplier_code, sku
+        from goods_price
+        where del_timestamp = 0
+        and supplier_code != ''
+        and sku != ''
+        union
+        select distinct pdis.supplier_code, pdis.sku
+        from produce_data_item_supplier pdis
+        join produce_data_item pdi
+        on pdis.produce_data_item_id = pdi.produce_data_item_id and pdi.del_timestamp = 0
+        where pdis.del_timestamp = 0
+        and pdis.supplier_code != ''
+        and pdis.sku != ''
+        order by supplier_code
+    </select>
+</mapper>

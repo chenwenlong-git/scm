@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.supplier.dao.SupplierCapacityMapper">
+    <sql id="commonConditions">
+        <if test="dto.supplierCodeList != null and !dto.supplierCodeList.isEmpty()">
+            and s.supplier_code in
+            <foreach collection="dto.supplierCodeList" item="supplierCode" open="(" separator="," close=")">
+                #{supplierCode}
+            </foreach>
+        </if>
+        <if test="dto.filterPerSupplierCodeList != null and !dto.filterPerSupplierCodeList.isEmpty()">
+            and s.supplier_code in
+            <foreach collection="dto.filterPerSupplierCodeList" item="supplierCode" open="(" separator="," close=")">
+                #{supplierCode}
+            </foreach>
+        </if>
+        <if test="dto.supplierStatus != null">
+            and s.supplier_status = #{dto.supplierStatus}
+        </if>
+        <if test="dto.supplierGradeList != null and !dto.supplierGradeList.isEmpty()">
+            and s.supplier_grade in
+            <foreach collection="dto.supplierGradeList" item="supplierGrade" open="(" separator="," close=")">
+                #{supplierGrade}
+            </foreach>
+        </if>
+        <if test="dto.normalCapacityStart != null">
+            <![CDATA[ and scr.capacity >= #{dto.normalCapacityStart} ]]>
+        </if>
+        <if test="dto.normalCapacityEnd != null">
+            <![CDATA[ and scr.capacity <= #{dto.normalCapacityEnd} ]]>
+        </if>
+        <if test="dto.filterStartDate != null">
+            <![CDATA[ and sc.capacity_date >= #{dto.filterStartDate} ]]>
+        </if>
+        <if test="dto.filterEndDate != null">
+            <![CDATA[ and sc.capacity_date <= #{dto.filterEndDate} ]]>
+        </if>
+    </sql>
+
+    <select id="updateSupNorAvailCapacity">
+        update supplier_capacity
+        set normal_available_capacity = normal_available_capacity + #{operateValue}
+        where supplier_code = #{supplierCode}
+        and capacity_date = #{operationDate}
+        and del_timestamp = 0
+    </select>
+
+    <select id="filterSupplierCodes" resultType="java.lang.String">
+        SELECT supplier_code,
+        ROUND(
+        (SUM(CASE
+        WHEN capacity_date BETWEEN CURDATE() + INTERVAL 1 DAY AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)
+        THEN normal_available_capacity
+        ELSE 0 END) /
+        NULLIF(SUM(CASE
+        WHEN capacity_date BETWEEN CURDATE() + INTERVAL 1 DAY AND DATE_ADD(CURDATE(),
+        INTERVAL 30 DAY) THEN
+        total_normal_capacity
+        ELSE 0 END), 0)) * 100,
+        2
+        ) AS remaining_capacity_30_days_percentage,
+        ROUND(
+        (SUM(CASE
+        WHEN capacity_date BETWEEN CURDATE() + INTERVAL 1 DAY AND DATE_ADD(CURDATE(),
+        INTERVAL 60 DAY) THEN
+        normal_available_capacity
+        ELSE 0 END) /
+        NULLIF(SUM(CASE
+        WHEN capacity_date BETWEEN CURDATE() + INTERVAL 1 DAY AND DATE_ADD(CURDATE(),
+        INTERVAL 60 DAY) THEN
+        total_normal_capacity
+        ELSE 0 END), 0)) * 100,
+        2
+        ) AS remaining_capacity_60_days_percentage,
+        ROUND(
+        (SUM(CASE
+        WHEN capacity_date BETWEEN CURDATE() + INTERVAL 1 DAY AND DATE_ADD(CURDATE(),
+        INTERVAL 90 DAY) THEN
+        normal_available_capacity
+        ELSE 0 END) /
+        NULLIF(SUM(CASE
+        WHEN capacity_date BETWEEN CURDATE() + INTERVAL 1 DAY AND DATE_ADD(CURDATE(),
+        INTERVAL 90 DAY) THEN
+        total_normal_capacity
+        ELSE 0 END), 0)) * 100,
+        2
+        ) AS remaining_capacity_90_days_percentage
+        FROM supplier_capacity
+        WHERE del_timestamp = 0
+        GROUP BY supplier_code
+        having 1 = 1
+        <if test="restCap30PerStart != null and restCap30PerEnd != null">
+            and
+            <![CDATA[ remaining_capacity_30_days_percentage >= #{restCap30PerStart} and remaining_capacity_30_days_percentage <= #{restCap30PerEnd} ]]>
+        </if>
+        <if test="restCap60PerStart != null and restCap60PerEnd != null">
+            and
+            <![CDATA[ remaining_capacity_60_days_percentage >= #{restCap60PerStart} and remaining_capacity_60_days_percentage <= #{restCap60PerEnd} ]]>
+        </if>
+        <if test="restCap90PerStart != null and restCap90PerEnd != null">
+            and
+            <![CDATA[ remaining_capacity_90_days_percentage >= #{restCap90PerStart} and remaining_capacity_90_days_percentage <= #{restCap90PerEnd} ]]>
+        </if>
+    </select>
+
+    <select id="getSupCapacityExportTotal" resultType="java.lang.Integer">
+        select count(1)
+        from supplier_capacity sc
+        join supplier s on sc.supplier_code = s.supplier_code and s.del_timestamp = 0
+        join supplier_capacity_rule scr on sc.supplier_code = scr.supplier_code and scr.del_timestamp=0
+        where sc.del_timestamp = 0
+        <include refid="commonConditions"/>
+    </select>
+
+    <select id="getSupCapacityExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.SupplierCapacityExportVo">
+        select
+        s.supplier_code,
+        sc.capacity_date,
+        sc.normal_available_capacity
+        from supplier_capacity sc
+        join supplier s on sc.supplier_code = s.supplier_code and s.del_timestamp = 0
+        join supplier_capacity_rule scr on sc.supplier_code = scr.supplier_code and scr.del_timestamp=0
+        where sc.del_timestamp = 0
+        <include refid="commonConditions"/>
+        order by sc.supplier_capacity_id
+    </select>
+    <select id="listBySupplierCodeAndDate"
+            resultType="com.hete.supply.scm.server.scm.supplier.entity.bo.SupplierCapacityResBo">
+        select
+        sc.supplier_code,
+        sc.capacity_date,
+        sc.normal_available_capacity
+        from supplier_capacity sc
+        where sc.del_timestamp = 0
+        <if test="queryParams != null and !queryParams.isEmpty()">
+            and (
+            <foreach collection="queryParams" item="item" separator=" or ">
+                (sc.supplier_code = #{item.supplierCode} and sc.capacity_date = #{item.capacityDate})
+            </foreach>
+            )
+        </if>
+    </select>
+
+    <select id="listBySupCapWithDateRange"
+            resultType="com.hete.supply.scm.server.scm.supplier.entity.bo.SupplierCapacityBo">
+        select
+        sc.supplier_code,
+        sc.capacity_date,
+        sc.normal_available_capacity
+        from supplier_capacity sc
+        where sc.del_timestamp=0
+        <if test="supplierCode != null and supplierCode != ''">
+            and sc.supplier_code= #{supplierCode}
+        </if>
+        <if test="capacityBeginDate != null and capacityEndDate != null">
+            and sc.capacity_date between #{capacityBeginDate} and #{capacityEndDate}
+        </if>
+    </select>
+</mapper>

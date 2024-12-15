@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.settle.dao.DeductOrderMapper">
+
+    <sql id="common_where">
+        dedu.del_timestamp = 0
+        <if test="dto.deductOrderId != null">
+            AND dedu.deduct_order_id = #{dto.deductOrderId}
+        </if>
+        <if test="dto.deductOrderNo != null and dto.deductOrderNo != ''">
+            AND dedu.deduct_order_no LIKE concat('%',#{dto.deductOrderNo}, '%')
+        </if>
+        <if test="dto.deductOrderIds != null and dto.deductOrderIds.size() > 0">
+            AND dedu.deduct_order_id IN
+            <foreach collection="dto.deductOrderIds" item="ids" separator="," open="(" close=")">
+                #{ids}
+            </foreach>
+        </if>
+        <if test="dto.deductStatusList != null and dto.deductStatusList.size() > 0">
+            AND dedu.deduct_status IN
+            <foreach collection="dto.deductStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.notDeductStatusList != null and dto.notDeductStatusList.size() > 0">
+            AND dedu.deduct_status NOT IN
+            <foreach collection="dto.notDeductStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.submitUsername != null and dto.submitUsername != ''">
+            AND dedu.submit_username LIKE concat('%',#{dto.submitUsername}, '%')
+        </if>
+        <if test="dto.submitUser != null and dto.submitUser != ''">
+            AND dedu.submit_user LIKE concat('%',#{dto.submitUser}, '%')
+        </if>
+        <if test="dto.examineUsername != null and dto.examineUsername != ''">
+            AND dedu.examine_username LIKE concat('%',#{dto.examineUsername}, '%')
+        </if>
+        <if test="dto.examineUser != null and dto.examineUser != ''">
+            AND dedu.examine_user LIKE concat('%',#{dto.examineUser}, '%')
+        </if>
+        <if test="dto.confirmUsername != null and dto.confirmUsername != ''">
+            AND dedu.confirm_username LIKE concat('%',#{dto.confirmUsername}, '%')
+        </if>
+        <if test="dto.confirmUser != null and dto.confirmUser != ''">
+            AND dedu.confirm_user LIKE concat('%',#{dto.confirmUser}, '%')
+        </if>
+        <if test="dto.deductUsername != null and dto.deductUsername != ''">
+            AND dedu.deduct_username LIKE concat('%',#{dto.deductUsername}, '%')
+        </if>
+        <if test="dto.deductUser != null and dto.deductUser != ''">
+            AND dedu.deduct_user LIKE concat('%',#{dto.deductUser}, '%')
+        </if>
+        <if test="dto.createUser != null and dto.createUser != ''">
+            AND dedu.create_user LIKE concat('%',#{dto.createUser}, '%')
+        </if>
+        <if test="dto.createUsername != null and dto.createUsername != ''">
+            AND dedu.create_username LIKE concat('%',#{dto.createUsername}, '%')
+        </if>
+        <if test="dto.supplierCode != null">
+            AND dedu.supplier_code = #{dto.supplierCode}
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND dedu.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierName != null and dto.supplierName != ''">
+            AND dedu.supplier_name = #{dto.supplierName}
+        </if>
+        <if test="dto.submitTimeStart != null">
+            <![CDATA[ AND dedu.submit_time >= #{dto.submitTimeStart} ]]>
+        </if>
+        <if test="dto.submitTimeEnd != null">
+            <![CDATA[ AND dedu.submit_time <= #{dto.submitTimeEnd}  ]]>
+        </if>
+        <if test="dto.confirmTimeStart != null">
+            <![CDATA[ AND dedu.confirm_time >= #{dto.confirmTimeStart} ]]>
+        </if>
+        <if test="dto.confirmTimeEnd != null">
+            <![CDATA[ AND dedu.confirm_time <= #{dto.confirmTimeEnd}  ]]>
+        </if>
+        <if test="dto.payTimeStart != null">
+            <![CDATA[ AND dedu.pay_time >= #{dto.payTimeStart}  ]]>
+        </if>
+        <if test="dto.payTimeEnd != null">
+            <![CDATA[ AND dedu.pay_time <= #{dto.payTimeEnd}  ]]>
+        </if>
+        <if test="dto.examineTimeStart != null">
+            <![CDATA[ AND dedu.examine_time >= #{dto.examineTimeStart} ]]>
+        </if>
+        <if test="dto.examineTimeEnd != null">
+            <![CDATA[ AND dedu.examine_time <= #{dto.examineTimeEnd}  ]]>
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND dedu.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND dedu.create_time <= #{dto.createTimeEnd}  ]]>
+        </if>
+        <if test="dto.deductTypeList != null and dto.deductTypeList.size() > 0">
+            AND dedu.deduct_type IN
+            <foreach collection="dto.deductTypeList" item="deductType" separator="," open="(" close=")">
+                #{deductType}
+            </foreach>
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND dedu.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.handleUser != null and dto.handleUser != ''">
+            AND dedu.handle_user = #{dto.handleUser}
+        </if>
+        <if test="dto.handleUsername != null and dto.handleUsername != ''">
+            AND dedu.handle_username LIKE concat('%',#{dto.handleUsername}, '%')
+        </if>
+    </sql>
+
+    <select id="selectDeductOrderPage" resultType="com.hete.supply.scm.server.scm.settle.entity.vo.DeductOrderVo"
+            parameterType="com.hete.supply.scm.server.scm.settle.entity.vo.DeductOrderVo">
+        SELECT dedu.deduct_order_id AS deductOrderId,
+        dedu.version AS version,
+        dedu.deduct_order_no as deductOrderNo,
+        dedu.deduct_type as deductType,
+        dedu.deduct_status as deductStatus,
+        dedu.supplier_code as supplierCode,
+        dedu.supplier_name as supplierName,
+        dedu.deduct_price as deductPrice,
+        dedu.submit_time as submitTime,
+        dedu.confirm_time as confirmTime,
+        dedu.examine_time AS examineTime,
+        dedu.pay_time AS payTime,
+        dedu.create_time AS createTime,
+        dedu.deduct_user AS deductUser,
+        dedu.deduct_username AS deductUsername,
+        dedu.handle_user AS handleUser,
+        dedu.handle_username AS handleUsername
+        FROM deduct_order AS dedu
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY dedu.create_time DESC
+    </select>
+
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT count(dedu.deduct_order_id) AS total
+        FROM deduct_order AS dedu
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.DeductOrderExportVo">
+        SELECT dedu.deduct_order_no as deductOrderNo,
+        dedu.deduct_type as deductType,
+        dedu.deduct_status as deductStatus,
+        dedu.deduct_price as deductPrice,
+        dedu.supplier_code as supplierCode,
+        dedu.supplier_name as supplierName,
+        dedu.deduct_user AS deductUser,
+        dedu.deduct_username AS deductUsername,
+        dedu.create_time as createTime,
+        dedu.submit_time as submitTime,
+        dedu.confirm_time as confirmTime,
+        dedu.examine_time AS examineTime,
+        dedu.settle_order_no AS settleOrderNo,
+        dedu.pay_time AS payTime,
+        dedu.handle_user AS handleUser,
+        dedu.handle_username AS handleUsername
+        FROM deduct_order AS dedu
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY dedu.create_time DESC
+    </select>
+    <select id="getPurchaseBatchDeductOrderNo"
+            resultType="com.hete.supply.scm.server.scm.settle.entity.bo.DeductOrderExportBo">
+        SELECT dedu.deduct_order_id AS deductOrderId,
+        dedu.deduct_order_no AS deductOrderNo,
+        purchase.spu AS spu,
+        purchase.sku AS sku,
+        purchase.deduct_price AS deductPrice,
+        purchase.deduct_remarks AS deductRemarks
+        FROM deduct_order AS dedu
+        INNER JOIN deduct_order_purchase as purchase on dedu.deduct_order_id = purchase.deduct_order_id
+        <where>
+            dedu.del_timestamp = 0
+            AND purchase.del_timestamp = 0
+            <if test="deductOrderNoList != null and deductOrderNoList.size() > 0">
+                AND dedu.deduct_order_no IN
+                <foreach collection="deductOrderNoList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY purchase.deduct_order_purchase_id,purchase.create_time DESC
+    </select>
+    <select id="getQualityBatchDeductOrderNo"
+            resultType="com.hete.supply.scm.server.scm.settle.entity.bo.DeductOrderExportBo">
+        SELECT dedu.deduct_order_id AS deductOrderId,
+        dedu.deduct_order_no AS deductOrderNo,
+        quality.spu AS spu,
+        quality.sku AS sku,
+        quality.deduct_price AS deductPrice,
+        quality.deduct_remarks AS deductRemarks
+        FROM deduct_order AS dedu
+        INNER JOIN deduct_order_quality as quality on dedu.deduct_order_id = quality.deduct_order_id
+        <where>
+            dedu.del_timestamp = 0
+            AND quality.del_timestamp = 0
+            <if test="deductOrderNoList != null and deductOrderNoList.size() > 0">
+                AND dedu.deduct_order_no IN
+                <foreach collection="deductOrderNoList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY quality.deduct_order_quality_id,quality.create_time DESC
+    </select>
+
+    <select id="getExportSkuTotals" resultType="java.lang.Integer">
+        SELECT count(dedu.deduct_order_id) AS total
+        FROM deduct_order AS dedu
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <select id="getExportSkuList" resultType="com.hete.supply.scm.server.scm.settle.entity.po.DeductOrderPo">
+        SELECT dedu.deduct_order_no as deductOrderNo,
+        dedu.deduct_order_id as deductOrderId,
+        dedu.deduct_type as deductType,
+        dedu.deduct_status as deductStatus,
+        dedu.deduct_price as deductPrice,
+        dedu.supplier_code as supplierCode,
+        dedu.supplier_name as supplierName,
+        dedu.deduct_user AS deductUser,
+        dedu.deduct_username AS deductUsername,
+        dedu.create_time as createTime,
+        dedu.submit_time as submitTime,
+        dedu.confirm_time as confirmTime,
+        dedu.examine_time AS examineTime,
+        dedu.settle_order_no AS settleOrderNo,
+        dedu.pay_time AS payTime,
+        dedu.handle_user AS handleUser,
+        dedu.handle_username AS handleUsername
+        FROM deduct_order AS dedu
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY dedu.create_time DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.purchase.dao.PurchaseParentOrderMapper">
+    <sql id="search_where">
+        WHERE ppo.del_timestamp = 0
+        <if test="dto.purchaseParentOrderNoList != null and dto.purchaseParentOrderNoList.size() > 0">
+            AND ppo.purchase_parent_order_no IN
+            <foreach collection="dto.purchaseParentOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="purchaseSearchBo != null and purchaseSearchBo.itemParentNoList != null and purchaseSearchBo.itemParentNoList.size() > 0">
+            AND ppo.purchase_parent_order_no IN
+            <foreach collection="purchaseSearchBo.itemParentNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="purchaseSearchBo != null and purchaseSearchBo.notInItemParentNoList != null and purchaseSearchBo.notInItemParentNoList.size() > 0">
+            AND ppo.purchase_parent_order_no NOT IN
+            <foreach collection="purchaseSearchBo.notInItemParentNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.purchaseParentOrderNo != null">
+            AND ppo.purchase_parent_order_no LIKE concat('%',#{dto.purchaseParentOrderNo}, '%')
+        </if>
+        <if test="dto.createUser != null and dto.createUser != ''">
+            AND ppo.place_order_user = #{dto.createUser}
+        </if>
+        <if test="dto.skuType != null">
+            AND ppo.sku_type = #{dto.skuType}
+        </if>
+        <if test="dto.createUsername != null and dto.createUsername != ''">
+            AND ppo.place_order_username = #{dto.createUsername}
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND ppo.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND ppo.create_time <= #{dto.createTimeEnd} ]]>
+        </if>
+        <if test="dto.purchaseParentOrderStatusList != null and dto.purchaseParentOrderStatusList.size() > 0">
+            AND ppo.purchase_parent_order_status IN
+            <foreach collection="dto.purchaseParentOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.isExistsChild != null">
+            AND EXISTS (
+            SELECT 1
+            FROM purchase_child_order AS pco
+            WHERE pco.purchase_parent_order_no = ppo.purchase_parent_order_no
+            AND pco.del_timestamp = 0
+            )
+        </if>
+        <if test="dto.isSplit != null and dto.isSplit.name() == 'TRUE'">
+            AND ppo.can_split_cnt > 0
+        </if>
+        <if test="dto.isSplit != null and dto.isSplit.name() == 'FALSE'">
+            <![CDATA[  AND ppo.can_split_cnt = 0]]>
+        </if>
+        <if test="dto.purchaseDemandType != null">
+            AND ppo.purchase_demand_type = #{dto.purchaseDemandType}
+        </if>
+        <if test="dto.platformList != null and dto.platformList.size() > 0">
+            AND ppo.platform IN
+            <foreach collection="dto.platformList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+
+    <select id="searchPurchaseNew" resultType="com.hete.supply.scm.server.scm.purchase.entity.vo.PurchaseSearchNewVo">
+        SELECT ppo.purchase_parent_order_id AS purchaseParentOrderId,
+        ppo.version AS version,
+        ppo.purchase_parent_order_no AS purchaseParentOrderNo,
+        ppo.spu AS spu,
+        ppo.purchase_parent_order_status AS purchaseParentOrderStatus,
+        ppo.platform AS platform,
+        ppo.warehouse_code AS warehouseCode,
+        ppo.warehouse_name AS warehouseName,
+        ppo.warehouse_types AS warehouseTypes,
+        ppo.create_time AS createTime,
+        ppo.place_order_username AS createUsername,
+        ppo.sku_type AS skuType,
+        ppo.can_split_cnt AS canSplitCnt,
+        ppo.purchase_demand_type AS purchaseDemandType
+        FROM purchase_parent_order AS ppo
+        <include refid="search_where"></include>
+        ORDER BY ppo.create_time DESC
+    </select>
+    <select id="exportPurchaseParentTotals" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM purchase_parent_order AS ppo
+        <include refid="search_where"></include>
+        ORDER BY ppo.create_time DESC
+    </select>
+    <select id="exportPurchaseParent"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.PurchaseParentExportVo">
+        SELECT ppo.purchase_parent_order_no AS purchaseParentOrderNo,
+        ppo.spu AS spu,
+        ppo.purchase_parent_order_status AS purchaseParentOrderStatus,
+        ppo.sku_type AS skuType,
+        ppo.platform AS platform,
+        ppo.warehouse_name AS warehouseName,
+        ppo.purchase_total AS purchaseTotal,
+        ppo.place_order_username AS createUsername,
+        ppo.create_time AS createTime,
+        ppo.purchase_demand_type AS purchaseDemandType
+        FROM purchase_parent_order AS ppo
+        <include refid="search_where"></include>
+        ORDER BY ppo.create_time,ppo.purchase_parent_order_id DESC
+    </select>
+    <select id="exportPurchaseParentBySkuTotals" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM purchase_parent_order AS ppo
+        INNER JOIN purchase_parent_order_item AS ppoi
+        ON ppo.purchase_parent_order_no = ppoi.purchase_parent_order_no
+        <include refid="search_where"></include>
+        ORDER BY ppo.create_time DESC
+    </select>
+    <select id="exportPurchaseParentBySku"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.PurchaseParentSkuExportVo">
+        SELECT ppo.purchase_parent_order_no AS purchaseParentOrderNo,
+        ppo.purchase_parent_order_status AS purchaseParentOrderStatus,
+        ppo.platform AS platform,
+        ppoi.sku AS sku,
+        ppoi.purchase_cnt AS purchaseCnt,
+        ppoi.can_split_cnt AS canSplitCnt,
+        ppoi.undelivered_cnt AS undeliveredCnt,
+        ppoi.quality_goods_cnt AS qualityGoodsCnt,
+        ppo.place_order_username AS createUsername,
+        ppo.create_time AS createTime,
+        ppo.purchase_demand_type AS purchaseDemandType
+        FROM purchase_parent_order AS ppo
+        INNER JOIN purchase_parent_order_item AS ppoi
+        ON ppo.purchase_parent_order_no = ppoi.purchase_parent_order_no
+        <include refid="search_where"></include>
+        ORDER BY ppo.create_time DESC,ppo.purchase_parent_order_id DESC
+    </select>
+    <select id="getCanCompletePurchase"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.po.PurchaseParentOrderPo">
+        SELECT ppo.purchase_parent_order_id AS purchaseParentOrderId,
+        ppo.purchase_parent_order_no AS purchaseParentOrderNo,
+        ppo.version AS version
+        FROM purchase_parent_order as ppo
+        WHERE ppo.del_timestamp = 0
+        AND ppo.can_split_cnt = 0
+        AND ppo.purchase_parent_order_status = 'IN_PROGRESS'
+        AND NOT EXISTS(
+        SELECT 1
+        FROM purchase_child_order as pco
+        WHERE pco.del_timestamp = 0
+        AND pco.purchase_parent_order_no = ppo.purchase_parent_order_no
+        AND pco.purchase_order_status NOT IN ('FINISH', 'DELETE')
+        )
+        AND EXISTS(
+        SELECT 1
+        FROM purchase_child_order as pco
+        WHERE pco.del_timestamp = 0
+        AND pco.purchase_parent_order_no = ppo.purchase_parent_order_no
+        );
+    </select>
+
+
+</mapper>

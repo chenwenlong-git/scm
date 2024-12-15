@@ -1,0 +1,18 @@
+provider:
+  generic-import-map:
+    scm_sku_attr_import:
+      biz-system-code: SCM
+      resource-name: 导入sku定价数据
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.SkuAttrImportationFacade
+      method-name-record: importSkuAttr
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.SkuAttrImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[蕾丝面积属性值]": laceAttrValue
+        "[档长尺寸属性值]": sizeAttrValue
+        "[材料属性值]": materialAttrValue
+        "[sku价格]": skuPrice

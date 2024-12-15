@@ -1,0 +1,28 @@
+provider:
+  generic-export-map:
+    scm_process_order_settle_detail:
+      biz-system-code: SCM
+      file-prefix: 加工单结算明细导出
+      resource-name: SCM系统-加工单结算明细导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.ProcessSettleDetailFacade
+      method-name-count: getProcessSettleDetailExportTotals
+      method-name-record: getExportProcessSettleDetailList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.GetProcessSettleOrderDetailAndScanSettleDto
+      header-alias:
+        completeUserName: 完成人
+        totalCommission: 个人总提成
+        processLabel: 工序类别
+        processLabelQualityGoodsCnt: 加工数量（类别）
+        processName: 工序名称
+        processNameQualityGoodsCnt: 加工数量（工序）
+        processBasePrice: 工序基础单价
+        firstLevelCoefficientAndLimit: 一级系数/临界值
+        secondLevelCoefficientAndLimit: 二级系数/临界值
+        firstLevelQualityGoodsCnt: 一级产品数
+        firstLevelTotalCommission: 一级提成
+        secondLevelQualityGoodsCnt: 二级产品数
+        secondLevelTotalCommission: 二级提成
+        additionalPayment: 补款金额
+        deductionAmount: 扣款金额

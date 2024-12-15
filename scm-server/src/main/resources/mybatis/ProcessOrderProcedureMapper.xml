@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.process.dao.ProcessOrderProcedureMapper">
+
+    <select id="getProcessProcedureCapacityNumBo"
+            resultType="com.hete.supply.scm.server.scm.process.entity.bo.ProcessProcedureComplexCoefficientBo">
+        SELECT
+        pop.process_order_no, sum(p.complex_coefficient) as complexCoefficient
+        from process_order_procedure pop
+        join process p on pop.process_id=p.process_id
+        where pop.del_timestamp=0 and p.del_timestamp=0
+        and p.process_status='ENABLED'
+        and pop.process_order_no in
+        <foreach collection="processOrderNos" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        group by pop.process_order_no
+    </select>
+</mapper>

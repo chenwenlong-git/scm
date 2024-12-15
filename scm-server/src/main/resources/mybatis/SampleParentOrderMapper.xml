@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.sample.dao.SampleParentOrderMapper">
+
+    <sql id="search_where">
+        WHERE spo.del_timestamp = 0
+        <if test="dto.sampleParentOrderNo != null and dto.sampleParentOrderNo != ''">
+            AND spo.sample_parent_order_no = #{dto.sampleParentOrderNo}
+        </if>
+        <if test="dto.spuList != null and dto.spuList.size() > 0">
+            AND spo.spu IN
+            <foreach collection="dto.spuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="skuParentOrderNoList != null and skuParentOrderNoList.size() > 0">
+            AND spo.sample_parent_order_no IN
+            <foreach collection="skuParentOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.platformList != null and dto.platformList.size() > 0">
+            AND spo.platform IN
+            <foreach collection="dto.platformList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.categoryName != null and dto.categoryName != ''">
+            AND spo.category_name = #{dto.categoryName}
+        </if>
+        <if test="dto.approveUser != null and dto.approveUser != ''">
+            AND spoc.approve_user = #{dto.approveUser}
+        </if>
+        <if test="dto.approveUsername != null and dto.approveUsername != ''">
+            AND spoc.approve_username = #{dto.approveUsername}
+        </if>
+        <if test="dto.placeOrderUser != null and dto.placeOrderUser != ''">
+            AND spoc.place_order_user = #{dto.placeOrderUser}
+        </if>
+        <if test="dto.placeOrderUsername != null and dto.placeOrderUsername != ''">
+            AND spoc.place_order_username = #{dto.placeOrderUsername}
+        </if>
+        <if test="dto.disburseUser != null and dto.disburseUser != ''">
+            AND spoc.disburse_user = #{dto.disburseUser}
+        </if>
+        <if test="dto.disburseUsername != null and dto.disburseUsername != ''">
+            AND spoc.disburse_username = #{dto.disburseUsername}
+        </if>
+        <if test="dto.placeOrderTimeStart != null">
+            <![CDATA[ AND spoc.place_order_time >= #{dto.placeOrderTimeStart} ]]>
+        </if>
+        <if test="dto.placeOrderTimeEnd != null">
+            <![CDATA[ AND spoc.place_order_time <= #{dto.placeOrderTimeEnd} ]]>
+        </if>
+        <if test="dto.approveTimeStart != null">
+            <![CDATA[ AND spoc.approve_time >= #{dto.approveTimeStart} ]]>
+        </if>
+        <if test="dto.approveTimeEnd != null">
+            <![CDATA[ AND spoc.approve_time <= #{dto.approveTimeEnd} ]]>
+        </if>
+        <if test="dto.receiveOrderTimeStart != null">
+            <![CDATA[ AND spoc.receive_order_time >= #{dto.receiveOrderTimeStart} ]]>
+        </if>
+        <if test="dto.receiveOrderTimeEnd != null">
+            <![CDATA[ AND spoc.receive_order_time <= #{dto.receiveOrderTimeEnd} ]]>
+        </if>
+        <if test="dto.deliverTimeStart != null">
+            <![CDATA[ AND spoc.deliver_time >= #{dto.deliverTimeStart} ]]>
+        </if>
+        <if test="dto.deliverTimeEnd != null">
+            <![CDATA[ AND spoc.deliver_time <= #{dto.deliverTimeEnd} ]]>
+        </if>
+        <if test="dto.receiptTimeStart != null">
+            <![CDATA[ AND spoc.receipt_time >= #{dto.receiptTimeStart} ]]>
+        </if>
+        <if test="dto.receiptTimeEnd != null">
+            <![CDATA[ AND spoc.receipt_time <= #{dto.receiptTimeEnd} ]]>
+        </if>
+        <if test="dto.sampleTimeStart != null">
+            <![CDATA[ AND spoc.sample_time >= #{dto.sampleTimeStart} ]]>
+        </if>
+        <if test="dto.sampleTimeEnd != null">
+            <![CDATA[ AND spoc.sample_time <= #{dto.sampleTimeEnd} ]]>
+        </if>
+        <if test="dto.deliverDateStart != null">
+            <![CDATA[ AND spo.deliver_date >= #{dto.deliverDateStart} ]]>
+        </if>
+        <if test="dto.deliverDateEnd != null">
+            <![CDATA[ AND spo.deliver_date <= #{dto.deliverDateEnd} ]]>
+        </if>
+        <if test="dto.typesettingTimeStart != null">
+            <![CDATA[ AND  spoc.typesetting_time >= #{dto.typesettingTimeStart} ]]>
+        </if>
+        <if test="dto.typesettingTimeEnd != null">
+            <![CDATA[ AND  spoc.typesetting_time <= #{dto.typesettingTimeEnd} ]]>
+        </if>
+        <if test="dto.isFirstOrder != null">
+            AND spo.is_first_order = #{dto.isFirstOrder}
+        </if>
+        <if test="dto.isUrgentOrder != null">
+            AND spo.is_urgent_order = #{dto.isUrgentOrder}
+        </if>
+        <if test="dto.isNormalOrder != null">
+            AND spo.is_normal_order = #{dto.isNormalOrder}
+        </if>
+        <if test="dto.sampleOrderStatusList != null and dto.sampleOrderStatusList.size() > 0">
+            AND spo.sample_order_status IN
+            <foreach collection="dto.sampleOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    <update id="updatePurchaseCnt">
+        UPDATE sample_parent_order AS spo
+        SET spo.purchase_total = spo.purchase_total + #{purchaseSum}
+        WHERE spo.del_timestamp = 0
+        AND spo.sample_parent_order_id = #{id}
+        AND spo.version = #{version}
+    </update>
+
+    <select id="searchSample" resultType="com.hete.supply.scm.server.scm.sample.entity.vo.SampleSearchVo">
+        SELECT spo.sample_parent_order_id AS sampleParentOrderId,
+        spo.version AS version,
+        spo.sample_parent_order_no AS sampleParentOrderNo,
+        spo.sample_order_status AS sampleOrderStatus,
+        spo.is_first_order AS isFirstOrder,
+        spo.is_urgent_order AS isUrgentOrder,
+        spo.is_normal_order AS isNormalOrder,
+        spo.spu AS spu,
+        spo.platform AS platform,
+        spo.purchase_total AS purchaseTotal,
+        spoc.place_order_time AS placeOrderTime,
+        spoc.disbursement_time AS disbursementTime,
+        spoc.typesetting_time AS typesettingTime,
+        spoc.receive_order_time AS receiveOrderTime,
+        spoc.sample_time AS sampleTime,
+        spo.deliver_date AS deliverDate,
+        spoc.disburse_user AS disburseUser,
+        spoc.disburse_username AS disburseUsername,
+        spo.warehouse_code AS warehouseCode,
+        spo.warehouse_name AS warehouseName,
+        spo.warehouse_types AS warehouseTypes,
+        spoc.place_order_username AS placeOrderUsername
+        FROM sample_parent_order AS spo
+        LEFT JOIN sample_parent_order_change AS spoc
+        ON spoc.sample_parent_order_id = spo.sample_parent_order_id
+        <include refid="search_where"></include>
+        ORDER BY spo.create_time DESC
+    </select>
+    <select id="getDefectiveSampleNoSet" resultType="java.lang.String">
+        SELECT DISTINCT(spo.defective_sample_child_order_no)
+        FROM sample_parent_order AS spo
+        WHERE spo.del_timestamp = 0
+        AND spo.defective_sample_child_order_no != ''
+    </select>
+
+    <select id="getSampleParentExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sample_parent_order AS spo
+        LEFT JOIN sample_parent_order_change AS spoc
+        ON spoc.sample_parent_order_id = spo.sample_parent_order_id
+        <include refid="search_where"></include>
+    </select>
+
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.SampleParentExportVo">
+        SELECT spo.sample_parent_order_no AS sampleParentOrderNo,
+        spo.is_first_order AS isFirstOrder,
+        spo.is_urgent_order AS isUrgentOrder,
+        spo.is_normal_order AS isNormalOrder,
+        spo.sample_order_status AS sampleOrderStatus,
+        spo.sample_dev_type AS sampleDevType,
+        spo.spu AS spu,
+        spo.purchase_predict_price AS purchasePredictPrice,
+        spo.warehouse_name AS warehouseName,
+        spo.platform AS platform,
+        spo.deliver_date AS deliverDate,
+        spoc.place_order_username AS placeOrderUsername,
+        spoc.place_order_time AS placeOrderTime,
+        spoc.disburse_username AS disburseUsername,
+        spoc.disbursement_time AS disbursementTime,
+        spoc.typesetting_time AS typesettingTime,
+        spoc.receive_order_time AS receiveOrderTime,
+        spoc.deliver_time AS deliverTime,
+        spoc.receipt_time AS receiptTime,
+        spoc.sample_time AS sampleTime
+        FROM sample_parent_order AS spo
+        LEFT JOIN sample_parent_order_change AS spoc
+        ON spoc.sample_parent_order_id = spo.sample_parent_order_id
+        <include refid="search_where"></include>
+        ORDER BY spo.sample_parent_order_id,spo.create_time DESC
+    </select>
+
+
+</mapper>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.process.dao.EmployeeProcessAbilityMapper">
+
+    <sql id="commonFields">
+        employee_process_ability_id
+        ,
+        production_pool_code,
+        employee_no,
+        employee_name,
+        process_id,
+        process_name,
+        total_processed_num,
+        available_processed_num,
+        validity_time,
+        version
+    </sql>
+
+    <select id="getEmployeeProcessAbilityByEmployeeNos"
+            resultType="com.hete.supply.scm.server.scm.entity.po.EmployeeProcessAbilityPo">
+        select
+        egr.employee_no ,
+        egr.employee_name,
+        egp.process_id,
+        egp.process_name,
+        egp.process_num as totalProcessedNum,
+        egp.process_num as availableProcessedNum
+        from employee_grade_relation egr
+        join employee_grade eg on egr.employee_grade_id=eg.employee_grade_id
+        join employee_grade_process egp on eg.employee_grade_id=egp.employee_grade_id
+        where egr.del_timestamp=0 and eg.del_timestamp=0 and egp.del_timestamp=0
+        <if test="employeeNos !=null and employeeNos.size() >0">
+            AND egr.employee_no in
+            <foreach collection="employeeNos" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        order by egr.employee_no asc
+    </select>
+
+    <select id="getEmployeeProcessAbilityByPoolAndDate"
+            resultType="com.hete.supply.scm.server.scm.entity.po.EmployeeProcessAbilityPo">
+        SELECT
+        <include refid="commonFields"/>
+        FROM
+        employee_process_ability
+        where del_timestamp=0
+        <if test="poolCode != null">
+            and production_pool_code = #{poolCode}
+        </if>
+        <if test="processPlanDates != null and !processPlanDates.isEmpty()">
+            and DATE(validity_time) in
+            <foreach item="processPlanDate" collection="processPlanDates" open="(" close=")" separator=",">
+                DATE(#{processPlanDate})
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getEmployeeProcessAbilityByPoolIdAndProcessIdAndSchedulingDate"
+            resultType="com.hete.supply.scm.server.scm.entity.po.EmployeeProcessAbilityPo">
+        select
+        <include refid="commonFields"/>
+        from employee_process_ability
+        where del_timestamp=0
+        <if test="productionPoolCode != null">
+            and production_pool_code = #{productionPoolCode}
+        </if>
+        <if test="processIds != null and processIds.size() > 0">
+            and process_id IN
+            <foreach item="processId" index="index" collection="processIds" open="(" separator="," close=")">
+                #{processId}
+            </foreach>
+        </if>
+        <if test="processPlanDates != null and !processPlanDates.isEmpty()">
+            and DATE(validity_time) in
+            <foreach item="processPlanDate" collection="processPlanDates" open="(" close=")" separator=",">
+                DATE(#{processPlanDate})
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getEmployeeProcessAbilityByPoolIdAndEmployeeIdAndSchedulingDate"
+            resultType="com.hete.supply.scm.server.scm.process.entity.bo.EmployeeProcessAbilityBo">
+        select
+        <include refid="commonFields"/>
+        from employee_process_ability
+        where del_timestamp=0
+        <if test="productionPoolCode != null">
+            and production_pool_code = #{productionPoolCode}
+        </if>
+        <if test="employeeNos != null and employeeNos.size() > 0">
+            and employee_no IN
+            <foreach item="employeeNo" index="index" collection="employeeNos" open="(" separator="," close=")">
+                #{employeeNo}
+            </foreach>
+        </if>
+        <if test="processPlanDates != null and !processPlanDates.isEmpty()">
+            and DATE(validity_time) in
+            <foreach item="processPlanDate" collection="processPlanDates" open="(" close=")" separator=",">
+                DATE(#{processPlanDate})
+            </foreach>
+        </if>
+    </select>
+</mapper>

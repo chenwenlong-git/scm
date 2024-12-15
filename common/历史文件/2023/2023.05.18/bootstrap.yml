@@ -1,0 +1,5 @@
+scm:
+  processOrder:
+    deliveryWarehouseCode: "JY01"
+    deliveryWarehouseName: "金塬01仓"
+    defectiveWarehouseCode: "BL008"

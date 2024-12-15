@@ -1,0 +1,33 @@
+provider:
+  generic-export-map:
+    spm_develop_sample_order_export:
+      biz-system-code: SPM
+      file-prefix: SPM开发样品单信息
+      resource-name: SPM系统-开发样品单列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.DevelopSampleOrderFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.DevelopSampleOrderSearchDto
+      header-alias:
+        developSampleOrderNo: 样品单号
+        developChildOrderNo: 开发子单号
+        developParentOrderNo: 开发需求单号
+        developSampleMethodName: 处理方式
+        platform: 平台
+        supplierCode: 供应商代码
+        createUsername: 创建人
+        createTimeStr: 创建时间
+        sku: sku
+        skuEncode: 产品名称
+        skuBatchCode: sku批次码
+        developPricingOrderNo: 核价单号
+        samplePrice: 样品价格
+        developOrderPrice: 大货价格
+        handleUsername: 处理人
+        handleTimeStr: 处理时间
+        signTimeStr: 退样签收时间
+        receiptOrderNo: 关联单据号
+        shelvesTimeStr: 上架时间
+

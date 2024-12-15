@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.process.dao.GoodsProcessMapper">
+
+    <resultMap id="goodsProcessResultMap" type="com.hete.supply.scm.server.scm.entity.vo.GoodsProcessVo">
+        <id property="goodsProcessId" column="goods_process_id"/>
+        <result property="sku" column="sku"/>
+        <result property="goodsProcessStatus" column="goods_process_status"/>
+        <result property="updateUsername" column="update_username"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="common_where">
+        gp.del_timestamp = 0
+        <if test="params.processCode != null and params.processCode != ''">
+            AND p.process_code LIKE concat('%',#{params.processCode}, '%')
+        </if>
+        <if test="params.processName != null and params.processName != ''">
+            AND p.process_name LIKE concat('%',#{params.processName}, '%')
+        </if>
+        <if test="params.skus != null and params.skus.size()>0">
+            AND gp.sku in
+            <foreach collection="params.skus" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.skuByCategory != null and params.skuByCategory.size()>0">
+            AND gp.sku in
+            <foreach collection="params.skuByCategory" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.goodsProcessStatusList !=null and params.goodsProcessStatusList.size() >0">
+            AND gp.goods_process_status in
+            <foreach collection="params.goodsProcessStatusList" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.goodsProcessIdList != null and params.goodsProcessIdList.size()>0">
+            AND gp.goods_process_id in
+            <foreach collection="params.goodsProcessIdList" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.goodsProcessStatus != null">
+            AND gp.goods_process_status = #{params.goodsProcessStatus}
+        </if>
+    </sql>
+
+    <sql id="page_where">
+        gp.del_timestamp = 0
+        <if test="params.skus != null and params.skus.size()>0">
+            AND gp.sku in
+            <foreach collection="params.skus" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.skuByCategory != null and params.skuByCategory.size()>0">
+            AND gp.sku in
+            <foreach collection="params.skuByCategory" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.goodsProcessIdList != null and params.goodsProcessIdList.size()>0">
+            AND gp.goods_process_id in
+            <foreach collection="params.goodsProcessIdList" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.goodsProcessIdsByProcessCode != null and params.goodsProcessIdsByProcessCode.size()>0">
+            AND gp.goods_process_id in
+            <foreach collection="params.goodsProcessIdsByProcessCode" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.goodsProcessIdsByProcessName != null and params.goodsProcessIdsByProcessName.size()>0">
+            AND gp.goods_process_id in
+            <foreach collection="params.goodsProcessIdsByProcessName" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.goodsProcessStatusList !=null and params.goodsProcessStatusList.size() >0">
+            AND gp.goods_process_status in
+            <foreach collection="params.goodsProcessStatusList" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.goodsProcessStatus != null">
+            AND gp.goods_process_status = #{params.goodsProcessStatus}
+        </if>
+    </sql>
+
+    <select id="getByPage" resultMap="goodsProcessResultMap">
+        SELECT
+        gp.goods_process_id,
+        gp.sku,
+        gp.goods_process_status,
+        gp.update_username,
+        gp.update_time,
+        gp.version
+        FROM goods_process as gp
+        <where>
+            <include refid="page_where"></include>
+        </where>
+        ORDER BY gp.update_time DESC
+    </select>
+
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT
+        count(gp.goods_process_id) as total
+        FROM goods_process as gp
+        left join goods_process_relation as gpr on gp.goods_process_id=gpr.goods_process_id AND (gpr.del_timestamp =0 or
+        gpr.del_timestamp is null)
+        left join process as p on gpr.process_id=p.process_id
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.GoodsProcessExportVo">
+        SELECT
+        gp.sku as sku,
+        p.process_first as processFirst,
+        p.process_second_name as processSecondName
+        FROM goods_process as gp
+        left join goods_process_relation as gpr on gp.goods_process_id=gpr.goods_process_id AND (gpr.del_timestamp =0 or
+        gpr.del_timestamp is null)
+        left join process as p on gpr.process_id=p.process_id
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY gpr.goods_process_relation_id DESC
+    </select>
+
+</mapper>

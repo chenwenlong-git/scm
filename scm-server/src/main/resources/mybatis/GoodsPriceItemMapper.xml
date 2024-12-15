@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.adjust.dao.GoodsPriceItemMapper">
+
+    <select id="getGoodsPriceItemListByDto"
+            resultType="com.hete.supply.scm.server.scm.adjust.entity.vo.GoodsPriceItemSearchListVo">
+        SELECT
+        gpi.goods_price_item_id AS goodsPriceItemId,
+        gpi.version AS version,
+        gpi.sku AS sku,
+        gpi.goods_price_effective_status AS goodsPriceEffectiveStatus,
+        gp.supplier_code AS supplierCode,
+        gp.channel_id AS channelId,
+        gp.channel_name AS channelName,
+        gpi.channel_price AS channelPrice,
+        gpi.effective_time AS effectiveTime,
+        gpi.effective_remark AS effectiveRemark
+        FROM goods_price_item AS gpi
+        INNER JOIN goods_price AS gp ON gp.goods_price_id = gpi.goods_price_id
+        <where>
+            gpi.del_timestamp = 0 AND gp.del_timestamp = 0
+            <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+                AND gp.supplier_code IN
+                <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="dto.channelIdList != null and dto.channelIdList.size() > 0">
+                AND gp.channel_id IN
+                <foreach collection="dto.channelIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="dto.goodsPriceEffectiveStatusList != null and dto.goodsPriceEffectiveStatusList.size() > 0">
+                AND gpi.goods_price_effective_status IN
+                <foreach collection="dto.goodsPriceEffectiveStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="dto.skuList != null and dto.skuList.size() > 0">
+                AND gpi.sku IN
+                <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="dto.goodsPriceItemStatusList != null and dto.goodsPriceItemStatusList.size() > 0">
+                AND gpi.goods_price_item_status IN
+                <foreach collection="dto.goodsPriceItemStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY gpi.goods_price_item_id DESC
+    </select>
+</mapper>

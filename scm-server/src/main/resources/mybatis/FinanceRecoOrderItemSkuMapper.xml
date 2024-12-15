@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.ibfs.dao.FinanceRecoOrderItemSkuMapper">
+
+    <select id="getListByCollectOrderNoAndNotStatus"
+            resultType="com.hete.supply.scm.server.scm.ibfs.entity.po.FinanceRecoOrderItemSkuPo">
+        SELECT frois.finance_reco_order_item_sku_id AS financeRecoOrderItemSkuId,
+        frois.version AS version,
+        frois.finance_reco_order_no AS financeRecoOrderNo,
+        frois.collect_order_no AS collectOrderNo
+        FROM finance_reco_order_item_sku AS frois
+        INNER JOIN finance_reco_order AS fro ON fro.finance_reco_order_no = frois.finance_reco_order_no
+        WHERE frois.del_timestamp = 0 AND fro.del_timestamp = 0
+        <if test="collectOrderNoList != null and collectOrderNoList.size() > 0">
+            AND frois.collect_order_no IN
+            <foreach collection="collectOrderNoList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="financeRecoOrderStatusNotList != null and financeRecoOrderStatusNotList.size() > 0">
+            AND fro.finance_reco_order_status NOT IN
+            <foreach collection="financeRecoOrderStatusNotList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        ORDER BY frois.finance_reco_order_item_sku_id DESC
+    </select>
+</mapper>

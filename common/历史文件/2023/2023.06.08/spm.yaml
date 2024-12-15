@@ -1,0 +1,36 @@
+provider:
+  generic-export-map:
+    purchase_raw_receipt_export:
+      biz-system-code: SPM
+      file-prefix: 采购原料收货导出数据
+      resource-name: scm系统-采购原料收货导出数据
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.RawReceiptFacade
+      method-name-count: getExportTotals
+      method-name-record: getNewRawReceiptExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.PurchaseRawReceiptSearchDto
+      header-alias:
+        purchaseParentOrderNo: 采购需求单号
+        purchaseChildOrderNo: 采购子单号
+        supplierCode: 供应商代码
+        purchaseRawDeliverOrderNo: 出库单号
+        deliverTime: 签出时间
+        purchaseOrderStatus: 采购单状态
+        sku: 成品sku
+        skuEncode: 产品名称
+        purchaseCnt: 采购数
+        qualityGoodsCnt: 正品数
+        defectiveGoodsCnt: 次品数
+        rawWarehouseName: 原料仓库名称
+        rawSku: 原料sku
+        rawSkuEncode: 原料sku产品名称
+        bomDeliveryCnt: 单位bom需求
+        deliveryCnt: 出库数
+        receiptCnt: 收货数
+        receiptTime: 原料收货时间
+        purchaseDeliverTime: 子单发货时间
+        purchaseReceiptTime: 子单收货时间
+        warehousingTime: 子单上架时间
+
+  generic-import-map:

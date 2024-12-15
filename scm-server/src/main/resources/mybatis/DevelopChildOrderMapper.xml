@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.develop.dao.DevelopChildOrderMapper">
+    <sql id="search_where">
+        WHERE dco.del_timestamp = 0
+        <if test="dto.developChildOrderNo != null and dto.developChildOrderNo != ''">
+            AND dco.develop_child_order_no LIKE concat('%',#{dto.developChildOrderNo}, '%')
+        </if>
+        <if test="dto.developParentOrderNo != null and dto.developParentOrderNo != ''">
+            AND dco.develop_parent_order_no LIKE concat('%',#{dto.developParentOrderNo}, '%')
+        </if>
+        <if test="dto.supplierCode != null and dto.supplierCode != ''">
+            AND dco.supplier_code LIKE concat('%',#{dto.supplierCode}, '%')
+        </if>
+        <if test="dto.sku != null and dto.sku != ''">
+            AND dco.sku LIKE concat('%',#{dto.sku}, '%')
+        </if>
+        <if test="dto.spu != null and dto.spu != ''">
+            AND dco.spu LIKE concat('%',#{dto.spu}, '%')
+        </if>
+        <if test="dto.skuDevType != null and dto.skuDevType != ''">
+            AND dco.sku_dev_type = #{dto.skuDevType}
+        </if>
+        <if test="dto.developCreateType != null and dto.developCreateType != ''">
+            AND dco.develop_create_type = #{dto.developCreateType}
+        </if>
+        <if test="dto.hasException != null ">
+            AND dco.has_exception = #{dto.hasException}
+        </if>
+        <if test="dto.isOnShelves != null ">
+            AND dco.is_on_shelves = #{dto.isOnShelves}
+        </if>
+        <if test="dto.isUrgent != null ">
+            AND dco.is_urgent = #{dto.isUrgent}
+        </if>
+        <if test="dto.category != null and dto.category != ''">
+            AND dco.category LIKE concat('%',#{dto.category}, '%')
+        </if>
+        <if test="dto.categoryId != null">
+            AND dco.category_id = #{dto.categoryId}
+        </if>
+        <if test="dto.devUser != null and dto.devUser != ''">
+            AND dcoc.dev_user = #{dto.devUser}
+        </if>
+        <if test="dto.devUsername != null and dto.devUsername != ''">
+            AND dcoc.dev_username LIKE concat('%',#{dto.devUsername}, '%')
+        </if>
+        <if test="dto.followUser != null and dto.followUser != ''">
+            AND dcoc.follow_user = #{dto.followUser}
+        </if>
+        <if test="dto.followUsername != null and dto.followUsername != ''">
+            AND dcoc.follow_username LIKE concat('%',#{dto.followUsername}, '%')
+        </if>
+        <if test="dto.reviewUser != null and dto.reviewUser != ''">
+            AND dcoc.review_user = #{dto.reviewUser}
+        </if>
+        <if test="dto.reviewUsername != null and dto.reviewUsername != ''">
+            AND dcoc.review_username LIKE concat('%',#{dto.reviewUsername}, '%')
+        </if>
+        <if test="dto.nuclearPriceUser != null and dto.nuclearPriceUser != ''">
+            AND dcoc.nuclear_price_user = #{dto.nuclearPriceUser}
+        </if>
+        <if test="dto.nuclearPriceUsername != null and dto.nuclearPriceUsername != ''">
+            AND dcoc.nuclear_price_username LIKE concat('%',#{dto.nuclearPriceUsername}, '%')
+        </if>
+        <if test="dto.isSample != null ">
+            AND dco.is_sample = #{dto.isSample}
+        </if>
+        <if test="dto.isNeedRaw != null ">
+            AND dco.is_need_raw = #{dto.isNeedRaw}
+        </if>
+        <if test="dto.hasFirstOrder != null ">
+            AND dco.has_first_order = #{dto.hasFirstOrder}
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND dco.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND dco.create_time <= #{dto.createTimeEnd} ]]>
+        </if>
+        <if test="dto.pamphletCompletionDateStart != null">
+            <![CDATA[ AND dcoc.pamphlet_completion_date >= #{dto.pamphletCompletionDateStart} ]]>
+        </if>
+        <if test="dto.pamphletCompletionDateEnd != null">
+            <![CDATA[ AND dcoc.pamphlet_completion_date <= #{dto.pamphletCompletionDateEnd} ]]>
+        </if>
+        <if test="dto.reviewCompletionDateStart != null">
+            <![CDATA[ AND dcoc.review_completion_date >= #{dto.reviewCompletionDateStart} ]]>
+        </if>
+        <if test="dto.reviewCompletionDateEnd != null">
+            <![CDATA[ AND dcoc.review_completion_date <= #{dto.reviewCompletionDateEnd} ]]>
+        </if>
+        <if test="dto.pricingCompletionDateStart != null">
+            <![CDATA[ AND dcoc.pricing_completion_date >= #{dto.pricingCompletionDateStart} ]]>
+        </if>
+        <if test="dto.pricingCompletionDateEnd != null">
+            <![CDATA[ AND dcoc.pricing_completion_date <= #{dto.pricingCompletionDateEnd} ]]>
+        </if>
+        <if test="dto.newestCompletionDateStart != null">
+            <![CDATA[ AND dcoc.newest_completion_date >= #{dto.newestCompletionDateStart} ]]>
+        </if>
+        <if test="dto.newestCompletionDateEnd != null">
+            <![CDATA[ AND dcoc.newest_completion_date <= #{dto.newestCompletionDateEnd} ]]>
+        </if>
+        <if test="dto.onShelvesCompletionDateStart != null">
+            <![CDATA[ AND dcoc.on_shelves_completion_date >= #{dto.onShelvesCompletionDateStart} ]]>
+        </if>
+        <if test="dto.onShelvesCompletionDateEnd != null">
+            <![CDATA[ AND dcoc.on_shelves_completion_date <= #{dto.onShelvesCompletionDateEnd} ]]>
+        </if>
+        <if test="dto.developChildOrderStatus != null ">
+            AND dco.develop_child_order_status = #{dto.developChildOrderStatus}
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND dco.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.developChildOrderNoList != null and dto.developChildOrderNoList.size() > 0">
+            AND dco.develop_child_order_no IN
+            <foreach collection="dto.developChildOrderNoList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.developChildOrderStatusList != null and dto.developChildOrderStatusList.size() > 0">
+            AND dco.develop_child_order_status IN
+            <foreach collection="dto.developChildOrderStatusList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND dco.sku IN
+            <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+
+    <select id="searchDevelopChild" resultType="com.hete.supply.scm.server.scm.develop.entity.vo.DevelopChildSearchVo">
+        SELECT dco.develop_child_order_id AS 'developChildOrderId',
+        dco.version AS 'version',
+        dco.develop_child_order_id AS 'developChildBaseMsgVo.developChildOrderId',
+        dco.develop_child_order_no AS 'developChildBaseMsgVo.developChildOrderNo',
+        dco.category AS 'developChildBaseMsgVo.category',
+        dco.category_id AS 'developChildBaseMsgVo.categoryId',
+        dco.is_need_raw AS 'developChildBaseMsgVo.isNeedRaw',
+        dco.is_sample AS 'developChildBaseMsgVo.isSample',
+        dco.sku_encode AS 'developChildBaseMsgVo.skuEncode',
+        dco.develop_parent_order_no AS 'developChildBaseMsgVo.developParentOrderNo',
+        dco.sku AS 'developChildBaseMsgVo.sku',
+        dco.spu AS 'developChildBaseMsgVo.spu',
+        dco.platform AS 'developChildBaseMsgVo.platform',
+        dco.develop_child_order_status AS 'developChildBaseMsgVo.developChildOrderStatus',
+        dco.sku_dev_type AS 'developChildBaseMsgVo.skuDevType',
+        dco.develop_create_type AS 'developChildBaseMsgVo.developCreateType',
+        dco.is_urgent AS 'developChildBaseMsgVo.isUrgent',
+        dco.has_exception AS 'developChildBaseMsgVo.hasException',
+        dco.supplier_code AS 'developSupplierPriceVo.supplierCode',
+        dco.supplier_name AS 'developSupplierPriceVo.supplierName',
+        dco.sample_price AS 'developSupplierPriceVo.samplePrice',
+        dco.purchase_price AS 'developSupplierPriceVo.purchasePrice',
+        dco.is_on_shelves AS 'developOnShelvesMsgVo.isOnShelves',
+        dco.expected_on_shelves_date AS 'developOnShelvesMsgVo.expectedOnShelvesDate',
+        dco.pamphlet_times AS 'developChildBaseMsgVo.pamphletTimes',
+        dco.create_time AS 'createTime',
+        dcoc.on_shelves_completion_date AS 'developOnShelvesMsgVo.onShelvesCompletionDate',
+        dcoc.newest_completion_date AS 'developOnShelvesMsgVo.newestCompletionDate',
+        dcoc.dev_user AS 'developUserMsgVo.devUser',
+        dcoc.dev_username AS 'developUserMsgVo.devUsername',
+        dcoc.follow_user AS 'developUserMsgVo.followUser',
+        dcoc.follow_username AS 'developUserMsgVo.followUsername',
+        dcoc.review_user AS 'developUserMsgVo.reviewUser',
+        dcoc.review_username AS 'developUserMsgVo.reviewUsername',
+        dcoc.nuclear_price_user AS 'developUserMsgVo.nuclearPriceUser',
+        dcoc.nuclear_price_username AS 'developUserMsgVo.nuclearPriceUsername',
+        dco.prenatal_sample_order_no AS 'developPrenatalFirstMsgVo.prenatalSampleOrderNo',
+        dco.first_sample_order_no AS 'developPrenatalFirstMsgVo.firstSampleOrderNo',
+        dco.purchase_parent_order_no AS 'developPrenatalFirstMsgVo.purchaseParentOrderNo'
+        FROM develop_child_order AS dco
+        INNER JOIN develop_child_order_change dcoc
+        ON dco.develop_child_order_no = dcoc.develop_child_order_no
+        <include refid="search_where"></include>
+        ORDER BY dco.create_time DESC,dco.develop_child_order_id DESC
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT count(dco.develop_child_order_id) AS total
+        FROM develop_child_order AS dco
+        INNER JOIN develop_child_order_change dcoc
+        ON dco.develop_child_order_no = dcoc.develop_child_order_no
+        <include refid="search_where"></include>
+        ORDER BY dco.create_time DESC,dco.develop_child_order_id DESC
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.DevelopChildOrderExportVo">
+        SELECT dco.develop_child_order_no AS developChildOrderNo,
+        dco.category AS category,
+        dco.sku_encode AS skuEncode,
+        dco.develop_parent_order_no AS developParentOrderNo,
+        dco.sku AS sku,
+        dco.spu AS spu,
+        dco.develop_child_order_status AS developChildOrderStatus,
+        dco.sku_dev_type AS skuDevType,
+        dco.develop_create_type AS developCreateType,
+        dco.is_urgent AS isUrgent,
+        dco.supplier_code AS supplierCode,
+        dco.supplier_name AS supplierName,
+        dco.sample_price AS samplePrice,
+        dco.purchase_price AS purchasePrice,
+        dco.is_on_shelves AS isOnShelves,
+        dco.expected_on_shelves_date AS expectedOnShelvesDate,
+        dco.create_time AS createTime,
+        dco.prenatal_sample_order_no AS prenatalSampleOrderNo,
+        dco.first_sample_order_no AS firstSampleOrderNo,
+        dcoc.on_shelves_completion_date AS onShelvesCompletionDate,
+        dcoc.dev_user AS devUser,
+        dcoc.dev_username AS devUsername,
+        dcoc.follow_user AS followUser,
+        dcoc.follow_username AS followUsername,
+        dcoc.review_user AS reviewUser,
+        dcoc.review_username AS reviewUsername,
+        dcoc.nuclear_price_user AS nuclearPriceUser,
+        dcoc.follow_date AS followDate,
+        dcoc.review_completion_date AS reviewCompletionDate,
+        dcoc.pricing_completion_date AS pricingCompletionDate,
+        dcoc.newest_completion_date AS newestCompletionDate,
+        dcoc.nuclear_price_username AS nuclearPriceUsername,
+        dco.purchase_parent_order_no AS purchaseParentOrderNo
+        FROM develop_child_order AS dco
+        INNER JOIN develop_child_order_change dcoc
+        ON dco.develop_child_order_no = dcoc.develop_child_order_no
+        <include refid="search_where"></include>
+        ORDER BY dco.create_time DESC,dco.develop_child_order_id DESC
+    </select>
+    <select id="getListByGroupByStatus"
+            resultType="com.hete.supply.scm.server.scm.develop.entity.bo.DevelopChildGroupByStatusBo">
+        SELECT develop_child_order_status AS developChildOrderStatus,
+        COUNT(DISTINCT (develop_child_order_no)) AS num
+        FROM develop_child_order
+        WHERE del_timestamp = 0
+        <if test="supplierCodeList != null and supplierCodeList.size() > 0">
+            AND supplier_code IN
+            <foreach collection="supplierCodeList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        GROUP BY develop_child_order_status;
+    </select>
+
+</mapper>

@@ -1,0 +1,16 @@
+provider:
+  generic-import-map:
+    purchase_import_plan_confirm:
+      biz-system-code: SCM
+      resource-name: 导入采购子单计划确认
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.PurchaseChildImportationFacade
+      method-name-record: importPlanConfirmPurchaseChild
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.PurchaseChildPlanConfirmImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      #表头转字段名
+      header-alias:
+        "[采购子单单号]": purchaseChildOrderNo
+        "[供应商代码]": supplierCode
+        "[采购单备注]": orderRemarks

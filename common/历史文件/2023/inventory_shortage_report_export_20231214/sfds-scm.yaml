@@ -1,0 +1,25 @@
+provider:
+  generic-export-map:
+    scm_process_order_inventory_shortage_report_export:
+      biz-system-code: SCM
+      file-prefix: 加工单缺货报表导出
+      resource-name: SCM系统-加工单缺货报表导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.ProcessOrderFacade
+      method-name-count: getInventoryShortageReportTotals
+      method-name-record: getInventoryShortageReportData
+      param-type: com.hete.supply.scm.api.scm.entity.dto.InventoryShortageReportExportDto
+      header-alias:
+        processOrderNo: 加工单号
+        spu: SPU
+        levelOneCategoryCnName: 类目一
+        levelTwoCategoryCnName: 类目二
+        levelThreeCategoryCnName: 类目三
+        levelFourCategoryCnName: 类目四
+        sku: SKU
+        processOrderType: 加工单类型
+        processOrderStatus: 加工单状态
+        createTimeStr: 下单时间
+        processNum: 下单数量
+        daysToDelivery: N天未交

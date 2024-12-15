@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.settle.dao.DevelopSampleSettleOrderMapper">
+    <sql id="common_where">
+        dsso.del_timestamp = 0
+        <if test="dto.developSampleSettleOrderNo != null and dto.developSampleSettleOrderNo != ''">
+            AND dsso.develop_sample_settle_order_no LIKE concat('%',#{dto.developSampleSettleOrderNo}, '%')
+        </if>
+        <if test="dto.developSampleSettleOrderNoList != null and dto.developSampleSettleOrderNoList.size() > 0">
+            AND dsso.develop_sample_settle_order_no IN
+            <foreach collection="dto.developSampleSettleOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.developSampleSettleStatusList != null and dto.developSampleSettleStatusList.size() > 0">
+            AND dsso.develop_sample_settle_status IN
+            <foreach collection="dto.developSampleSettleStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.notDevelopSampleSettleStatusList != null and dto.notDevelopSampleSettleStatusList.size() > 0">
+            AND dsso.develop_sample_settle_status NOT IN
+            <foreach collection="dto.notDevelopSampleSettleStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.examineUsername != null and dto.examineUsername != ''">
+            AND dsso.examine_username LIKE concat('%',#{dto.examineUsername}, '%')
+        </if>
+        <if test="dto.confirmUsername != null and dto.confirmUsername != ''">
+            AND dsso.confirm_username LIKE concat('%',#{dto.confirmUsername}, '%')
+        </if>
+        <if test="dto.settleUsername != null and dto.settleUsername != ''">
+            AND dsso.settle_username LIKE concat('%',#{dto.settleUsername}, '%')
+        </if>
+        <if test="dto.supplierCode != null and dto.supplierCode != ''">
+            AND dsso.supplier_code LIKE concat('%',#{dto.supplier_code}, '%')
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND dsso.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND dsso.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND dsso.create_time <= #{dto.createTimeEnd}  ]]>
+        </if>
+        <if test="dto.confirmTimeStart != null">
+            <![CDATA[ AND dsso.confirm_time >= #{dto.confirmTimeStart} ]]>
+        </if>
+        <if test="dto.confirmTimeEnd != null">
+            <![CDATA[ AND dsso.confirm_time <= #{dto.confirmTimeEnd}  ]]>
+        </if>
+        <if test="dto.payTimeStart != null">
+            <![CDATA[ AND dsso.pay_time >= #{dto.payTimeStart} ]]>
+        </if>
+        <if test="dto.payTimeEnd != null">
+            <![CDATA[ AND dsso.pay_time <= #{dto.payTimeEnd}  ]]>
+        </if>
+        <if test="dto.examineTimeStart != null">
+            <![CDATA[ AND dsso.examine_time >= #{dto.examineTimeStart} ]]>
+        </if>
+        <if test="dto.examineTimeEnd != null">
+            <![CDATA[ AND dsso.examine_time <= #{dto.examineTimeEnd}  ]]>
+        </if>
+        <if test="dto.settleTimeStart != null">
+            <![CDATA[ AND dsso.settle_time >= #{dto.settleTimeStart} ]]>
+        </if>
+        <if test="dto.settleTimeEnd != null">
+            <![CDATA[ AND dsso.settle_time <= #{dto.settleTimeEnd} ]]>
+        </if>
+        <if test="dto.authSupplierCodeList != null and dto.authSupplierCodeList.size() > 0">
+            AND dsso.supplier_code IN
+            <foreach collection="dto.authSupplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    <select id="search" resultType="com.hete.supply.scm.server.scm.develop.entity.vo.DevelopSampleSettleSearchVo">
+        SELECT dsso.develop_sample_settle_order_no AS developSampleSettleOrderNo,
+        dsso.develop_sample_settle_order_id AS developSampleSettleOrderId,
+        dsso.version AS version,
+        dsso.develop_sample_settle_status AS developSampleSettleStatus,
+        dsso.supplier_name AS supplierName,
+        dsso.supplier_code AS supplierCode,
+        dsso.total_price AS totalPrice,
+        dsso.pay_price AS payPrice,
+        dsso.confirm_username AS confirmUsername,
+        dsso.examine_username AS examineUsername,
+        dsso.settle_username AS settleUsername,
+        dsso.create_time AS createTime,
+        dsso.confirm_time AS confirmTime,
+        dsso.examine_time AS examineTime,
+        dsso.settle_time AS settleTime,
+        dsso.pay_time AS payTime
+        FROM develop_sample_settle_order AS dsso
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY dsso.create_time DESC
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT count(dssi.develop_sample_settle_order_no) AS total
+        FROM develop_sample_settle_order AS dsso
+        INNER JOIN develop_sample_settle_item as dssi on dsso.develop_sample_settle_order_no =
+        dssi.develop_sample_settle_order_no
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+    <select id="getExportList"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.DevelopSampleSettleOrderExportVo">
+        SELECT dsso.develop_sample_settle_order_no AS developSampleSettleOrderNo,
+        dsso.develop_sample_settle_status AS developSampleSettleStatus,
+        dsso.supplier_code AS supplierCode,
+        dsso.total_price AS totalPrice,
+        dsso.pay_price AS payPrice,
+        dsso.confirm_username AS confirmUsername,
+        dsso.examine_username AS examineUsername,
+        dsso.settle_username AS settleUsername,
+        dsso.create_time AS createTime,
+        dsso.confirm_time AS confirmTime,
+        dsso.examine_time AS examineTime,
+        dsso.settle_time AS settleTime,
+        dsso.pay_time AS payTime,
+        dsso.settle_refuse_remarks AS settleRefuseRemarks,
+        dsso.examine_refuse_remarks AS examineRefuseRemarks,
+        dssi.develop_sample_order_no AS developSampleOrderNo,
+        dssi.develop_child_order_no AS developChildOrderNo,
+        dssi.settle_time AS itemSettleTime,
+        dssi.sample_price AS samplePrice,
+        dssi.business_no AS businessNo
+        FROM develop_sample_settle_order AS dsso
+        INNER JOIN develop_sample_settle_item as dssi on dsso.develop_sample_settle_order_no =
+        dssi.develop_sample_settle_order_no
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY dssi.develop_sample_settle_item_id DESC
+    </select>
+</mapper>

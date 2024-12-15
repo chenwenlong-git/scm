@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.process.dao.ProcessMapper">
+    <select id="getByPage" resultType="com.hete.supply.scm.server.scm.process.entity.vo.ProcessVo">
+        SELECT
+        process_id AS processId,
+        process_first as processFirst,
+        process_second_code AS processSecondCode,
+        process_second_name AS processSecondName,
+        process_second_name AS processName,
+        process_code AS processCode,
+        commission,
+        extra_commission,
+        process_status AS processStatus,
+        update_username AS updateUsername,
+        update_time AS updateTime,
+        process_label AS processLabel,
+        process_type,
+        complex_coefficient AS complexCoefficient,
+        setup_duration AS setupDuration,
+        version
+        FROM process
+        WHERE del_timestamp = 0
+        <if test="params.processSecondName != null and params.processSecondName != ''">
+            AND process_second_name LIKE concat('%',#{params.processSecondName}, '%')
+        </if>
+        <if test="params.processLabel != null">
+            AND process_label = #{params.processLabel}
+        </if>
+        <if test="params.processStatus != null">
+            AND process_status = #{params.processStatus}
+        </if>
+        <if test="params.processFirst != null">
+            AND process_first = #{params.processFirst}
+        </if>
+        <if test="params.processType != null">
+            AND process_type = #{params.processType}
+        </if>
+        ORDER BY update_time DESC
+    </select>
+
+    <select id="getProcessCodeMapping"
+            resultType="com.hete.supply.scm.server.scm.entity.bo.ProcessCodeMappingEntryBo">
+        SELECT DISTINCT process_code as processCode,
+        CONCAT('pc', ROW_NUMBER() OVER (ORDER BY process_code)) AS javaColumnName
+        FROM process
+        WHERE del_timestamp = 0
+        and process_status = 'ENABLED'
+    </select>
+</mapper>

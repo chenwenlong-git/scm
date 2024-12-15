@@ -1,0 +1,3 @@
+update repair_order_result
+set material_usage_quantity=completed_quantity
+where del_timestamp = 0

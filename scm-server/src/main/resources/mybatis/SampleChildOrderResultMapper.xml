@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.sample.dao.SampleChildOrderResultMapper">
+    <sql id="search_where">
+        ret.del_timestamp = 0
+        <if test="dto.sampleChildOrderNo != null and dto.sampleChildOrderNo != ''">
+            AND ret.sample_child_order_no = #{dto.sampleChildOrderNo}
+        </if>
+        <if test="dto.sampleParentOrderNo != null and dto.sampleParentOrderNo != ''">
+            AND ret.sample_parent_order_no = #{dto.sampleParentOrderNo}
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND sco.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.platformList != null and dto.platformList.size() > 0">
+            AND sco.platform IN
+            <foreach collection="dto.platformList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sampleChildOrderResultIdList != null and dto.sampleChildOrderResultIdList.size() > 0">
+            AND ret.sample_child_order_result_id IN
+            <foreach collection="dto.sampleChildOrderResultIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sampleChildOrderNoList != null and dto.sampleChildOrderNoList.size() > 0">
+            AND ret.sample_child_order_no IN
+            <foreach collection="dto.sampleChildOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sampleParentOrderNoList != null and dto.sampleParentOrderNoList.size() > 0">
+            AND ret.sample_parent_order_no IN
+            <foreach collection="dto.sampleParentOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sampleResultList != null and dto.sampleResultList.size() > 0">
+            AND ret.sample_result IN
+            <foreach collection="dto.sampleResultList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sampleResultStatusList != null and dto.sampleResultStatusList.size() > 0">
+            AND ret.sample_result_status IN
+            <foreach collection="dto.sampleResultStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sampleChildOrderIdList != null and dto.sampleChildOrderIdList.size() > 0">
+            AND sco.sample_child_order_id IN
+            <foreach collection="dto.sampleChildOrderIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sampleResultNoList != null and dto.sampleResultNoList.size() > 0">
+            AND ret.sample_result_no IN
+            <foreach collection="dto.sampleResultNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+
+    <select id="searchSampleChildOrderResult"
+            resultType="com.hete.supply.scm.server.scm.sample.entity.vo.SampleChildOrderResultSearchVo">
+        SELECT ret.sample_child_order_result_id AS sampleChildOrderResultId,
+        ret.version AS version,
+        ret.sample_result_no AS sampleResultNo,
+        ret.sample_parent_order_no AS sampleParentOrderNo,
+        ret.sample_child_order_no AS sampleChildOrderNo,
+        ret.sample_result AS sampleResult,
+        ret.relate_order_no AS relateOrderNo,
+        ret.sample_cnt AS sampleCnt,
+        sco.supplier_code AS supplierCode,
+        sco.supplier_name AS supplierName,
+        sco.warehouse_code AS warehouseCode,
+        sco.warehouse_name AS warehouseName,
+        sco.platform AS platform,
+        sco.spu AS spu,
+        sco.sku AS sku,
+        sco.sku_batch_code AS skuBatchCode,
+        sco.purchase_cnt AS purchaseCnt,
+        sco.receipt_cnt AS receiptCnt,
+        ret.sample_result_status AS sampleResultStatus,
+        ret.remark AS remark,
+        ret.create_time AS createTime,
+        ret.create_username AS createUsername,
+        scoc.sample_time AS sampleTime
+        FROM sample_child_order_result AS ret
+        LEFT JOIN sample_child_order AS sco
+        ON sco.sample_child_order_no = ret.sample_child_order_no
+        LEFT JOIN sample_child_order_change AS scoc
+        ON sco.sample_child_order_id = scoc.sample_child_order_id
+        <where>
+            <include refid="search_where"></include>
+        </where>
+        ORDER BY ret.sample_child_order_result_id DESC
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sample_child_order_result AS ret
+        LEFT JOIN sample_child_order AS sco
+        ON sco.sample_child_order_no = ret.sample_child_order_no
+        LEFT JOIN sample_child_order_change AS scoc
+        ON sco.sample_child_order_id = scoc.sample_child_order_id
+        <where>
+            <include refid="search_where"></include>
+        </where>
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.SampleChildResultExportVo">
+        SELECT ret.sample_child_order_result_id AS sampleChildOrderResultId,
+        ret.version AS version,
+        ret.sample_result_no AS sampleResultNo,
+        ret.sample_parent_order_no AS sampleParentOrderNo,
+        ret.sample_child_order_no AS sampleChildOrderNo,
+        ret.sample_result AS sampleResult,
+        ret.relate_order_no AS relateOrderNo,
+        ret.sample_cnt AS sampleCnt,
+        sco.supplier_code AS supplierCode,
+        sco.supplier_name AS supplierName,
+        sco.warehouse_code AS warehouseCode,
+        sco.warehouse_name AS warehouseName,
+        sco.platform AS platform,
+        sco.spu AS spu,
+        sco.sku AS sku,
+        sco.sku_batch_code AS skuBatchCode,
+        sco.purchase_cnt AS purchaseCnt,
+        sco.receipt_cnt AS receiptCnt,
+        ret.sample_result_status AS sampleResultStatus,
+        ret.remark AS remark,
+        ret.create_time AS createTime,
+        ret.create_username AS createUsername,
+        scoc.sample_time AS sampleTime
+        FROM sample_child_order_result AS ret
+        LEFT JOIN sample_child_order AS sco
+        ON sco.sample_child_order_no = ret.sample_child_order_no
+        LEFT JOIN sample_child_order_change AS scoc
+        ON sco.sample_child_order_id = scoc.sample_child_order_id
+        <where>
+            <include refid="search_where"></include>
+        </where>
+        ORDER BY ret.sample_child_order_result_id DESC
+    </select>
+</mapper>

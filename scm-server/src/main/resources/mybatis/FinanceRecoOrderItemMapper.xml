@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.ibfs.dao.FinanceRecoOrderItemMapper">
+    <sql id="search_where">
+        WHERE frois.del_timestamp = 0
+        <if test="dto.financeRecoOrderNo != null and dto.financeRecoOrderNo != ''">
+            AND frois.finance_reco_order_no = #{dto.financeRecoOrderNo}
+        </if>
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND frois.sku IN
+            <foreach item="item" collection="dto.skuList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.collectOrderNoList != null and dto.collectOrderNoList.size() > 0">
+            AND frois.collect_order_no IN
+            <foreach item="item" collection="dto.collectOrderNoList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.collectOrderTypeList != null and dto.collectOrderTypeList.size() > 0">
+            AND frois.collect_order_type IN
+            <foreach item="item" collection="dto.collectOrderTypeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.financeRecoFundTypeList != null and dto.financeRecoFundTypeList.size() > 0">
+            AND frois.finance_reco_fund_type IN
+            <foreach item="item" collection="dto.financeRecoFundTypeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.financeRecoPayTypeList != null and dto.financeRecoPayTypeList.size() > 0">
+            AND frois.finance_reco_pay_type IN
+            <foreach item="item" collection="dto.financeRecoPayTypeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.recoOrderItemSkuStatusList != null and dto.recoOrderItemSkuStatusList.size() > 0">
+            AND frois.reco_order_item_sku_status IN
+            <foreach item="item" collection="dto.recoOrderItemSkuStatusList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.financeRecoOrderItemSkuIdList != null and dto.financeRecoOrderItemSkuIdList.size() > 0">
+            AND frois.finance_reco_order_item_sku_id IN
+            <foreach item="item" collection="dto.financeRecoOrderItemSkuIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    <select id="searchRecoOrderItemPage"
+            resultType="com.hete.supply.scm.server.scm.ibfs.entity.vo.RecoOrderItemSearchVo">
+        SELECT frois.finance_reco_order_item_sku_id AS financeRecoOrderItemSkuId,
+        frois.version AS version,
+        frois.finance_reco_order_item_id AS financeRecoOrderItemId,
+        frois.finance_reco_order_no AS financeRecoOrderNo,
+        frois.collect_order_no AS collectOrderNo,
+        frois.finance_reco_fund_type AS financeRecoFundType,
+        frois.collect_order_type AS collectOrderType,
+        frois.association_time AS associationTime,
+        frois.sku AS sku,
+        frois.sku_batch_code AS skuBatchCode,
+        frois.price AS price,
+        frois.num AS num,
+        frois.total_price AS totalPrice,
+        frois.remarks AS remarks,
+        frois.finance_reco_pay_type AS financeRecoPayType,
+        frois.reco_order_item_sku_status AS recoOrderItemSkuStatus
+        FROM finance_reco_order_item_sku AS frois
+        <include refid="search_where"></include>
+        ORDER BY frois.finance_reco_order_item_sku_id DESC
+    </select>
+    <select id="getRecoOrderItemTotalGroup" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS num
+        FROM finance_reco_order_item_sku AS frois
+        <include refid="search_where"></include>
+    </select>
+    <select id="getRecoOrderItemTotalGroupSku" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT frois.sku) AS num
+        FROM finance_reco_order_item_sku AS frois
+        <include refid="search_where"></include>
+        AND frois.sku!=""
+    </select>
+    <select id="getRecoOrderItemTotal"
+            resultType="com.hete.supply.scm.server.scm.ibfs.entity.vo.RecoOrderItemTotalVo">
+        SELECT COUNT(frois.finance_reco_order_item_sku_id) AS recoOrderTotalCount,
+        sum(frois.total_price) AS totalPrice
+        FROM finance_reco_order_item_sku AS frois
+        <include refid="search_where"></include>
+    </select>
+    <select id="getRecoOrderItemTotalGroupSkuList" resultType="java.lang.String">
+        SELECT DISTINCT frois.sku AS sku
+        FROM finance_reco_order_item_sku AS frois
+        <include refid="search_where"></include>
+        AND frois.sku!=""
+    </select>
+</mapper>

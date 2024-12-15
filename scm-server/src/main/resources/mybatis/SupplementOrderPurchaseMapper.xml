@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.settle.dao.SupplementOrderPurchaseMapper">
+
+    <select id="getListByBusinessNoAndStatus"
+            resultType="com.hete.supply.scm.server.scm.settle.entity.bo.DeductSupplementAndStatusBo">
+        SELECT sop.supplement_order_purchase_id AS businessId,
+        sop.version AS version,
+        so.supplement_order_no AS deductSupplementNo,
+        sop.business_no AS businessNo,
+        sop.sku AS sku,
+        sop.sku_num AS num,
+        sop.supplement_price AS totalPrice
+        FROM supplement_order_purchase AS sop
+        INNER JOIN supplement_order AS so ON so.supplement_order_id = sop.supplement_order_id
+        WHERE so.del_timestamp = 0 AND sop.del_timestamp = 0
+        <if test="businessNoList != null and businessNoList.size() > 0">
+            AND sop.business_no IN
+            <foreach collection="businessNoList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="statusList != null and statusList.size() > 0">
+            AND so.supplement_status IN
+            <foreach collection="statusList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        ORDER BY sop.supplement_order_purchase_id DESC
+    </select>
+</mapper>

@@ -1,0 +1,237 @@
+provider:
+  generic-export-map:
+    scm_return_order_export:
+      biz-system-code: SCM
+      file-prefix: 退货单列表信息
+      resource-name: SCM系统-退货单列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.PurchaseReturnFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.PurchaseReturnDto
+      header-alias:
+        returnOrderNo: 退货单号
+        returnOrderStatus: 退货单状态
+        returnType: 类型
+        returnBizNo: 来源单据号
+        purchaseChildOrderNo: 采购子单号
+        supplierCode: 供应商代码
+        sku: 商品sku
+        skuEncode: 产品名称
+        skuBatchCode: 批次码
+        expectedReturnCnt: 预计退货数量
+        realityReturnCnt: 实际退货数量
+        receiptCnt: 收货数量
+        logistics: 物流
+        trackingNo: 运单号
+        createUsername: 创建人
+        createTimeAsString: 创建时间
+        returnUsername: 退货人
+        returnTimeAsString: 退货时间
+        receiptTimeAsString: 收货时间
+    scm_finance_prepayment_order_export:
+      biz-system-code: SCM
+      file-prefix: SCM预付款单导出列表信息
+      resource-name: SCM系统-预付款单列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.FinancePrepaymentFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.PrepaymentSearchDto
+      header-alias:
+        prepaymentOrderNo: 预付款单号
+        prepaymentOrderStatusStr: 预付款状态
+        supplierCode: 供应商编码
+        createTimeStr: 创建时间
+        financeRecoOrderNo: 对账单号
+        workflowNo: 关联飞书审批单号
+        prepaymentTypeStr: 预付类型
+        prepaymentReason: 预付事由
+        prepaymentMoney: 预付金额
+        prepaymentRemark: 预付备注
+    scm_finance_reco_order_export:
+      biz-system-code: SCM
+      file-prefix: SCM对账单导出列表信息
+      resource-name: SCM系统-对账单列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.FinanceRecoOrderFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.RecoOrderSearchDto
+      header-alias:
+        financeRecoOrderNo: 对账单号
+        supplierCode: 供应商
+        financeRecoOrderStatusName: 对账单状态
+        reconciliationCycleName: 对账周期
+        reconciliationStartTimeStr: 对账周期开始时间
+        reconciliationEndTimeStr: 对账周期结束时间
+        payPrice: 应付总金额
+        receivePrice: 应收总金额
+        settlePrice: 对账总金额
+        handleUsername: 处理人
+        financeSettleOrderNo: 关联结算单号
+        financeSettleOrderStatusName: 结算单状态
+        createTimeStr: 创建时间
+        collectOrderTimeStr: 收单时间
+        confirmUsername: 跟单确认人
+        confirmTimeStr: 跟单确认时间
+        supplierConfirmTimeStr: 供应商确认时间
+        completeTimeStr: 对账完成时间
+    scm_finance_reco_order_item_export:
+      biz-system-code: SCM
+      file-prefix: SCM对账单详情导出列表信息
+      resource-name: SCM系统-对账单详情列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.FinanceRecoOrderFacade
+      method-name-count: getExportTotalsItem
+      method-name-record: getExportListItem
+      param-type: com.hete.supply.scm.api.scm.entity.dto.RecoOrderSearchDto
+      header-alias:
+        financeRecoOrderNo: 对账单号
+        financeRecoOrderStatusName: 对账单状态
+        supplierCode: 供应商
+        reconciliationCycleName: 对账周期
+        reconciliationStartTimeStr: 对账周期开始时间
+        reconciliationEndTimeStr: 对账周期结束时间
+        financeSettleOrderNo: 关联结算单号
+        collectOrderNo: 收单单据
+        recoOrderItemSkuStatusName: 收单状态
+        associationTimeStr: 收单时间
+        sku: SKU
+        price: 单价
+        num: 数量
+        totalPrice: 收单金额
+        settlePrice: 对账总金额
+    scm_finance_settle_order_item_export:
+      biz-system-code: SCM
+      file-prefix: SCM结算单详情导出信息
+      resource-name: SCM系统-结算单详情信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.FinanceSettleOrderFacade
+      method-name-count: getExportSettleItemTotalCount
+      method-name-record: getExportSettleItemList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.SearchSettleOrderDto
+      header-alias:
+        settleOrderNo: 结算单号
+        settleOrderStatusRemark: 结算单状态
+        supplierCode: 供应商
+        ctrlUserName: 处理人
+        businessNo: 关联单号
+        receiveAmount: 对账应收
+        payAmount: 对账应付
+        settleAmount: 对账结算
+    scm_finance_settle_order_export:
+      biz-system-code: SCM
+      file-prefix: SCM结算单导出信息
+      resource-name: SCM系统-结算单信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.FinanceSettleOrderFacade
+      method-name-count: getExportSettleOrderTotalCount
+      method-name-record: getExportSettleList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.SearchSettleOrderDto
+      header-alias:
+        settleOrderNo: 结算单号
+        settleOrderStatus: 结算单状态
+        supplierCode: 供应商编码
+        payAmount: 应付总金额
+        receiveAmount: 应收总金额
+        settleAmount: 结算总金额
+        paidAmount: 已付款金额
+        ctrlUsername: 处理人
+        createTime: 创建时间
+        supplierSubmitTime: 工厂提交时间
+        followConfirmUsername: 跟单确认人
+        followerConfirmTime: 跟单确认时间
+        workflowFinishTime: 审批完成时间
+        settleFinishTime: 结算完成时间
+        financeSettleCarryoverOrderNo: 结转单号
+        financeSettleCarryoverOrderStatus: 结转单状态
+        availableCarryoverAmount: 待结转金额
+    scm_develop_sample_order_export:
+      biz-system-code: SCM
+      file-prefix: SCM开发样品单信息
+      resource-name: SCM系统-开发样品单列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.DevelopSampleOrderFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.DevelopSampleOrderSearchDto
+      header-alias:
+        developSampleOrderNo: 样品单号
+        developChildOrderNo: 开发子单号
+        developParentOrderNo: 开发需求单号
+        developSampleMethodName: 处理方式
+        platform: 平台
+        supplierCode: 供应商代码
+        createUsername: 创建人
+        createTimeStr: 创建时间
+        sku: sku
+        skuEncode: 产品名称
+        skuBatchCode: sku批次码
+        developPricingOrderNo: 核价单号
+        samplePrice: 样品价格
+        bulkPrice: 大货价格
+        handleUsername: 处理人
+        handleTimeStr: 处理时间
+        signTimeStr: 退样签收时间
+        receiptOrderNo: 关联单据号
+        shelvesTimeStr: 上架时间
+
+  generic-import-map:
+    scm_supplier_subject_import:
+      biz-system-code: SCM
+      resource-name: 导入供应商主体信息
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.SupplierImportationFacade
+      method-name-record: importSupplierSubject
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.SupplierSubjectImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[*供应商代码]": supplierCode
+        "[*主体类型]": supplierSubjectType
+        "[*公司名称]": subject
+        "[*法人]": legalPerson
+        "[*联系人]": contactsName
+        "[*联系电话]": contactsPhone
+        "[*注册资金]": registerMoney
+        "[*经营范围]": businessScope
+        "[*经营地址]": businessAddress
+        "[社会信用代码]": creditCode
+        "[进出口资质]": supplierExport
+        "[开票资质]": supplierInvoicing
+        "[税点]": taxPoint
+      cell-extends-map:
+        "[*主体类型]":
+          comment: 值为个人和企业，必填
+        "[*公司名称]":
+          comment: 必填，文本输入框，限制长度255；任意供应商，公司名称不能重复
+        "[*法人]":
+          comment: 必填，文本输入框，限制长度255
+        "[*联系人]":
+          comment: 必填，文本输入框，限制长度255
+        "[*联系电话]":
+          comment: 必填，文本输入框，限制数值，长度11位
+        "[*注册资金]":
+          comment: 注册资金，必填，文本输入框，限制长度255
+        "[*经营范围]":
+          comment: 必填，文本输入框，限制长度255
+        "[*经营地址]":
+          comment: 必填，文本输入框，限制长度255
+        "[社会信用代码]":
+          comment: 非必填，文本输入框，限制阿拉伯数字或大写英文字母，长度最长18
+        "[进出口资质]":
+          comment: 非必填，值为是和否
+        "[开票资质]":
+          comment: 非必填，值为是和否
+        "[税点]":
+          comment: 非必填，文本输入框，限制数值，长度6位

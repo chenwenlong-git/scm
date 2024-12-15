@@ -1,0 +1,2 @@
+ALTER TABLE `cn_scm`.`purchase_child_order`
+    ADD COLUMN `source_purchase_child_order_no` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '源子单号' AFTER `raw_remain_tab`;

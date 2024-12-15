@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.process.dao.RepairOrderMapper">
+
+    <sql id="common_where">
+        ro.del_timestamp = 0
+        <if test="dto.repairOrderNo != null and dto.repairOrderNo != ''">
+            AND ro.repair_order_no LIKE concat('%',#{dto.repairOrderNo}, '%')
+        </if>
+        <if test="dto.planNo != null and dto.planNo != ''">
+            AND ro.plan_no LIKE concat('%',#{dto.planNo}, '%')
+        </if>
+        <if test="dto.planNoList != null and dto.planNoList.size() > 0">
+            AND ro.plan_no IN
+            <foreach collection="dto.planNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.planCreateUser != null and dto.planCreateUser!= ''">
+            AND ro.plan_create_user = #{dto.planCreateUser}
+        </if>
+        <if test="dto.planCreateUsername != null and dto.planCreateUsername != ''">
+            AND ro.plan_create_username LIKE concat('%',#{dto.planCreateUsername}, '%')
+        </if>
+        <if test="dto.planTitle != null and dto.planTitle != ''">
+            AND ro.plan_title LIKE concat('%',#{dto.planTitle}, '%')
+        </if>
+        <if test="dto.platform != null and dto.platform != ''">
+            AND ro.platform LIKE concat('%',#{dto.platform}, '%')
+        </if>
+        <if test="dto.isReceiveMaterial != null">
+            AND ro.is_receive_material = #{dto.isReceiveMaterial}
+        </if>
+        <if test="dto.planCreateTimeStart != null">
+            <![CDATA[ AND ro.plan_create_time >= #{dto.planCreateTimeStart} ]]>
+        </if>
+        <if test="dto.planCreateTimeEnd != null">
+            <![CDATA[ AND ro.plan_create_time <= #{dto.planCreateTimeEnd} ]]>
+        </if>
+        <if test="dto.repairCompleteTimeStart != null">
+            <![CDATA[ AND ro.confirm_complete_time >= #{dto.repairCompleteTimeStart} ]]>
+        </if>
+        <if test="dto.repairCompleteTimeEnd != null">
+            <![CDATA[ AND ro.confirm_complete_time <= #{dto.repairCompleteTimeEnd} ]]>
+        </if>
+        <if test="dto.expectCompleteProcessTimeStart != null">
+            <![CDATA[ AND ro.expect_complete_process_time >= #{dto.expectCompleteProcessTimeStart} ]]>
+        </if>
+        <if test="dto.expectCompleteProcessTimeEnd != null">
+            <![CDATA[ AND ro.expect_complete_process_time <= #{dto.expectCompleteProcessTimeEnd} ]]>
+        </if>
+        <if test="dto.repairOrderStatusList != null and dto.repairOrderStatusList.size() > 0">
+            AND ro.repair_order_status IN
+            <foreach collection="dto.repairOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.repairOrderNoList != null and dto.repairOrderNoList.size() > 0">
+            AND ro.repair_order_no IN
+            <foreach collection="dto.repairOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </sql>
+
+    <select id="searchRepairOrder"
+            resultType="com.hete.supply.scm.server.scm.process.entity.vo.RepairOrderSearchVo">
+        SELECT ro.repair_order_id AS repairOrderId,
+        ro.version AS version,
+        ro.repair_order_no AS repairOrderNo,
+        ro.plan_no AS planNo,
+        ro.plan_title AS planTitle,
+        ro.plan_type AS planType,
+        ro.is_receive_material AS isReceiveMaterial,
+        ro.repair_order_status AS repairOrderStatus,
+        ro.sale_price AS salePrice,
+        ro.expect_process_num AS expectProcessNum,
+        ro.platform AS platform,
+        ro.expect_warehouse_code AS expectWarehouseCode,
+        ro.expect_complete_process_time AS expectCompleteProcessTime,
+        ro.plan_create_user AS planCreateUser,
+        ro.plan_create_username AS planCreateUsername,
+        ro.plan_create_time AS planCreateTime,
+        ro.confirm_complete_time AS confirmCompleteTime,
+        ro.receive_order_no AS receiveOrderNo,
+        ro.delivery_num AS deliveryNum
+        FROM repair_order AS ro
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY ro.create_time DESC
+    </select>
+    <select id="getExportRepairOrderTotals" resultType="java.lang.Integer">
+        SELECT count(ro.repair_order_id) AS total
+        FROM repair_order AS ro
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY ro.create_time DESC
+    </select>
+    <select id="getExportRepairOrderResultTotals" resultType="java.lang.Integer">
+        SELECT count(ror.repair_order_result_id) AS total
+        FROM repair_order_result AS ror
+        INNER JOIN repair_order as ro on ro.repair_order_no = ror.repair_order_no
+        <where>
+            <include refid="common_where"></include>
+            AND ror.del_timestamp = 0
+        </where>
+        ORDER BY ror.create_time DESC
+    </select>
+    <select id="getExportRepairOrderResultList"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.RepairOrderResultExportVo">
+        SELECT ror.repair_order_no AS repairOrderNo,
+        ror.sku AS sku,
+        ror.batch_code AS batchCode,
+        ror.completed_quantity AS completedQuantity,
+        ror.material_batch_code as materialBatchCode,
+        ror.repair_username AS repairCreateUsername,
+        ror.repair_time AS repairTime,
+        ror.qc_pass_quantity AS qcPassQuantity,
+        ror.qc_fail_quantity AS qcFailQuantity
+        FROM repair_order_result AS ror
+        INNER JOIN repair_order as ro on ro.repair_order_no = ror.repair_order_no
+        <where>
+            <include refid="common_where"></include>
+            AND ror.del_timestamp = 0
+        </where>
+        ORDER BY ror.create_time DESC
+    </select>
+    <select id="getRepairOrderPrintBatchCode"
+            resultType="com.hete.supply.scm.server.scm.process.entity.vo.RepairOrderPrintBatchCodeVo">
+        SELECT ro.repair_order_no AS repairOrderNo
+        FROM repair_order AS ro
+        <where>
+            ro.del_timestamp = 0
+            <if test="dto.repairOrderNoList != null and dto.repairOrderNoList.size() > 0">
+                AND ro.repair_order_no IN
+                <foreach collection="dto.repairOrderNoList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY ro.create_time DESC
+    </select>
+</mapper>

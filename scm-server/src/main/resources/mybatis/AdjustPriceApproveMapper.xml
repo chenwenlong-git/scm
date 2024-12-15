@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.adjust.dao.AdjustPriceApproveMapper">
+
+    <select id="searchAdjustApprove"
+            resultType="com.hete.supply.scm.server.scm.adjust.entity.vo.AdjustApproveVo">
+        SELECT apa.adjust_price_approve_no AS adjustPriceApproveNo,
+        apa.approve_type AS approveType,
+        apa.approve_status AS approveStatus,
+        apa.apply_user AS applyUser,
+        apa.apply_username AS applyUsername,
+        apa.apply_time AS applyTime,
+        apa.approve_user AS approveUser,
+        apa.approve_username AS approveUsername,
+        apa.workflow_no AS workflowNo,
+        apa.task_id AS taskId,
+        apa.supplier_code AS supplierCode
+        FROM adjust_price_approve AS apa
+        <include refid="search_where"></include>
+        ORDER BY apa.create_time DESC
+    </select>
+    <sql id="search_where">
+        WHERE apa.del_timestamp = 0
+        <if test="dto.dataUser != null and dto.dataUser != ''">
+            AND (apa.apply_user = #{dto.dataUser} OR apa.approve_user = #{dto.dataUser})
+        </if>
+        <if test="dto.adjustPriceApproveNo != null and dto.adjustPriceApproveNo != ''">
+            AND apa.adjust_price_approve_no = #{dto.adjustPriceApproveNo}
+        </if>
+        <if test="dto.approveType != null">
+            AND apa.approve_type = #{dto.approveType}
+        </if>
+        <if test="dto.applyUser != null and dto.applyUser != ''">
+            AND apa.apply_user = #{dto.applyUser}
+        </if>
+        <if test="dto.approveUser != null and dto.approveUser != ''">
+            AND apa.approve_user = #{dto.approveUser}
+        </if>
+        <if test="dto.applyTimeStart != null">
+            <![CDATA[ AND apa.create_time >= #{dto.applyTimeStart} ]]>
+        </if>
+        <if test="dto.applyTimeEnd != null">
+            <![CDATA[ AND apa.create_time <= #{dto.applyTimeEnd}  ]]>
+        </if>
+        <if test="dto.approveStatusList != null and dto.approveStatusList.size() > 0">
+            AND apa.approve_status IN
+            <foreach collection="dto.approveStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.isItemSearch != null and dto.isItemSearch.name() == 'TRUE'">
+            AND apa.adjust_price_approve_no IN (
+            SELECT apai.adjust_price_approve_no
+            FROM adjust_price_approve_item AS apai
+            WHERE apai.del_timestamp = 0
+            <if test="dto.skuList != null and dto.skuList.size() > 0">
+                AND apai.sku IN
+                <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="dto.purchaseChildOrderNoList != null and dto.purchaseChildOrderNoList.size() > 0">
+                AND apai.purchase_child_order_no IN
+                <foreach collection="dto.purchaseChildOrderNoList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            )
+        </if>
+        <if test="dto.ctrlUser != null and dto.ctrlUser != ''">
+            AND apa.approve_user = #{dto.ctrlUser}
+        </if>
+    </sql>
+</mapper>

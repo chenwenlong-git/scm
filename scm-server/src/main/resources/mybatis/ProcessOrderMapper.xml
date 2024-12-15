@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.process.dao.ProcessOrderMapper">
+
+    <sql id="common_where">
+        po.del_timestamp = 0
+        <if test="params.processOrderNoList != null and params.processOrderNoList.size() >0">
+            AND po.process_order_no in
+            <foreach collection="params.processOrderNoList" item="id" index="index" open="(" close=")"
+                     separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="processOrderQueryBo.processOrderNosBySku != null and processOrderQueryBo.processOrderNosBySku.size() >0">
+            AND po.process_order_no in
+            <foreach collection="processOrderQueryBo.processOrderNosBySku" item="id" index="index" open="(" close=")"
+                     separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="processOrderQueryBo.processOrderNosByCategoryId != null and processOrderQueryBo.processOrderNosByCategoryId.size()>0">
+            AND po.process_order_no in
+            <foreach collection="processOrderQueryBo.processOrderNosByCategoryId" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="processOrderQueryBo.processOrderNosBySkuAttribute !=null and processOrderQueryBo.processOrderNosBySkuAttribute.size()>0">
+            AND po.process_order_no in
+            <foreach collection="processOrderQueryBo.processOrderNosBySkuAttribute" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="processOrderQueryBo.processOrderNosBySkuEncode !=null and processOrderQueryBo.processOrderNosBySkuEncode.size()>0">
+            AND po.process_order_no in
+            <foreach collection="processOrderQueryBo.processOrderNosBySkuEncode" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="processOrderQueryBo.processOrderNosByDefective != null and processOrderQueryBo.processOrderNosByDefective.size() >0">
+            AND po.process_order_no in
+            <foreach collection="processOrderQueryBo.processOrderNosByDefective" item="id" index="index" open="("
+                     close=")"
+                     separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="processOrderQueryBo.processOrderNosByMaterialSku != null and processOrderQueryBo.processOrderNosByMaterialSku.size() >0">
+            AND po.process_order_no in
+            <foreach collection="processOrderQueryBo.processOrderNosByMaterialSku" item="id" index="index" open="("
+                     close=")"
+                     separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.checkOrderNo != null and params.checkOrderNo != ''">
+            AND poe.check_order_no = #{params.checkOrderNo}
+        </if>
+        <if test="params.receiptOrderNo != null and params.receiptOrderNo != ''">
+            AND poe.receipt_order_no = #{params.receiptOrderNo}
+        </if>
+        <if test="params.storeOrderNo != null and params.storeOrderNo != ''">
+            AND poe.store_order_no = #{params.storeOrderNo}
+        </if>
+        <if test="params.settleOrderNo != null and params.settleOrderNo != ''">
+            AND poe.settle_order_no = #{params.settleOrderNo}
+        </if>
+        <if test="params.platformList !=null and params.platformList.size() >0">
+            AND po.platform in
+            <foreach collection="params.platformList" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.minProcessNum != null ">
+            <![CDATA[ AND po.total_process_num >= #{params.minProcessNum} ]]>
+        </if>
+        <if test="params.maxProcessNum != null">
+            <![CDATA[ AND po.total_process_num <= #{params.maxProcessNum} ]]>
+        </if>
+        <if test="params.createUser != null and params.createUser != ''">
+            AND po.create_user = #{params.createUser}
+        </if>
+        <if test="params.createUsers !=null and params.createUsers.size() >0">
+            AND po.create_user in
+            <foreach collection="params.createUsers" item="createUser" index="index" open="(" close=")" separator=",">
+                #{createUser}
+            </foreach>
+        </if>
+        <if test="params.createUsername != null and params.createUsername != ''">
+            AND po.create_username = #{params.createUsername}
+        </if>
+        <if test="params.createTimeStart != null">
+            <![CDATA[ AND po.create_time >= #{params.createTimeStart} ]]>
+        </if>
+        <if test="params.createTimeEnd != null">
+            <![CDATA[ AND po.create_time <= #{params.createTimeEnd} ]]>
+        </if>
+        <if test="params.producedTimeStart != null">
+            <![CDATA[ AND poe.processing_time >= #{params.producedTimeStart} ]]>
+        </if>
+        <if test="params.producedTimeEnd != null">
+            <![CDATA[ AND poe.processing_time <= #{params.producedTimeEnd} ]]>
+        </if>
+        <if test="params.checkedTimeStart != null">
+            <![CDATA[ AND po.checked_time >= #{params.checkedTimeStart} ]]>
+        </if>
+        <if test="params.checkedTimeEnd != null">
+            <![CDATA[ AND po.checked_time <= #{params.checkedTimeEnd} ]]>
+        </if>
+        <if test="params.receiptTimeStart != null">
+            <![CDATA[ AND po.receipt_time >= #{params.receiptTimeStart} ]]>
+        </if>
+        <if test="params.receiptTimeEnd != null">
+            <![CDATA[ AND po.receipt_time <= #{params.receiptTimeEnd} ]]>
+        </if>
+        <if test="params.storedStart != null">
+            <![CDATA[ AND po.stored_time >= #{params.storedStart} ]]>
+        </if>
+        <if test="params.storedEnd != null">
+            <![CDATA[ AND po.stored_time <= #{params.storedEnd} ]]>
+        </if>
+        <if test="params.checkingTimeStart != null">
+            <![CDATA[ AND poe.checking_time >= #{params.checkingTimeStart} ]]>
+        </if>
+        <if test="params.checkingTimeEnd != null">
+            <![CDATA[ AND poe.checking_time <= #{params.checkingTimeEnd} ]]>
+        </if>
+        <if test="params.deliverDateStart != null">
+            <![CDATA[ AND po.deliver_date >= #{params.deliverDateStart} ]]>
+        </if>
+        <if test="params.deliverDateEnd != null">
+            <![CDATA[ AND po.deliver_date <= #{params.deliverDateEnd} ]]>
+        </if>
+        <if test="params.promiseDateStart != null">
+            <![CDATA[ AND po.promise_date >= #{params.promiseDateStart} ]]>
+        </if>
+        <if test="params.promiseDateEnd != null">
+            <![CDATA[ AND po.promise_date <= #{params.promiseDateEnd} ]]>
+        </if>
+        <if test="params.receiptUser != null and params.receiptUser != ''">
+            AND poe.receipt_user = #{params.receiptUser}
+        </if>
+        <if test="params.receiptUsername != null and params.receiptUsername != ''">
+            AND poe.receipt_username = #{params.receiptUsername}
+        </if>
+        <if test="params.storeUser != null and params.storeUser != ''">
+            AND poe.store_user = #{params.storeUser}
+        </if>
+        <if test="params.storeUsername != null and params.storeUsername != ''">
+            AND poe.store_username = #{params.storeUsername}
+        </if>
+        <if test="params.completeScanUser != null and params.completeScanUser != ''">
+            AND poe.complete_scan_user = #{params.completeScanUser}
+        </if>
+        <if test="params.completeScanUsername != null and params.completeScanUsername != ''">
+            AND poe.complete_scan_username = #{params.completeScanUsername}
+        </if>
+        <if test="params.deliverTimeStart != null">
+            <![CDATA[ AND poe.deliver_time >= #{params.deliverTimeStart} ]]>
+        </if>
+        <if test="params.deliverTimeEnd != null">
+            <![CDATA[ AND poe.deliver_time <= #{params.deliverTimeEnd} ]]>
+        </if>
+        <if test="params.promiseDateDelayed != null">
+            AND po.promise_date_delayed = #{params.promiseDateDelayed}
+        </if>
+        <if test="params.processOrderTypes !=null and params.processOrderTypes.size() >0">
+            AND (po.process_order_type in
+            <foreach collection="params.processOrderTypes" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+            )
+        </if>
+        <if test="params.processOrderStatuses !=null and params.processOrderStatuses.size() >0">
+            AND po.process_order_status in
+            <foreach collection="params.processOrderStatuses" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.currentProcessLabels !=null and params.currentProcessLabels.size() >0">
+            AND po.process_order_status=#{processOrderStatus} and po.current_process_label in
+            <foreach collection="params.currentProcessLabels" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.materialBackStatuses !=null and params.materialBackStatuses.size() >0">
+            AND po.material_back_status in
+            <foreach collection="params.materialBackStatuses" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.missingInformationList !=null and params.missingInformationList.size() >0">
+            AND(
+            <foreach collection="params.missingInformationList" item="item" index="index" separator="or">
+                FIND_IN_SET(#{item},po.missing_information)
+            </foreach>
+            )
+        </if>
+        <if test="params.isReceiveMaterial != null">
+            AND po.is_receive_material = #{params.isReceiveMaterial}
+        </if>
+        <if test="params.overPlan != null">
+            AND po.over_plan = #{params.overPlan}
+        </if>
+    </sql>
+
+    <select id="getByPage" resultType="com.hete.supply.scm.server.scm.process.entity.vo.ProcessOrderVo">
+        SELECT
+        po.process_order_id AS processOrderId,
+        po.process_order_no AS processOrderNo,
+        po.process_order_status AS processOrderStatus,
+        po.process_order_type AS processOrderType,
+        po.warehouse_code as warehouseCode,
+        po.warehouse_name as warehouseName,
+        po.warehouse_types as warehouseTypes,
+        po.spu,
+        po.platform,
+        po.total_process_num as totalProcessNum,
+        po.create_username AS createUsername,
+        po.create_time AS createTime,
+        po.produced_time AS producedTime,
+        po.checked_time AS checkedTime,
+        po.receipt_time AS receiptTime,
+        po.stored_time AS storedTime,
+        po.deliver_date AS deliverDate,
+        po.promise_date AS promiseDate,
+        po.promise_date_delayed AS promiseDateDelayed,
+        po.current_process_label as currentProcessLabel,
+        po.material_back_status as materialBackStatus,
+        po.missing_information as missingInformationEnums,
+        po.is_receive_material as isReceiveMaterial,
+        po.over_plan as overPlan,
+        po.version,
+        po.file_code as fileCodeStr,
+        po.process_plan_time as processPlanTime
+        FROM process_order as po
+        Left JOIN process_order_extra as poe on po.process_order_no=poe.process_order_no
+
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY po.process_order_id DESC
+    </select>
+
+    <select id="getExportTotalsByOrder" resultType="java.lang.Integer">
+        SELECT
+        count(po.process_order_no) as total
+        FROM process_order as po
+        Left JOIN process_order_extra as poe on po.process_order_no=poe.process_order_no
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <select id="getExportListByOrder" resultType="com.hete.supply.scm.api.scm.entity.vo.ProcessOrderExportByOrderVo">
+        SELECT
+        po.process_order_no AS processOrderNo,
+        po.process_order_status AS processOrderStatus,
+        po.process_order_type AS processOrderType,
+        po.warehouse_name as warehouseName,
+        po.spu,
+        po.platform,
+        po.deliver_date AS deliverDate,
+        po.order_no as orderNo,
+        po.customer_name as customerName,
+        po.total_process_num as totalProcessNum,
+        po.create_username AS createUsername,
+        po.create_time AS createTime,
+        poe.produced_username as producedUsername,
+        po.produced_time AS producedTime,
+        po.checked_time AS checkedTime,
+        poe.deliver_time as deliverTime,
+        po.receipt_time AS receiptTime,
+        po.stored_time AS storedTime,
+        po.missing_information as missingInformationEnums,
+        po.is_receive_material as isReceiveMaterialEnum,
+        po.over_plan as overPlanEnum,
+        po.receive_material_time,
+        po.need_process_plan,
+        po.process_plan_time,
+        po.promise_date,
+        po.promise_date_delayed,
+        poe.processing_time,
+        poe.checking_time,
+        po.process_order_note as processOrderNote
+        FROM process_order as po
+        Left JOIN process_order_extra as poe on po.process_order_no=poe.process_order_no
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY po.process_order_id DESC
+    </select>
+
+    <select id="getExportTotalsByItem" resultType="java.lang.Integer">
+        SELECT
+        count(po.process_order_no) as total
+        FROM process_order as po
+        Left JOIN process_order_extra as poe on po.process_order_no=poe.process_order_no
+        Left JOIN process_order_item as poi on po.process_order_no=poi.process_order_no
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <select id="getExportListByItem" resultType="com.hete.supply.scm.api.scm.entity.vo.ProcessOrderExportByItemVo">
+        SELECT
+        po.process_order_no AS processOrderNo,
+        po.process_order_status AS processOrderStatus,
+        po.process_order_type AS processOrderType,
+        po.warehouse_name as warehouseName,
+        po.spu,
+        po.platform,
+        po.deliver_date AS deliverDate,
+        po.order_no as orderNo,
+        po.customer_name as customerName,
+        poi.sku as sku,
+        poi.purchase_price as purchasePrice,
+        poi.process_num as processNum,
+        poi.quality_goods_cnt as qualityGoodsCnt,
+        poi.defective_goods_cnt as defectiveGoodsCnt,
+        po.create_username AS createUsername,
+        po.create_time AS createTime,
+        poe.produced_username as producedUsername,
+        po.produced_time AS producedTime,
+        po.checked_time AS checkedTime,
+        poe.deliver_time as deliverTime,
+        po.receipt_time AS receiptTime,
+        po.stored_time AS storedTime,
+        poe.processing_time as processingTime,
+        poe.complete_scan_time as completeScanTime,
+        poe.deliver_time as deliverTime,
+        po.missing_information as missingInformationEnums,
+        po.is_receive_material as isReceiveMaterialEnum,
+        po.over_plan as overPlanEnum,
+        po.receive_material_time,
+        po.need_process_plan,
+        po.process_plan_time,
+        po.promise_date,
+        po.promise_date_delayed
+        FROM process_order as po
+        Left JOIN process_order_extra as poe on po.process_order_no=poe.process_order_no
+        Left JOIN process_order_item as poi on po.process_order_no=poi.process_order_no
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY poi.process_order_item_id DESC
+    </select>
+
+    <select id="getExportTotalsByMaterial" resultType="java.lang.Integer">
+        SELECT
+        count(pom.process_order_material_id) as total
+        FROM process_order_material as pom
+        JOIN process_order as po ON po.process_order_no = pom.process_order_no AND po.del_timestamp = 0
+        LEFT JOIN process_order_extra as poe ON po.process_order_no = poe.process_order_no AND poe.del_timestamp = 0
+        LEFT JOIN process_material_receipt as pmr
+        ON pmr.process_order_no = pom.process_order_no AND pmr.del_timestamp = 0
+        LEFT JOIN process_material_receipt_item pmri
+        ON pmr.process_material_receipt_id = pmri.process_material_receipt_id AND pmri.del_timestamp = 0
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <select id="getExportListByMaterial"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.ProcessOrderExportByMaterialVo">
+        SELECT
+        po.process_order_no AS processOrderNo,
+        po.process_order_status AS processOrderStatus,
+        po.process_order_type AS processOrderType,
+        po.warehouse_name AS warehouseName,
+        po.spu,
+        po.platform,
+        po.deliver_date AS deliverDate,
+        po.order_no AS orderNo,
+        po.customer_name AS customerName,
+        po.missing_information AS missingInformationEnums,
+        po.is_receive_material AS isReceiveMaterialEnum,
+        po.over_plan AS overPlanEnum,
+        po.delivery_warehouse_name AS deliveryWarehouseName,
+
+        pom.sku AS sku,
+        pom.delivery_num AS materialNum,
+
+        pmr.delivery_no AS deliveryNo,
+        pmr.delivery_time AS deliveryTime,
+        pmr.receipt_username AS receiptUsername,
+        pmr.receipt_time AS receiptTime,
+
+        pmri.delivery_num as deliveryNum,
+        pmri.receipt_num AS receiptNum,
+
+        poe.checking_time AS checkingTime
+        FROM process_order_material as pom
+        JOIN process_order as po ON po.process_order_no = pom.process_order_no AND po.del_timestamp = 0 AND
+        pom.del_timestamp=0
+        LEFT JOIN process_order_extra as poe ON po.process_order_no = poe.process_order_no AND poe.del_timestamp = 0
+        LEFT JOIN process_material_receipt as pmr
+        ON pmr.process_order_no = pom.process_order_no AND pmr.del_timestamp = 0
+        LEFT JOIN process_material_receipt_item pmri
+        ON pmr.process_material_receipt_id = pmri.process_material_receipt_id AND pmri.del_timestamp = 0
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY pom.process_order_material_id
+    </select>
+
+    <select id="getOrdersToProcessPlan"
+            resultType="com.hete.supply.scm.server.scm.process.entity.bo.ProcessPlanOrderBo">
+        select
+        po.process_order_id,
+        po.process_order_no,
+        po.process_order_type,
+        sum(p.complex_coefficient) as totalComplexCoefficient,
+        sum(p.complex_coefficient)* total_process_num as capacityNum,
+        po.create_time
+        from
+        process_order po
+        join process_order_procedure pop on po.process_order_no=pop.process_order_no
+        join process p on pop.process_id=p.process_id
+        where po.del_timestamp =0
+        and pop.del_timestamp=0
+        and p. del_timestamp=0
+        <if test="param.processStatus != null">
+            and p.process_status=#{param.processStatus}
+        </if>
+        <if test="param.processOrderStatus != null">
+            and po.process_order_status=#{param.processOrderStatus}
+        </if>
+        <if test="param.processOrderTypes != null and param.processOrderTypes.size() > 0">
+            and po.process_order_type IN
+            <foreach item="item" index="index" collection="param.processOrderTypes" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="param.overPlan != null">
+            and po.over_plan=#{param.overPlan}
+        </if>
+        group by po.process_order_no
+    </select>
+
+
+    <select id="getNeedProcessPlanCount" resultType="java.lang.Integer">
+        select
+        count(distinct(po.process_order_no))
+        from
+        process_order po
+        join process_order_procedure pop on po.process_order_no=pop.process_order_no
+        join process p on pop.process_id=p.process_id
+        where po.del_timestamp =0
+        and pop.del_timestamp=0
+        and p. del_timestamp=0
+        <if test="param.processStatus != null">
+            and p.process_status=#{param.processStatus}
+        </if>
+        <if test="param.processOrderStatus != null">
+            and po.process_order_status=#{param.processOrderStatus}
+        </if>
+        <if test="param.processOrderType != null">
+            and po.process_order_type=#{param.processOrderType}
+        </if>
+        <if test="param.overPlan != null">
+            and po.over_plan=#{param.overPlan}
+        </if>
+    </select>
+
+    <select id="getInventoryShortageReportTotals" resultType="java.lang.Integer">
+        select count(process_order_no)
+        from process_order
+        <where>
+            del_timestamp = 0
+            <if test="param.processOrderStatuses != null and param.processOrderStatuses.size() > 0">
+                and process_order_status in
+                <foreach collection="param.processOrderStatuses" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <!-- ProcessOrderMapper.xml -->
+
+    <select id="countStoredNumBetweenTimes" resultType="int">
+        SELECT ifnull(sum(quality_goods_cnt), 0)
+        FROM process_order p
+        join process_order_item poi on p.process_order_no = poi.process_order_no and poi.del_timestamp = 0
+        WHERE p.del_timestamp = 0
+        <if test="dayOfBeginTime != null">
+            <![CDATA[ AND stored_time >= #{dayOfBeginTime} ]]>
+        </if>
+        <if test="dayOfEndTime != null">
+            <![CDATA[ AND stored_time <= #{dayOfEndTime} ]]>
+        </if>
+    </select>
+
+    <select id="getDeliveryWarehouseInitData"
+            resultType="com.hete.supply.scm.server.scm.process.entity.po.ProcessOrderPo">
+        SELECT
+        po.process_order_id,
+        po.process_order_no,
+        po.delivery_warehouse_code,
+        po.delivery_warehouse_name,
+        po.version
+        FROM
+        process_order po
+        JOIN
+        process_order_item poi
+        ON
+        po.process_order_no = poi.process_order_no
+        AND poi.del_timestamp = 0
+        WHERE
+        po.del_timestamp = 0
+        <if test="processOrderType != null">
+            AND po.process_order_type = #{processOrderType}
+        </if>
+        <if test="processOrderStatus != null">
+            AND po.process_order_status = #{processOrderStatus}
+        </if>
+        <if test="missInfoList !=null and missInfoList.size() >0">
+            AND
+            (
+            <foreach collection="missInfoList" item="item" index="index" separator="or">
+                FIND_IN_SET(#{item},po.missing_information)
+            </foreach>
+            )
+        </if>
+        <if test="deliveryWarehouseCode != null and deliveryWarehouseCode != ''">
+            AND po.delivery_warehouse_code != #{deliveryWarehouseCode}
+        </if>
+        <if test="skuList != null and skuList.size() >0">
+            AND poi.sku IN
+            <foreach item="sku" collection="skuList" open="(" separator="," close=")">
+                #{sku}
+            </foreach>
+        </if>
+    </select>
+</mapper>

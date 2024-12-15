@@ -1,0 +1,46 @@
+spm:
+  employee:
+    processing:
+      orgChain: "ORG3938_ORG4106_ORG7690"
+
+# 产能池配置
+production-pool-config:
+  - production-pool-code: "capacity-pool-001"
+
+# 产能池信息1
+capacity-pool-001:
+  # 订单类型列表
+  order-types:
+    - "NORMAL"
+  # 员工编号列表
+  employee-nos:
+    - "U012840"
+    - "U044072"
+    - "U051752"
+    - "U079400"
+    - "U143912"
+    - "U193064"
+    - "U322600"
+    - "U373288"
+    - "U437288"
+  # 排产周期（天）
+  production-cycle: "3"
+  # 上班时间
+  start-time: "09:00:00"
+  # 下班时间
+  end-time: "18:30:00"
+  # 节假日列表
+  holidays:
+    - "2023/9/10"
+    - "2023/9/17"
+    - "2023/9/24"
+  # 休息时间段列表
+  break-time-segments:
+    - start-time: "12:00:00"
+      end-time: "13:30:00"
+  # 工作时长（小时）
+  work-duration: "8.0"
+  # 最大排产单量
+  max-production-orders: "150"
+
+stringBuilderLogLimit: "3000"

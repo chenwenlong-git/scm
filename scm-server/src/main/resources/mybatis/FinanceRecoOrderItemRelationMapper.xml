@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.ibfs.dao.FinanceRecoOrderItemRelationMapper">
+
+    <select id="getListByBusinessIdAndNotStatus"
+            resultType="com.hete.supply.scm.server.scm.ibfs.entity.vo.RecoOrderItemRelationCheckVo">
+        SELECT froir.finance_reco_order_no AS financeRecoOrderNo,
+        froir.business_no AS businessNo,
+        froir.business_id AS businessId
+        FROM finance_reco_order_item_relation AS froir
+        INNER JOIN finance_reco_order AS fro ON fro.finance_reco_order_no = froir.finance_reco_order_no
+        WHERE froir.del_timestamp = 0 AND fro.del_timestamp = 0
+        <if test="businessIdList != null and businessIdList.size() > 0">
+            AND froir.business_id IN
+            <foreach collection="businessIdList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="financeRecoOrderStatusNotList != null and financeRecoOrderStatusNotList.size() > 0">
+            AND fro.finance_reco_order_status NOT IN
+            <foreach collection="financeRecoOrderStatusNotList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        ORDER BY froir.finance_reco_order_item_relation_id DESC
+    </select>
+</mapper>

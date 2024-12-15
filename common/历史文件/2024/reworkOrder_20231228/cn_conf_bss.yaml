@@ -1,0 +1,10 @@
+hete:
+  oss:
+    config:
+      oss-biz-info-map:
+        scm_overseas:
+          # 请注意：bucket的值需要根据生产nacos的bucket-info-map下面mall公共桶的名称赋值
+          bucket: mall-prod-pub
+          dir: scm_sale
+          max-size: 10485760
+          content-type: image

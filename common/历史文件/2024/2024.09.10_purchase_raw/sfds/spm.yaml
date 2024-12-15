@@ -1,0 +1,31 @@
+provider:
+  generic-export-map:
+    spm_supplier_inventory_export:
+      biz-system-code: SPM
+      file-prefix: SPM供应商库存导出
+      resource-name: SPM系统-SPM供应商库存导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.SupplierInventoryFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.SearchInventoryDto
+      header-alias:
+        supplierCode: 供应商代码
+        sku: SKU
+        skuEncode: 产品名称
+        categoryName: 商品二级类目
+        inventoryStatusStr: 库存状态
+        insStockUpInventory: 在库-备货库存
+        insSelfProvideInventory: 在库-自备库存
+        insDefectiveInventory: 在库-不良库存
+        stockUpInventory: 可用-备货库存
+        selfProvideInventory: 可用-自备库存
+        defectiveInventory: 可用-不良库存
+        frzStockUpInventory: 冻结-备货库存
+        frzSelfProvideInventory: 冻结-自备库存
+        frzDefectiveInventory: 冻结-不良库存
+        deliveryNotReturnCnt: 已发未回
+        laceArea: 蕾丝面积
+        completeLongSize: 完成长尺寸
+        material: 材料

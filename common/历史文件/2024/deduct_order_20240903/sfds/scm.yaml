@@ -1,0 +1,152 @@
+provider:
+  generic-export-map:
+    scm_deduct_order_sku_export:
+      biz-system-code: SCM
+      file-prefix: 扣款单明细列表信息
+      resource-name: SCM系统-扣款单明细列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.DeductOrderFacade
+      method-name-count: getExportSkuTotals
+      method-name-record: getExportSkuList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.DeductOrderDto
+      header-alias:
+        deductOrderNo: 扣款单号
+        deductTypeName: 扣款类型
+        deductStatusName: 状态
+        supplierCode: 供应商代码
+        deductPriceTotal: 扣款总金额
+        settleOrderNo: 关联结算单
+        deductOrderPurchaseTypeName: 单据类型
+        businessNo: 单据号
+        purchaseChildOrderNo: 退货关联采购单
+        returnSkuBatchCode: 退货sku批次码
+        settlePrice: 结算金额
+        spu: spu
+        sku: 商品sku
+        skuEncode: 产品名称
+        deductNum: 扣款数量
+        deductRemarks: 扣款原因
+        deductPrice: 扣款金额（明细）
+        handleUsername: 处理人
+    scm_supplement_order_sku_export:
+      biz-system-code: SCM
+      file-prefix: 补款单明细列表信息
+      resource-name: SCM系统-补款单明细列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.SupplementOrderFacade
+      method-name-count: getExportSkuTotals
+      method-name-record: getExportSkuList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.SupplementOrderDto
+      header-alias:
+        supplementOrderNo: 补款单号
+        supplementTypeName: 补款类型
+        supplementStatusName: 状态
+        supplierCode: 供应商代码
+        supplementPriceTotal: 补款总金额
+        settleOrderNo: 关联结算单
+        supplementOrderPurchaseTypeName: 单据类型
+        businessNo: 单据号
+        settlePrice: 结算金额
+        spu: spu
+        sku: 商品sku
+        supplementNum: 补款数量
+        supplementRemarks: 补款原因
+        supplementPrice: 补款金额（明细）
+        handleUsername: 处理人
+
+  generic-import-map:
+    scm_deduct_order_item_import:
+      biz-system-code: SCM
+      resource-name: 导入扣款单明细列表信息
+      interface-name: com.hete.supply.scm.api.scm.facade.DeductOrderFacade
+      method-name-record: importCapacity
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[*单据类型]": deductType
+        "[*单据号]": businessNo
+        "[sku]": sku
+        "[数量]": deductNum
+        "[*扣款原因]": deductRemarks
+        "[*扣款金额]": deductPrice
+      cell-extends-map:
+        "[*单据类型]":
+          comment: 大货采购单/加工采购单/样品单/发货单/退货单，必填
+        "[*单据号]":
+          comment: 必须填写单据类型对应的单据号，必填
+        "[sku]":
+          comment: sku必须是该关联单据的产品
+        "[*扣款原因]":
+          comment: 必填
+        "[*扣款金额]":
+          comment: 必须填写数值，不能为0，必填
+    scm_deduct_order_other_import:
+      biz-system-code: SCM
+      resource-name: 导入扣款单明细列表其他信息
+      interface-name: com.hete.supply.scm.api.scm.facade.DeductOrderFacade
+      method-name-record: importCapacity
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[*扣款原因]": deductRemarks
+        "[*扣款金额]": deductPrice
+      cell-extends-map:
+        "[*扣款原因]":
+          comment: 必填
+        "[*扣款金额]":
+          comment: 必须填写数值，不能为0，必填
+    scm_supplement_order_item_import:
+      biz-system-code: SCM
+      resource-name: 导入补款单明细列表信息
+      interface-name: com.hete.supply.scm.api.scm.facade.SupplementOrderFacade
+      method-name-record: importCapacity
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[*单据类型]": supplementType
+        "[*单据号]": businessNo
+        "[sku]": sku
+        "[数量]": supplementNum
+        "[*补款原因]": supplementRemarks
+        "[*补款金额]": supplementPrice
+      cell-extends-map:
+        "[*单据类型]":
+          comment: 大货采购单/加工采购单/样品单/发货单，必填
+        "[*单据号]":
+          comment: 必须填写单据类型对应的单据号，必填
+        "[sku]":
+          comment: sku必须是该关联单据的产品
+        "[*补款原因]":
+          comment: 必填
+        "[*补款金额]":
+          comment: 必须填写数值，不能为0，必填
+    scm_supplement_order_other_import:
+      biz-system-code: SCM
+      resource-name: 导入补款单明细列表其他信息
+      interface-name: com.hete.supply.scm.api.scm.facade.SupplementOrderFacade
+      method-name-record: importCapacity
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[*补款原因]": supplementRemarks
+        "[*补款金额]": supplementPrice
+      cell-extends-map:
+        "[*补款原因]":
+          comment: 必填
+        "[*补款金额]":
+          comment: 必须填写数值，不能为0，必填
+

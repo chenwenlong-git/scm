@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.process.dao.ProcessTemplateMapper">
+    <select id="getByPage" resultType="com.hete.supply.scm.server.scm.process.entity.vo.ProcessTemplateVo">
+        SELECT process_template_id AS processTemplateId,
+        name,
+        process_template_type AS processTemplateType,
+        type_value_name AS typeValueName,
+        details_last_updated_time,
+        create_username AS createUsername,
+        create_time AS createTime
+        FROM process_template
+        WHERE del_timestamp = 0
+        <if test="params.name != null and params.name != ''">
+            AND name LIKE concat('%',#{params.name}, '%')
+        </if>
+        <if test="params.categoryIds != null and params.categoryIds.size()>0">
+            AND type_value in
+            <foreach collection="params.categoryIds" item="id" index="index" open="("
+                     close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="params.skuName != null and params.skuName != ''">
+            AND type_value_name LIKE concat('%',#{params.skuName}, '%') AND process_template_type=#{skuType}
+        </if>
+        <if test="params.sortField!=null and params.sortField!=''">
+            ORDER BY ${params.sortField} ${params.sortOrder}
+        </if>
+    </select>
+</mapper>

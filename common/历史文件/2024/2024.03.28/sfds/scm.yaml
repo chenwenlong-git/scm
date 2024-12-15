@@ -1,0 +1,23 @@
+provider:
+  generic-import-map:
+    scm_produce_data_item_supplier_import:
+      biz-system-code: SCM
+      resource-name: 导入生产信息的BOM供应商
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.ProduceDataImportationFacade
+      method-name-record: importProduceDataItemSupplier
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.ProduceDataItemSupplierImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[BOM ID]": produceDataItemId
+        "[SKU]": sku
+        "[BOM名称]": bomName
+        "[供应商代码]": supplierCodeList
+        "[处理方式]": handleWay
+      cell-extends-map:
+        "[供应商代码]":
+          comment: 多供应商用/隔开
+

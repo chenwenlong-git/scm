@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.dao.ProduceDataAttrMapper">
+
+    <select id="getProduceDataAttrValue"
+            resultType="com.hete.supply.scm.server.scm.entity.vo.ProduceDataAttrValueVo">
+
+    </select>
+    <select id="selectProduceDataAttrWeightPage" resultType="java.lang.String">
+        SELECT pda.sku
+        FROM produce_data_attr AS pda
+        LEFT JOIN produce_data AS pd ON pda.sku = pd.sku AND pd.del_timestamp = 0
+        WHERE (pd.weight = 0 OR pd.sku IS NULL)
+        AND pda.sku!=""
+        AND pda.attr_value!=""
+        AND pda.del_timestamp = 0
+        <if test="attributeNameIdList != null and attributeNameIdList.size() > 0">
+            AND pda.attribute_name_id IN
+            <foreach collection="attributeNameIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY pda.sku
+        ORDER BY pda.sku ASC
+    </select>
+    <select id="getProduceDataAttrValueListByValueList"
+            resultType="com.hete.supply.scm.server.scm.entity.vo.ProduceDataAttrValueListVo">
+        SELECT pda.sku
+        FROM produce_data_attr AS pda
+        WHERE pda.sku!=""
+        AND pda.del_timestamp = 0
+        <if test="dto.notSku != null and dto.notSku != ''">
+            AND pda.sku != #{dto.notSku}
+        </if>
+        <if test="dto.produceDataAttrValueListItem != null and dto.produceDataAttrValueListItem.size() > 0">
+            AND
+            <foreach collection="dto.produceDataAttrValueListItem" item="item" open="(" separator="AND" close=")">
+                ( pda.attribute_name_id = #{item.attributeNameId}
+                <if test="item.attrValueList != null and item.attrValueList.size() > 0">
+                    AND pda.attr_value IN
+                    <foreach collection="item.attrValueList" item="attrValue" separator="," open="(" close=")">
+                        #{attrValue}
+                    </foreach>
+                </if>
+                )
+            </foreach>
+        </if>
+    </select>
+    <select id="selectProduceDataAttrPage" resultType="java.lang.String">
+        SELECT pda.sku
+        FROM produce_data_attr AS pda
+        WHERE pda.sku!=""
+        AND pda.attr_value!=""
+        AND pda.del_timestamp = 0
+        <if test="attributeNameIdList != null and attributeNameIdList.size() > 0">
+            AND pda.attribute_name_id IN
+            <foreach collection="attributeNameIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY pda.sku
+        ORDER BY pda.sku ASC
+    </select>
+    <select id="getPageBySkuList" resultType="com.hete.supply.scm.api.scm.entity.vo.ProduceDataAttrSkuVo">
+        SELECT pda.sku,
+        pda.attr_name,
+        pda.attr_value,
+        pda.attribute_name_id
+        FROM produce_data_attr AS pda
+        WHERE pda.del_timestamp = 0
+        <if test="dto.attributeNameId != null">
+            AND pda.attribute_name_id = #{dto.attributeNameId}
+        </if>
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND pda.sku IN
+            <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getSkuByPage" resultType="java.lang.String">
+        SELECT distinct pda.sku
+        FROM produce_data_attr AS pda
+        WHERE pda.del_timestamp = 0
+        AND pda.sku!=''
+        AND pda.attr_value!=''
+        <if test="attributeNameIdList != null and attributeNameIdList.size() > 0">
+            AND pda.attribute_name_id IN
+            <foreach collection="attributeNameIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY pda.sku ASC
+    </select>
+</mapper>

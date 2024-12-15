@@ -1,0 +1,49 @@
+provider:
+  generic-export-map:
+    scm_stock_up_item_export:
+      biz-system-code: SCM
+      file-prefix: SCM备货单明细导出
+      resource-name: SCM系统-SCM备货单明细导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.StockUpFacade
+      method-name-count: getItemExportTotals
+      method-name-record: getItemExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.StockUpSearchDto
+      header-alias:
+        stockUpOrderNo: 备货单号
+        sku: SKU
+        skuEncode: 产品名称
+        categoryName: 分类名(一级或二级名称)
+        supplierAlias: 供应商
+        stockUpOrderStatusStr: 备货单状态
+        warehousingCnt: 入库数
+        returnGoodsCnt: 回货数
+        returnGoodsDateStr: 回货时间
+    scm_stock_up_export:
+      biz-system-code: SCM
+      file-prefix: SCM备货单导出
+      resource-name: SCM系统-SCM备货单导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.StockUpFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.StockUpSearchDto
+      header-alias:
+        stockUpOrderNo: 备货单号
+        sku: SKU
+        skuEncode: 产品名称
+        categoryName: 商品二级类目
+        supplierAlias: 供应商
+        stockUpOrderStatusStr: 状态
+        stockUpPrice: 预计单价
+        warehousingCnt: 入库数
+        returnGoodsCnt: 回货数
+        placeOrderCnt: 下单数
+        createUsername: 创建人
+        createTimeStr: 创建时间
+        followUsername: 跟单人
+        followDateStr: 跟单时间
+        finishUsername: 完结人
+        finishDateStr: 完结时间

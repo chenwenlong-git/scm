@@ -1,0 +1,34 @@
+provider:
+  generic-export-map:
+    scm_process_order_promise_date_import:
+      biz-system-code: SCM
+      resource-name: 导入加工单答交时间
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.ProcessOrderImportationFacade
+      method-name-record: importPromiseDate
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.ProcessOrderPromiseDateImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[加工单号]": processOrderNo
+        "[答交时间 (格式：yyyy/MM/dd)]": promiseDate
+    purchase_import_edit:
+      biz-system-code: SCM
+      resource-name: 导入修改子单数据
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.PurchaseChildImportationFacade
+      method-name-record: importEditPurchaseChild
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.PurchaseChildEditImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[采购订单号]": purchaseChildOrderNo
+        "[收货仓库编码]": warehouseCode
+        "[期望上架时间]": deliverDateStr
+        "[答交时间]": promiseDateStr
+        "[结算单价]": settlePriceStr
+        "[我司原料单价]": substractPriceStr

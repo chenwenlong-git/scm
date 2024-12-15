@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.supplier.sample.dao.SampleReturnOrderMapper">
+    <sql id="search_where">
+        WHERE sro.del_timestamp = 0
+        <if test="dto.sampleReturnOrderNo != null and dto.sampleReturnOrderNo != ''">
+            AND sro.sample_return_order_no LIKE concat('%',#{dto.sampleReturnOrderNo}, '%')
+        </if>
+        <if test="dto.receiptUser != null and dto.receiptUser != ''">
+            AND sro.receipt_user LIKE concat('%',#{dto.receiptUser}, '%')
+        </if>
+        <if test="dto.receiptUsername != null and dto.receiptUsername != ''">
+            AND sro.receipt_username LIKE concat('%',#{dto.receiptUsername}, '%')
+        </if>
+        <if test="dto.receiptTimeStart != null">
+            <![CDATA[ AND sro.receipt_time >= #{dto.receiptTimeStart} ]]>
+        </if>
+        <if test="dto.receiptTimeEnd != null">
+            <![CDATA[ AND sro.receipt_time <= #{dto.receiptTimeEnd} ]]>
+        </if>
+        <if test="dto.trackingNo != null and dto.trackingNo != ''">
+            AND sro.tracking_no LIKE concat('%',#{dto.trackingNo}, '%')
+        </if>
+        <if test="dto.returnOrderStatusList != null and dto.returnOrderStatusList.size() > 0">
+            AND sro.return_order_status IN
+            <foreach collection="dto.returnOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="sampleReturnOrderNoList != null and sampleReturnOrderNoList.size() > 0">
+            AND sro.sample_return_order_no IN
+            <foreach collection="sampleReturnOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND sro.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND sro.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierNameList != null and dto.supplierNameList.size() > 0">
+            AND sro.supplier_name IN
+            <foreach collection="dto.supplierNameList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    <select id="searchProductPurchase"
+            resultType="com.hete.supply.scm.server.supplier.sample.entity.vo.SampleReturnVo">
+        SELECT sro.sample_return_order_no AS sampleReturnOrderNo,
+        sro.return_order_status AS returnOrderStatus,
+        sro.logistics AS logistics,
+        sro.tracking_no AS trackingNo,
+        sro.return_cnt AS returnCnt,
+        sro.receipt_user AS receiptUser,
+        sro.receipt_username AS receiptUsername,
+        sro.receipt_time AS receiptTime,
+        sro.supplier_code AS supplierCode,
+        sro.supplier_name AS supplierName,
+        sro.create_time AS deliverTime,
+        sro.create_time AS createTime,
+        sro.receipt_cnt AS receiptCnt,
+        sro.create_username AS createUsername
+        FROM sample_return_order AS sro
+        <include refid="search_where"></include>
+        ORDER BY sro.create_time DESC
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sample_return_order_item AS sroi
+        LEFT JOIN sample_return_order AS sro
+        ON sroi.sample_return_order_no = sro.sample_return_order_no
+        <include refid="search_where"></include>
+        <if test="dto.sampleChildOrderNo != null and dto.sampleChildOrderNo != ''">
+            AND sroi.sample_child_order_no LIKE concat('%',#{dto.sampleChildOrderNo}, '%')
+        </if>
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.SampleReturnExportVo">
+        SELECT sroi.sample_return_order_no AS sampleReturnOrderNo,
+        sro.return_order_status AS returnOrderStatus,
+        sro.supplier_name AS supplierName,
+        sroi.spu AS spu,
+        sroi.sample_child_order_no AS sampleChildOrderNo,
+        sroi.return_cnt AS returnCnt,
+        sroi.receipt_cnt AS receiptCnt,
+        sro.create_username AS createUsername,
+        sro.create_time AS createTime,
+        sro.receipt_username AS receiptUsername,
+        sro.receipt_time AS receiptTime
+        FROM sample_return_order_item AS sroi
+        LEFT JOIN sample_return_order AS sro
+        ON sroi.sample_return_order_no = sro.sample_return_order_no
+        <include refid="search_where"></include>
+        <if test="dto.sampleChildOrderNo != null and dto.sampleChildOrderNo != ''">
+            AND sroi.sample_child_order_no LIKE concat('%',#{dto.sampleChildOrderNo}, '%')
+        </if>
+        ORDER BY sro.create_time DESC
+    </select>
+
+
+</mapper>

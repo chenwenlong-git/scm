@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.ibfs.dao.FinanceSettleOrderMapper">
+
+    <sql id="baseColumns">
+        fso.finance_settle_order_id,
+        fso.finance_settle_order_no,
+        fso.finance_settle_order_status,
+        fso.supplier_code,
+        fso.settle_amount,
+        fso.receive_amount,
+        fso.pay_amount,
+        fso.supplier_submit_time,
+        fso.follower_confirm_user,
+        fso.follower_confirm_username,
+        fso.follower_confirm_time,
+        fso.workflow_no,
+        fso.ctrl_user,
+        fso.ctrl_username,
+        fso.task_id,
+        fso.workflow_finish_time,
+        fso.settle_finish_time,
+        fso.create_username,
+        fso.update_username,
+        fso.create_user,
+        fso.create_time,
+        fso.update_user,
+        fso.update_time,
+        fso.version,
+        fso.del_timestamp
+    </sql>
+
+
+    <select id="findSupCodesWithAuthSupCode" resultType="java.lang.String">
+        select distinct (fso.supplier_code)
+        from finance_settle_order fso
+        <include refid="withAuthSupplierCode"/>
+    </select>
+
+    <select id="findSupCodesOptAuthSupCode" resultType="java.lang.String">
+        select distinct (fso.supplier_code)
+        from finance_settle_order fso
+        <include refid="optionAuthSupplierCode"/>
+    </select>
+
+    <select id="findSoCodesWithAuthSupCode" resultType="java.lang.String">
+        select distinct (fso.finance_settle_order_no)
+        from finance_settle_order fso
+        <include refid="withAuthSupplierCode"/>
+    </select>
+
+    <select id="findSoCodesOptAuthSupCode" resultType="java.lang.String">
+        select distinct (fso.finance_settle_order_no)
+        from finance_settle_order fso
+        <include refid="optionAuthSupplierCode"/>
+    </select>
+
+    <select id="findPageOptAuthSupCode"
+            resultType="com.hete.supply.scm.server.scm.ibfs.entity.po.FinanceSettleOrderPo">
+        select
+        <include refid="baseColumns"/>
+        from finance_settle_order fso
+        <include refid="optionAuthSupplierCode"/>
+        order by fso.finance_settle_order_id desc
+    </select>
+
+    <select id="findPageWithAuthSupCode"
+            resultType="com.hete.supply.scm.server.scm.ibfs.entity.po.FinanceSettleOrderPo">
+        select
+        <include refid="baseColumns"/>
+        from finance_settle_order fso
+        <include refid="withAuthSupplierCode"/>
+        order by fso.finance_settle_order_id desc
+    </select>
+
+    <select id="findExportSettleOrderTotalCount" resultType="java.lang.Integer">
+        select count(1)
+        from finance_settle_order fso
+        <include refid="optionAuthSupplierCode"/>
+    </select>
+
+    <sql id="withAuthSupplierCode">
+        left join finance_settle_carryover_order fsco on fso.finance_settle_order_no = fsco.finance_settle_order_no and
+        fsco.del_timestamp=0
+
+        where fso.del_timestamp = 0
+        <if test="param.ctrlUser != null and param.ctrlUser != ''">
+            and (
+            fso.ctrl_user = #{param.ctrlUser} or fso.follow_user = #{param.ctrlUser}
+            <if test="param.authSupplierCodes != null and param.authSupplierCodes.size() > 0">
+                or fso.supplier_code in
+                <foreach item="authSupplierCode" collection="param.authSupplierCodes" open="(" separator="," close=")">
+                    #{authSupplierCode}
+                </foreach>
+            </if>
+            )
+        </if>
+
+        <if test="param.supplierCode != null and param.supplierCode != ''">
+            and fso.supplier_code = #{param.supplierCode}
+        </if>
+
+        <if test="param.settleOrderNo != null and param.settleOrderNo != ''">
+            and fso.finance_settle_order_no = #{param.settleOrderNo}
+        </if>
+
+        <if test="param.settleOrderNos != null and param.settleOrderNos.size() > 0">
+            and fso.finance_settle_order_no in
+            <foreach item="settleOrderNo" collection="param.settleOrderNos" open="(" separator="," close=")">
+                #{settleOrderNo}
+            </foreach>
+        </if>
+
+        <if test="param.supplierCodes != null and param.supplierCodes.size() > 0">
+            and fso.supplier_code in
+            <foreach item="supplierCode" collection="param.supplierCodes" open="(" separator="," close=")">
+                #{supplierCode}
+            </foreach>
+        </if>
+
+        <if test="param.settleOrderStatusList != null and param.settleOrderStatusList.size() > 0">
+            and fso.finance_settle_order_status in
+            <foreach item="settleOrderStatus" collection="param.settleOrderStatusList" open="(" separator="," close=")">
+                #{settleOrderStatus}
+            </foreach>
+        </if>
+
+        <if test="param.availableCarryoverAmountBegin != null">
+            <![CDATA[ and fsco.available_carryover_amount >= #{param.availableCarryoverAmountBegin} ]]>
+        </if>
+        <if test="param.availableCarryoverAmountEnd != null">
+            <![CDATA[ and fsco.available_carryover_amount <= #{param.availableCarryoverAmountEnd} ]]>
+        </if>
+
+        <if test="param.existCarryoverOrder != null">
+            <if test="param.existCarryoverOrder">
+                and fsco.finance_settle_carryover_order_id is not null
+            </if>
+            <if test="!param.existCarryoverOrder">
+                and fsco.finance_settle_carryover_order_id is null
+            </if>
+        </if>
+
+        <if test="param.settleOrderCreateBeginTime != null">
+            <![CDATA[ and fso.create_time >= #{param.settleOrderCreateBeginTime} ]]>
+        </if>
+        <if test="param.settleOrderCreateEndTime != null">
+            <![CDATA[ and fso.create_time <= #{param.settleOrderCreateEndTime} ]]>
+        </if>
+    </sql>
+
+    <sql id="optionAuthSupplierCode">
+        left join finance_settle_carryover_order fsco on fso.finance_settle_order_no = fsco.finance_settle_order_no and
+        fsco.del_timestamp=0
+
+        where fso.del_timestamp = 0
+        <if test="param.ctrlUser != null and param.ctrlUser != ''">
+            and fso.ctrl_user = #{param.ctrlUser}
+        </if>
+
+        <if test="param.authSupplierCodes != null and param.authSupplierCodes.size() > 0">
+            and fso.supplier_code in
+            <foreach item="authSupplierCode" collection="param.authSupplierCodes" open="(" separator="," close=")">
+                #{authSupplierCode}
+            </foreach>
+        </if>
+
+        <if test="param.supplierCode != null and param.supplierCode != ''">
+            and fso.supplier_code = #{param.supplierCode}
+        </if>
+
+        <if test="param.settleOrderNo != null and param.settleOrderNo != ''">
+            and fso.finance_settle_order_no = #{param.settleOrderNo}
+        </if>
+
+        <if test="param.settleOrderNos != null and param.settleOrderNos.size() > 0">
+            and fso.finance_settle_order_no in
+            <foreach item="settleOrderNo" collection="param.settleOrderNos" open="(" separator="," close=")">
+                #{settleOrderNo}
+            </foreach>
+        </if>
+
+        <if test="param.supplierCodes != null and param.supplierCodes.size() > 0">
+            and fso.supplier_code in
+            <foreach item="supplierCode" collection="param.supplierCodes" open="(" separator="," close=")">
+                #{supplierCode}
+            </foreach>
+        </if>
+
+        <if test="param.settleOrderStatusList != null and param.settleOrderStatusList.size() > 0">
+            and fso.finance_settle_order_status in
+            <foreach item="settleOrderStatus" collection="param.settleOrderStatusList" open="(" separator="," close=")">
+                #{settleOrderStatus}
+            </foreach>
+        </if>
+
+        <if test="param.availableCarryoverAmountBegin != null">
+            <![CDATA[ and fsco.available_carryover_amount >= #{param.availableCarryoverAmountBegin} ]]>
+        </if>
+        <if test="param.availableCarryoverAmountEnd != null">
+            <![CDATA[ and fsco.available_carryover_amount <= #{param.availableCarryoverAmountEnd} ]]>
+        </if>
+
+        <if test="param.existCarryoverOrder != null">
+            <if test="param.existCarryoverOrder">
+                and fsco.finance_settle_carryover_order_id is not null
+            </if>
+            <if test="!param.existCarryoverOrder">
+                and fsco.finance_settle_carryover_order_id is null
+            </if>
+        </if>
+
+        <if test="param.settleOrderCreateBeginTime != null">
+            <![CDATA[ and fso.create_time >= #{param.settleOrderCreateBeginTime} ]]>
+        </if>
+        <if test="param.settleOrderCreateEndTime != null">
+            <![CDATA[ and fso.create_time <= #{param.settleOrderCreateEndTime} ]]>
+        </if>
+    </sql>
+
+    <select id="getByPage" resultType="com.hete.supply.scm.server.scm.ibfs.entity.po.FinanceSettleOrderPo">
+        SELECT
+        fso.finance_settle_order_id AS financeSettleOrderId,
+        fso.finance_settle_order_no AS financeSettleOrderNo,
+        fso.finance_settle_order_status AS financeSettleOrderStatus,
+        fso.supplier_code AS supplierCode,
+        fso.settle_amount AS settleAmount,
+        fso.receive_amount AS receiveAmount,
+        fso.pay_amount AS payAmount,
+        fso.workflow_no AS workflowNo,
+        fso.ctrl_user AS ctrlUser,
+        fso.ctrl_username AS ctrlUsername,
+        fso.task_id AS taskId,
+        fso.create_username AS createUsername,
+        fso.update_username AS updateUsername
+        FROM finance_settle_order fso
+        LEFT JOIN finance_settle_order_item fsoi ON fso.finance_settle_order_no = fsoi.finance_settle_order_no and
+        fsoi.del_timestamp=0
+        <include refid="withAuthSupplierCode"/>
+    </select>
+
+    <select id="getApproveFailTimesByFollowUser" resultType="java.lang.Long">
+        SELECT COUNT(fao.feishu_audit_order_id)
+        FROM feishu_audit_order AS fao
+                 INNER JOIN finance_settle_order AS fso
+                            ON fao.business_id = fso.finance_settle_order_id
+        WHERE fao.del_timestamp = 0
+          AND fso.del_timestamp = 0
+         <![CDATA[ AND fso.create_time >= #{startTime} ]]>
+         <![CDATA[ AND fso.create_time <= #{endTime} ]]>
+          AND fao.feishu_audit_order_type = #{feishuAuditOrderType}
+          AND fso.follow_user = #{followUser}
+          AND fao.workflow_result = #{workflowResult}
+    </select>
+
+    <select id="getApproveFailTimesBySupplier" resultType="java.lang.Long">
+        SELECT COUNT(fao.feishu_audit_order_id)
+        FROM feishu_audit_order AS fao
+                 INNER JOIN finance_settle_order AS fso
+                            ON fao.business_id = fso.finance_settle_order_id
+        WHERE fao.del_timestamp = 0
+          AND fso.del_timestamp = 0
+         <![CDATA[ AND fso.create_time >= #{startTime} ]]>
+         <![CDATA[ AND fso.create_time <= #{endTime} ]]>
+          AND fao.feishu_audit_order_type = #{feishuAuditOrderType}
+          AND fso.supplier_code = #{supplierCode}
+          AND fao.workflow_result = #{workflowResult}
+    </select>
+
+    <select id="getAvgMonthSettleAmount" resultType="java.math.BigDecimal">
+        select ROUND(COALESCE(AVG(settle_amount), 0), 2)
+        from finance_settle_order
+        where del_timestamp = 0
+          and finance_settle_order_status != 'INVALIDATE'
+          and supplier_code = #{supplierCode}
+        order by create_time desc
+        limit 3
+    </select>
+
+
+</mapper>

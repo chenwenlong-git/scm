@@ -1,0 +1,98 @@
+provider:
+  generic-import-map:
+    scm_produce_data_attr_import:
+      biz-system-code: SCM
+      resource-name: 导入SKU生产属性
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.ProduceDataImportationFacade
+      method-name-record: importProduceDataAttr
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.ProduceDataAttrImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[SKU]": sku
+        "[重量]": weight
+        "[属性名称1]": attrName1
+        "[属性值1]": attrValue1
+        "[属性名称2]": attrName2
+        "[属性值2]": attrValue2
+        "[属性名称3]": attrName3
+        "[属性值3]": attrValue3
+        "[属性名称4]": attrName4
+        "[属性值4]": attrValue4
+        "[属性名称5]": attrName5
+        "[属性值5]": attrValue5
+        "[属性名称6]": attrName6
+        "[属性值6]": attrValue6
+        "[属性名称7]": attrName7
+        "[属性值7]": attrValue7
+        "[属性名称8]": attrName8
+        "[属性值8]": attrValue8
+        "[属性名称9]": attrName9
+        "[属性值9]": attrValue9
+        "[属性名称10]": attrName10
+        "[属性值10]": attrValue10
+        "[属性名称11]": attrName11
+        "[属性值11]": attrValue11
+        "[属性名称12]": attrName12
+        "[属性值12]": attrValue12
+        "[属性名称13]": attrName13
+        "[属性值13]": attrValue13
+        "[属性名称14]": attrName14
+        "[属性值14]": attrValue14
+        "[属性名称15]": attrName15
+        "[属性值15]": attrValue15
+        "[属性名称16]": attrName16
+        "[属性值16]": attrValue16
+        "[属性名称17]": attrName17
+        "[属性值17]": attrValue17
+        "[属性名称18]": attrName18
+        "[属性值18]": attrValue18
+        "[属性名称19]": attrName19
+        "[属性值19]": attrValue19
+        "[属性名称20]": attrName20
+        "[属性值20]": attrValue20
+      cell-extends-map:
+        "[属性值1]":
+          comment: 多个值用/隔开
+        "[属性值2]":
+          comment: 多个值用/隔开
+        "[属性值3]":
+          comment: 多个值用/隔开
+        "[属性值4]":
+          comment: 多个值用/隔开
+        "[属性值5]":
+          comment: 多个值用/隔开
+        "[属性值6]":
+          comment: 多个值用/隔开
+        "[属性值7]":
+          comment: 多个值用/隔开
+        "[属性值8]":
+          comment: 多个值用/隔开
+        "[属性值9]":
+          comment: 多个值用/隔开
+        "[属性值10]":
+          comment: 多个值用/隔开
+        "[属性值11]":
+          comment: 多个值用/隔开
+        "[属性值12]":
+          comment: 多个值用/隔开
+        "[属性值13]":
+          comment: 多个值用/隔开
+        "[属性值14]":
+          comment: 多个值用/隔开
+        "[属性值15]":
+          comment: 多个值用/隔开
+        "[属性值16]":
+          comment: 多个值用/隔开
+        "[属性值17]":
+          comment: 多个值用/隔开
+        "[属性值18]":
+          comment: 多个值用/隔开
+        "[属性值19]":
+          comment: 多个值用/隔开
+        "[属性值20]":
+          comment: 多个值用/隔开
+

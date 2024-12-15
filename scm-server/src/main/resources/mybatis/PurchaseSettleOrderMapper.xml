@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.settle.dao.PurchaseSettleOrderMapper">
+    <sql id="common_where">
+        purc.del_timestamp = 0
+        <if test="dto.purchaseSettleOrderId != null">
+            AND purc.purchase_settle_order_id = #{dto.purchaseSettleOrderId}
+        </if>
+        <if test="dto.purchaseSettleOrderIds != null and dto.purchaseSettleOrderIds.size() > 0">
+            AND purc.purchase_settle_order_id IN
+            <foreach collection="dto.purchaseSettleOrderIds" item="ids" separator="," open="(" close=")">
+                #{ids}
+            </foreach>
+        </if>
+        <if test="dto.purchaseSettleStatusList != null and dto.purchaseSettleStatusList.size() > 0">
+            AND purc.purchase_settle_status IN
+            <foreach collection="dto.purchaseSettleStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.notPurchaseSettleStatusList != null and dto.notPurchaseSettleStatusList.size() > 0">
+            AND purc.purchase_settle_status NOT IN
+            <foreach collection="dto.notPurchaseSettleStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.purchaseSettleOrderNo != null and dto.purchaseSettleOrderNo != ''">
+            AND purc.purchase_settle_order_no LIKE concat('%',#{dto.purchaseSettleOrderNo}, '%')
+        </if>
+        <if test="dto.examineUser != null and dto.examineUser != ''">
+            AND purc.examine_user LIKE concat('%',#{dto.examineUser}, '%')
+        </if>
+        <if test="dto.examineUsername != null and dto.examineUsername != ''">
+            AND purc.examine_username LIKE concat('%',#{dto.examineUsername}, '%')
+        </if>
+        <if test="dto.confirmUser != null and dto.confirmUser != ''">
+            AND purc.confirm_user LIKE concat('%',#{dto.confirmUser}, '%')
+        </if>
+        <if test="dto.confirmUsername != null and dto.confirmUsername != ''">
+            AND purc.confirm_username LIKE concat('%',#{dto.confirmUsername}, '%')
+        </if>
+        <if test="dto.settleUser != null and dto.settleUser != ''">
+            AND purc.settle_user LIKE concat('%',#{dto.settleUser}, '%')
+        </if>
+        <if test="dto.settleUsername != null and dto.settleUsername != ''">
+            AND purc.settle_username LIKE concat('%',#{dto.settleUsername}, '%')
+        </if>
+        <if test="dto.payUser != null and dto.payUser != ''">
+            AND purc.pay_user LIKE concat('%',#{dto.payUser}, '%')
+        </if>
+        <if test="dto.payUsername != null and dto.payUsername != ''">
+            AND purc.pay_username LIKE concat('%',#{dto.payUsername}, '%')
+        </if>
+        <if test="dto.supplierName != null and dto.supplierName != ''">
+            AND purc.supplier_name = #{dto.supplierName}
+        </if>
+        <if test="dto.supplierCode != null and dto.supplierCode != ''">
+            AND purc.supplier_code = #{dto.supplierCode}
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND purc.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND purc.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND purc.create_time <= #{dto.createTimeEnd}  ]]>
+        </if>
+        <if test="dto.confirmTimeStart != null">
+            <![CDATA[ AND purc.confirm_time >= #{dto.confirmTimeStart} ]]>
+        </if>
+        <if test="dto.confirmTimeEnd != null">
+            <![CDATA[ AND purc.confirm_time <= #{dto.confirmTimeEnd}  ]]>
+        </if>
+        <if test="dto.payTimeStart != null">
+            <![CDATA[ AND purc.pay_time >= #{dto.payTimeStart} ]]>
+        </if>
+        <if test="dto.payTimeEnd != null">
+            <![CDATA[ AND purc.pay_time <= #{dto.payTimeEnd}  ]]>
+        </if>
+        <if test="dto.examineTimeStart != null">
+            <![CDATA[ AND purc.examine_time >= #{dto.examineTimeStart} ]]>
+        </if>
+        <if test="dto.examineTimeEnd != null">
+            <![CDATA[ AND purc.examine_time <= #{dto.examineTimeEnd}  ]]>
+        </if>
+        <if test="dto.settleTimeStart != null">
+            <![CDATA[ AND purc.settle_time >= #{dto.settleTimeStart} ]]>
+        </if>
+        <if test="dto.settleTimeEnd != null">
+            <![CDATA[ AND purc.settle_time <= #{dto.settleTimeEnd} ]]>
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND purc.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+    </sql>
+    <select id="selectPurchaseSettleOrderPage"
+            resultType="com.hete.supply.scm.server.scm.settle.entity.vo.PurchaseSettleOrderVo"
+            parameterType="com.hete.supply.scm.server.scm.settle.entity.vo.PurchaseSettleOrderVo">
+        SELECT purc.purchase_settle_order_id AS purchaseSettleOrderId,
+        purc.version AS version,
+        purc.purchase_settle_order_no AS purchaseSettleOrderNo,
+        purc.purchase_settle_status AS purchaseSettleStatus,
+        purc.supplier_name AS supplierName,
+        purc.supplier_code AS supplierCode,
+        purc.total_price AS totalPrice,
+        purc.pay_price AS payPrice,
+        purc.create_time AS createTime,
+        purc.confirm_time AS confirmTime,
+        purc.examine_time AS examineTime,
+        purc.settle_time AS settleTime,
+        purc.pay_time AS payTime
+        FROM purchase_settle_order AS purc
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY purc.create_time DESC
+    </select>
+
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT
+        count(purc.purchase_settle_order_id) as total
+        FROM purchase_settle_order as purc
+        RIGHT JOIN purchase_settle_order_item as item on purc.purchase_settle_order_id = item.purchase_settle_order_id
+        <where>
+            <include refid="common_where"></include>
+            AND item.del_timestamp = 0
+        </where>
+        ORDER BY item.purchase_settle_order_item_id,item.create_time DESC
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.PurchaseSettleOrderExportVo">
+        SELECT purc.purchase_settle_order_no AS purchaseSettleOrderNo,
+        purc.purchase_settle_status AS purchaseSettleStatus,
+        purc.supplier_code AS supplierCode,
+        purc.supplier_name AS supplierName,
+        item.purchase_settle_item_type AS purchaseSettleItemType,
+        item.business_no AS businessNo,
+        item.settle_time AS itemSettleTime,
+        item.settle_price AS settlePrice,
+        item.status_name AS statusName,
+        purc.confirm_user AS confirmUser,
+        purc.confirm_time AS confirmTime,
+        purc.confirm_username AS confirmUsername,
+        purc.total_price AS totalPrice,
+        purc.deduct_price AS deductPrice,
+        purc.pay_price AS payPrice,
+        purc.settle_time AS settleTime,
+        purc.pay_time AS payTime,
+        purc.create_time AS createTime,
+        purc.examine_time AS examineTime
+        FROM purchase_settle_order AS purc
+        RIGHT JOIN purchase_settle_order_item as item on purc.purchase_settle_order_id = item.purchase_settle_order_id
+        <where>
+            <include refid="common_where"></include>
+            AND item.del_timestamp = 0
+        </where>
+        ORDER BY item.purchase_settle_order_item_id,item.create_time DESC
+    </select>
+
+</mapper>

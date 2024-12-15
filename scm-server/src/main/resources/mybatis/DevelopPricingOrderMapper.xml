@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.develop.dao.DevelopPricingOrderMapper">
+    <sql id="common_where">
+        dpo.del_timestamp = 0
+        <if test="dto.developPricingOrderNo != null and dto.developPricingOrderNo != ''">
+            AND dpo.develop_pricing_order_no LIKE concat('%',#{dto.developPricingOrderNo}, '%')
+        </if>
+        <if test="dto.developPricingOrderNoList != null and dto.developPricingOrderNoList.size() > 0">
+            AND dpo.develop_pricing_order_no IN
+            <foreach collection="dto.developPricingOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.developChildOrderNo != null and dto.developChildOrderNo != ''">
+            AND dpo.develop_child_order_no LIKE concat('%',#{dto.developChildOrderNo}, '%')
+        </if>
+        <if test="dto.nuclearPriceUsername != null and dto.nuclearPriceUsername != ''">
+            AND dpo.nuclear_price_username LIKE concat('%',#{dto.nuclearPriceUsername}, '%')
+        </if>
+        <if test="dto.submitUsername != null and dto.submitUsername != ''">
+            AND dpo.submit_username LIKE concat('%',#{dto.submitUsername}, '%')
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND dpo.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND dpo.create_time <= #{dto.createTimeEnd}  ]]>
+        </if>
+        <if test="dto.submitTimeStart != null">
+            <![CDATA[ AND dpo.submit_time >= #{dto.submitTimeStart} ]]>
+        </if>
+        <if test="dto.submitTimeEnd != null">
+            <![CDATA[ AND dpo.submit_time <= #{dto.submitTimeEnd}  ]]>
+        </if>
+        <if test="dto.nuclearPriceTimeStart != null">
+            <![CDATA[ AND dpo.nuclear_price_time >= #{dto.nuclearPriceTimeStart} ]]>
+        </if>
+        <if test="dto.nuclearPriceTimeEnd != null">
+            <![CDATA[ AND dpo.nuclear_price_time <= #{dto.nuclearPriceTimeEnd}  ]]>
+        </if>
+        <if test="dto.platform != null and dto.platform != ''">
+            AND dpo.platform LIKE concat('%',#{dto.platform}, '%')
+        </if>
+        <if test="dto.supplierCode != null and dto.supplierCode != ''">
+            AND dpo.supplier_code LIKE concat('%',#{dto.supplierCode}, '%')
+        </if>
+        <if test="dto.developPricingOrderStatusList != null and dto.developPricingOrderStatusList.size() > 0">
+            AND dpo.develop_pricing_order_status IN
+            <foreach collection="dto.developPricingOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    <select id="search" resultType="com.hete.supply.scm.server.scm.develop.entity.vo.DevelopPricingOrderSearchVo">
+        SELECT dpo.develop_pricing_order_no AS developPricingOrderNo,
+        dpo.version AS version,
+        dpo.develop_pricing_order_status AS developPricingOrderStatus,
+        dpo.develop_parent_order_no AS developParentOrderNo,
+        dpo.develop_child_order_no AS developChildOrderNo,
+        dpo.platform AS platform,
+        dpo.supplier_code AS supplierCode,
+        dpo.create_time AS createTime,
+        dpo.submit_username AS submitUsername,
+        dpo.submit_time AS submitTime,
+        dpo.nuclear_price_username AS nuclearPriceUsername,
+        dpo.nuclear_price_time AS nuclearPriceTime
+        FROM develop_pricing_order AS dpo
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY dpo.create_time DESC
+
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT count(dpoi.develop_pricing_order_info_id) AS total
+        FROM develop_pricing_order AS dpo
+        INNER JOIN develop_pricing_order_info as dpoi on dpoi.develop_pricing_order_no = dpo.develop_pricing_order_no
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY dpoi.develop_pricing_order_info_id DESC
+    </select>
+    <select id="getExportList"
+            resultType="com.hete.supply.scm.api.scm.entity.vo.DevelopPricingOrderExportVo">
+        SELECT dpo.develop_pricing_order_no AS developPricingOrderNo,
+        dpo.develop_child_order_no AS developChildOrderNo,
+        dpoi.develop_sample_order_no AS developSampleOrderNo,
+        dpo.platform AS platform,
+        dpo.supplier_code AS supplierCode,
+        dpoi.sample_price AS samplePrice,
+        dpoi.bulk_price AS bulkPrice,
+        dpoi.remarks AS remarks
+        FROM develop_pricing_order AS dpo
+        INNER JOIN develop_pricing_order_info as dpoi on dpoi.develop_pricing_order_no = dpo.develop_pricing_order_no
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY dpoi.develop_pricing_order_info_id DESC
+    </select>
+    <select id="getListByGroupByStatus"
+            resultType="com.hete.supply.scm.server.scm.develop.entity.bo.DevelopPricingGroupByStatusBo">
+        SELECT develop_pricing_order_status AS developPricingOrderStatus,
+        COUNT(DISTINCT (develop_child_order_no)) AS num
+        FROM develop_pricing_order
+        WHERE del_timestamp = 0
+        <if test="supplierCodeList != null and supplierCodeList.size() > 0">
+            AND supplier_code IN
+            <foreach collection="supplierCodeList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        GROUP BY develop_pricing_order_status;
+    </select>
+</mapper>

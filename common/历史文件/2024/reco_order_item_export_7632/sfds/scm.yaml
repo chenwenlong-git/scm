@@ -1,0 +1,48 @@
+provider:
+  generic-export-map:
+    scm_finance_reco_order_item_export:
+      biz-system-code: SCM
+      file-prefix: SCM对账单详情导出列表信息
+      resource-name: SCM系统-对账单详情列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.FinanceRecoOrderFacade
+      method-name-count: getExportTotalsItem
+      method-name-record: getExportListItem
+      param-type: com.hete.supply.scm.api.scm.entity.dto.RecoOrderSearchDto
+      header-alias:
+        financeRecoOrderNo: 对账单号
+        financeRecoOrderStatusName: 对账单状态
+        supplierCode: 供应商
+        reconciliationCycleName: 对账周期
+        reconciliationStartTimeStr: 对账周期开始时间
+        reconciliationEndTimeStr: 对账周期结束时间
+        financeSettleOrderNo: 关联结算单号
+        collectOrderNo: 收单单据
+        financeRecoFundTypeName: 款项类型
+        collectOrderTypeName: 收单类型
+        financeRecoPayTypeName: 收付类型
+        recoOrderItemSkuStatusName: 收单状态
+        associationTimeStr: 收单时间
+        sku: SKU
+        skuEncode: 产品名称
+        skuBatchCode: 批次码
+        price: 单价
+        num: 数量
+        totalPrice: 收单金额
+        purchaseChildOrderNo: 关联采购订单
+        purchaseBizType: 采购类型
+        warehouseName: 收货仓
+        purchaseDeliverTime: 发货时间
+        onShelvesTime: 上架时间
+        deliveryAmount: 发货数
+        receiveAmount: 收货数
+        qualityGoodsCnt: 正品数
+        defectiveGoodsCnt: 次品数
+        realityReturnCnt: 退货数
+        onShelvesAmount: 上架数
+        purchaseSettlePrice: 结算单价（采购订单结算单价）
+        settleTotalPrice: 结算总价（结算单价*上架数）
+        deductSupplementOrder: 关联补扣款单（存在多个、隔开）
+        deductSupplementType: 补扣款类型（补款/扣款/补扣款）
+        deductSupplementPrice: 调整金额（补款-扣款）

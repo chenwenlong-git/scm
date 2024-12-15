@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.qc.dao.QcOrderDefectConfigMapper">
+
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS total
+        FROM qc_order_defect_config AS qodc
+        INNER JOIN qc_order_defect_config AS qodc2
+        ON qodc.`qc_order_defect_config_id` = qodc2.`parent_defect_config_id`
+        WHERE qodc.`parent_defect_config_id` = 0
+        AND qodc.del_timestamp = 0
+        AND qodc2.del_timestamp = 0
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.QcOrderDefectConfigExportVo">
+        SELECT qodc.qc_order_defect_config_id AS qcOrderDefectConfigId,
+        qodc.defect_category AS defectCategory,
+        qodc.defect_code AS defectCode,
+        qodc2.defect_category AS defectReason,
+        qodc2.defect_code AS reasonCode,
+        qodc2.defect_status AS defectStatus
+        FROM qc_order_defect_config AS qodc
+        INNER JOIN qc_order_defect_config AS qodc2
+        ON qodc.`qc_order_defect_config_id` = qodc2.`parent_defect_config_id`
+        WHERE qodc.`parent_defect_config_id` = 0
+        AND qodc.del_timestamp = 0
+        AND qodc2.del_timestamp = 0
+    </select>
+</mapper>

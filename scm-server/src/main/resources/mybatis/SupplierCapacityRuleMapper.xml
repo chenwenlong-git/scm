@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.supplier.dao.SupplierCapacityRuleMapper">
+    <sql id="commonConditions">
+        where scr.del_timestamp = 0
+        <if test="dto.supplierCodeList != null and !dto.supplierCodeList.isEmpty()">
+            and s.supplier_code in
+            <foreach collection="dto.supplierCodeList" item="supplierCode" open="(" separator="," close=")">
+                #{supplierCode}
+            </foreach>
+        </if>
+        <if test="dto.filterPerSupplierCodeList != null and !dto.filterPerSupplierCodeList.isEmpty()">
+            and s.supplier_code in
+            <foreach collection="dto.filterPerSupplierCodeList" item="supplierCode" open="(" separator=","
+                     close=")">
+                #{supplierCode}
+            </foreach>
+        </if>
+        <if test="dto.supplierStatus != null">
+            and s.supplier_status = #{dto.supplierStatus}
+        </if>
+        <if test="dto.supplierGradeList != null and !dto.supplierGradeList.isEmpty()">
+            and s.supplier_grade in
+            <foreach collection="dto.supplierGradeList" item="supplierGrade" open="(" separator="," close=")">
+                #{supplierGrade}
+            </foreach>
+        </if>
+        <if test="dto.normalCapacityStart != null">
+            <![CDATA[ and scr.capacity >= #{dto.normalCapacityStart} ]]>
+        </if>
+        <if test="dto.normalCapacityEnd != null">
+            <![CDATA[ and scr.capacity <= #{dto.normalCapacityEnd} ]]>
+        </if>
+    </sql>
+
+
+    <select id="page" resultType="com.hete.supply.scm.server.scm.supplier.entity.vo.SupplierCapacityPageVo">
+        select
+        s.supplier_code,
+        s.supplier_name,
+        s.supplier_alias,
+        s.supplier_status,
+        s.supplier_grade,
+        scr.capacity as normalCapacity
+        from supplier_capacity_rule scr
+        join supplier s on scr.supplier_code = s.supplier_code and s.del_timestamp = 0
+        <include refid="commonConditions"/>
+        order by scr.supplier_capacity_rule_id
+    </select>
+
+    <select id="getSupCapacityRuleExportTotal" resultType="java.lang.Integer">
+        select count(1)
+        from supplier_capacity_rule scr
+        join supplier s on scr.supplier_code = s.supplier_code and s.del_timestamp = 0
+        <include refid="commonConditions"/>
+    </select>
+
+    <select id="listBySupplierCodes" resultType="com.hete.supply.scm.server.scm.supplier.entity.bo.SupCapRuleBo">
+        select
+        supplier_code,
+        capacity
+        from supplier_capacity_rule
+        where del_timestamp=0
+        <if test="supplierCodeList != null and !supplierCodeList.isEmpty()">
+            and supplier_code in
+            <foreach collection="supplierCodeList" item="supplierCode" open="(" separator="," close=")">
+                #{supplierCode}
+            </foreach>
+        </if>
+    </select>
+</mapper>

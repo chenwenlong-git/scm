@@ -1,0 +1,22 @@
+provider:
+  generic-export-map:
+    scm_repair_order_result_export:
+      biz-system-code: SCM
+      file-prefix: SCM返修单记录导出
+      resource-name: SCM系统-SCM返修单记录导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.RepairOrderFacade
+      method-name-count: getResultExportTotals
+      method-name-record: getResultExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.RepairOrderSearchDto
+      header-alias:
+        repairOrderNo: 返修单号
+        sku: SKU
+        batchCode: 批次码
+        completedQuantity: 完成数量
+        materialBatchCode: 绑定原料批次
+        repairCreateUsername: 返修人
+        repairTimeStr: 返修时间
+        qcPassQuantity: 质检正品数
+        qcFailQuantity: 质检次品数

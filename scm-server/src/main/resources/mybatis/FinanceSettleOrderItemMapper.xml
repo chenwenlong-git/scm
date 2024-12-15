@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.ibfs.dao.FinanceSettleOrderItemMapper">
+    <sql id="baseColumns">
+        finance_settle_order_item_id,
+        finance_settle_order_no,
+        finance_settle_order_item_type,
+        business_no,
+        settle_amount,
+        receive_amount,
+        pay_amount,
+        create_username,
+        update_username,
+        create_user,
+        create_time,
+        update_user,
+        update_time,
+        version,
+        del_timestamp
+    </sql>
+
+    <select id="findPageSettleOrderItems"
+            resultType="com.hete.supply.scm.server.scm.ibfs.entity.po.FinanceSettleOrderItemPo">
+        select
+        <include refid="baseColumns"/>
+        from finance_settle_order_item
+        <include refid="conditions"/>
+        order by finance_settle_order_item_id desc
+    </select>
+
+    <select id="findExportSettleItemTotalCount" resultType="java.lang.Integer">
+        select count(1)
+        from finance_settle_order_item
+        <include refid="conditions"/>
+    </select>
+
+    <sql id="conditions">
+        where del_timestamp = 0
+
+        <if test="param.settleOrderNos != null and param.settleOrderNos.size() > 0">
+            and finance_settle_order_no in
+            <foreach item="settleOrderNo" collection="param.settleOrderNos" open="(" separator="," close=")">
+                #{settleOrderNo}
+            </foreach>
+        </if>
+    </sql>
+
+    <sql id="withAuthSupplierCode">
+        where del_timestamp = 0
+
+        <if test="param.ctrlUser != null and param.ctrlUser != ''">
+            and (
+            ctrl_user = #{param.ctrlUser}
+            <if test="param.authSupplierCodes != null and param.authSupplierCodes.size() > 0">
+                or supplier_code in
+                <foreach item="authSupplierCode" collection="param.authSupplierCodes" open="(" separator="," close=")">
+                    #{authSupplierCode}
+                </foreach>
+            </if>
+            )
+        </if>
+
+        <if test="param.supplierCode != null and param.supplierCode != ''">
+            and supplier_code = #{param.supplierCode}
+        </if>
+
+        <if test="param.settleOrderNo != null and param.settleOrderNo != ''">
+            and finance_settle_order_no = #{param.settleOrderNo}
+        </if>
+
+        <if test="param.settleOrderNos != null and param.settleOrderNos.size() > 0">
+            and finance_settle_order_no in
+            <foreach item="settleOrderNo" collection="param.settleOrderNos" open="(" separator="," close=")">
+                #{settleOrderNo}
+            </foreach>
+        </if>
+
+        <if test="param.supplierCodes != null and param.supplierCodes.size() > 0">
+            and supplier_code in
+            <foreach item="supplierCode" collection="param.supplierCodes" open="(" separator="," close=")">
+                #{supplierCode}
+            </foreach>
+        </if>
+
+        <if test="param.settleOrderStatusList != null and param.settleOrderStatusList.size() > 0">
+            and finance_settle_order_status in
+            <foreach item="settleOrderStatus" collection="param.settleOrderStatusList" open="(" separator="," close=")">
+                #{settleOrderStatus}
+            </foreach>
+        </if>
+    </sql>
+</mapper>

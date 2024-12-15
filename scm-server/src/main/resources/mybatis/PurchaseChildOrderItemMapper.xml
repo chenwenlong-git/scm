@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.purchase.dao.PurchaseChildOrderItemMapper">
+
+    <select id="getPage"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.po.PurchaseChildOrderItemPo">
+        SELECT pcoi.sku AS sku,
+        pcoi.sku_batch_code AS skuBatchCode,
+        pcoi.purchase_cnt AS purchaseCnt,
+        pcoi.purchase_price AS purchasePrice
+        FROM purchase_child_order_item AS pcoi
+        INNER JOIN purchase_child_order AS pco
+        ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        WHERE pcoi.del_timestamp = 0
+        AND pco.del_timestamp = 0
+        AND pco.purchase_order_status IN ('WAREHOUSED', 'FINISH')
+        AND pcoi.sku = pcoi.sku_batch_code
+    </select>
+    <select id="getListByPurchaseItemAndReceiveTime"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.bo.PurchaseItemByReceiveTimeBo">
+        SELECT pcoi.purchase_child_order_no AS purchaseChildOrderNo,
+        pcoi.sku AS sku,
+        pcoi.purchase_price AS purchasePrice,
+        pcoc.receive_order_time AS receiveOrderTime
+        FROM purchase_child_order_item AS pcoi
+        INNER JOIN purchase_child_order AS pco ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        INNER JOIN purchase_child_order_change AS pcoc ON pcoc.purchase_child_order_id = pco.purchase_child_order_id
+        <where>
+            pcoi.del_timestamp = 0
+            AND pco.del_timestamp = 0
+            AND pcoc.del_timestamp = 0
+            <if test="skuList != null and skuList.size() > 0">
+                AND pcoi.sku IN
+                <foreach collection="skuList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="purchaseOrderStatusExcludeList != null and purchaseOrderStatusExcludeList.size() > 0">
+                AND pco.purchase_order_status NOT IN
+                <foreach collection="purchaseOrderStatusExcludeList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY pcoc.receive_order_time DESC
+    </select>
+    <select id="getListBySkuListAndNotStatus"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.bo.PurchaseGetSuggestSupplierBo">
+        SELECT pcoi.purchase_child_order_no AS purchaseChildOrderNo,
+        pcoi.sku AS sku,
+        pco.supplier_code AS supplierCode,
+        pcoc.plan_confirm_time AS planConfirmTime
+        FROM purchase_child_order_item AS pcoi
+        INNER JOIN purchase_child_order AS pco ON pcoi.purchase_child_order_no = pco.purchase_child_order_no
+        INNER JOIN purchase_child_order_change AS pcoc ON pcoc.purchase_child_order_id = pco.purchase_child_order_id
+        <where>
+            pcoi.del_timestamp = 0
+            AND pco.del_timestamp = 0
+            AND pcoc.del_timestamp = 0
+            <if test="skuList != null and skuList.size() > 0">
+                AND pcoi.sku IN
+                <foreach collection="skuList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="notPurchaseOrderStatus != null">
+                AND pco.purchase_order_status != #{notPurchaseOrderStatus}
+            </if>
+            <if test="planConfirmTimeStart != null">
+                <![CDATA[ AND pcoc.plan_confirm_time >= #{planConfirmTimeStart} ]]>
+            </if>
+            <if test="planConfirmTimeEnd != null">
+                <![CDATA[ AND pcoc.plan_confirm_time <= #{planConfirmTimeEnd} ]]>
+            </if>
+        </where>
+    </select>
+</mapper>

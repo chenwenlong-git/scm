@@ -1,0 +1,9 @@
+produceDataAttr:
+  #蕾丝分类id
+  laceAreaAttributeNameId: "1625490322386792449"
+  #裆长尺寸id
+  lengthAttributeNameId: "1625490320331583490"
+  #头套类目id
+  wigAttributeNameId: "1625489992668360705"
+  #头套类目
+  wigAttributeName: "头套"

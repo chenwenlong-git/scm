@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.process.dao.ProcessOrderScanRelateMapper">
+
+    <sql id="containConditions">
+        del_timestamp=0
+        <if test="processCode != null and processCode != ''">
+            AND process_code = #{processCode}
+        </if>
+        <if test="completeUser != null and completeUser != ''">
+            AND complete_user = #{completeUser}
+        </if>
+        <if test="completeTimeBegin != null">
+            <![CDATA[ AND complete_time >= #{completeTimeBegin} ]]>
+        </if>
+        <if test="completeTimeEnd != null">
+            <![CDATA[ AND complete_time <= #{completeTimeEnd} ]]>
+        </if>
+        <if test="processOrderScanId != null and processOrderScanId != ''">
+            AND process_order_scan_id != #{processOrderScanId}
+        </if>
+    </sql>
+
+    <select id="calculateQualityGoodsCountTotal" resultType="java.lang.Integer">
+        SELECT sum(quality_goods_cnt)
+        FROM process_order_scan_relate
+        <where>
+            <include refid="containConditions"></include>
+        </where>
+    </select>
+
+    <select id="countProcessOrderScanByIds"
+            resultType="com.hete.supply.scm.server.scm.process.entity.bo.ProcessOrderScanRelateCountBo"
+            parameterType="java.util.List">
+        SELECT process_order_scan_id, COUNT(1) as count
+        FROM process_order_scan_relate
+        WHERE del_timestamp = 0
+        AND process_order_scan_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY process_order_scan_id
+    </select>
+</mapper>

@@ -1,0 +1,1216 @@
+hete:
+  redis:
+    host: td-ops.htwig.com
+    port: 30002
+    password: K954OHcie82Jfdte1
+  mybatis-plus:
+    sql-log-enabled: true
+    update-check-throw-exception: true
+    update-check-exception-msg: "数据已被更新,请刷新页面后重试"
+  dubbo:
+    open-api: true
+  enumScan:
+    package: com.hete.supply.scm
+  consistency:
+    background-polling: true
+    db-clear-job-start-hour: 18
+    handler-pool-config:
+      scheduledMqTask:
+        core-pool-size: 4
+        keep-alive-seconds: 5
+        max-pool-size: 5
+        queue-capacity: 10
+      processOrderHandler:
+        core-pool-size: 2
+        keep-alive-seconds: 5
+        max-pool-size: 3
+        queue-capacity: 10
+      handler-info-map:
+        testDemo:
+          priority: 50
+    mq-info:
+      wmsReceiptHandler:
+        topic: topic_scm
+        tag: tag_create_receipt
+      logVersionHandler:
+        topic: topic_commons
+        tag: tag_cn_bss_create_biz_log
+      dingTalkHandler:
+        topic: topic_commons
+        tag: tag_mc_ding_talk_oto_msg
+      sampleStatusHandler:
+        topic: topic_scm
+        tag: tag_sample_status
+      wmsRawDeliverHandler:
+        topic: topic_wms
+        tag: tag_delivery_order_create
+      wmsCancelDeliverHandler:
+        topic: topic_scm
+        tag: tag_cancel_deliver
+      wmsQcOrderHandler:
+        topic: topic_scm
+        tag: tag_create_qc
+      wmsWaveCreateResultHandler:
+        topic: topic_scm
+        tag: tag_process_wave_create_result_event
+      scmExportHandler:
+        topic: topic_commons
+        tag: tag_biz_sfds_exportation
+      wmsReturnOrderHandler:
+        topic: topic_scm
+        tag: tag_return_order_create
+      wmsOnShelvesHandler:
+        topic: topic_scm
+        tag: tag_on_shelves
+      wmsProcessCancelHandler:
+        topic: topic_scm
+        tag: tag_delivery_order_cancel
+
+      developStatusHandler:
+        topic: topic_scm
+        tag: tag_dev_child_status_change
+      developCancelResultHandler:
+        topic: topic_scm
+        tag: tag_dev_child_cancel_result
+      developCompleteInfoHandler:
+        topic: topic_scm
+        tag: tag_scm_goods_create
+      developCompleteNoticeHandler:
+        topic: topic_scm
+        tag: tag_develop_complete_notice
+      qcOrderUpdateSendMqHandler:
+        topic: topic_scm
+        tag: tag_qc_order_information_update
+      reOrderCreResHandler:
+        topic: topic_scm
+        tag: tag_repair_order_create_result
+      reOrderComProHandler:
+        topic: topic_scm
+        tag: tag_repair_order_complete_process
+      reOrderInsHandler:
+        topic: topic_scm
+        tag: tag_repair_order_in_storage
+      reOrderCancelHandler:
+        topic: topic_scm
+        tag: tag_repair_order_cancel
+      batchCodePriceUpdateHandler:
+        topic: topic_scm
+        tag: tag_batch_code_price_update
+      purchaseChangeHandler:
+        topic: topic_scm
+        tag: tag_purchase_child_order_update
+      wmsDeliverDispatchHandler:
+        topic: topic_scm
+        tag: tag_delivery_order_dispatch
+      dingTalkGroupMsgSendMqHandler:
+        topic: topic_commons
+        tag: tag_mc_ding_talk_group_msg
+      skuPriceUpdateHandler:
+        topic: topic_scm
+        tag: tag_sku_price_update
+      feiShuGroupHandler:
+        topic: topic_commons
+        tag: tag_mc_fei_shu_group_msg
+
+spring:
+  application:
+    name: scm
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      auto-commit: true
+      connection-test-query: SELECT 1
+      connection-timeout: 30000
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      maximum-pool-size: 15
+      minimum-idle: 5
+      pool-name: DatebookHikariCP
+    url: jdbc:mysql://47.107.148.192:3300/cn_scm?useUnicode=true&serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true
+    username: client
+    password: OBL7HZ1IVdre1P4RR40H
+    type: com.zaxxer.hikari.HikariDataSource
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  cloud:
+    nacos:
+      config:
+        server-addr: td-ops.htwig.com:30004
+        username: user_cn_java
+        password: "5zypuLZT91drfESp"
+        namespace: cn_conf_scm
+        group: DEFAULT_GROUP
+        extension-configs:
+          - data-id: scm-local.yaml
+            refresh: true
+            group: DEFAULT_GROUP
+      discovery:
+        server-addr: td-ops.htwig.com:30004
+        username: user_cn_java
+        password: "5zypuLZT91drfESp"
+        register-enabled: false
+        namespace: cn_web
+        group: DEFAULT_GROUP
+
+server:
+  port: 8081
+
+mybatis-plus:
+  mapper-locations: classpath:mybatis/*.xml
+
+springfox:
+  documentation:
+    enabled: true
+
+rocketmq:
+  name-server: td-ops3.htwig.com:9877
+  producer:
+    group: scm_producer
+    enable-msg-trace: true
+    access-key: rocketmq2
+    secret-key: TAlkk8Q55cmVLp8yoq9
+  consumer:
+    group: scm
+    topic: topic
+    enable-msg-trace: true
+    access-key: rocketmq2
+    secret-key: TAlkk8Q55cmVLp8yoq9
+
+dubbo:
+  application:
+    name: ${spring.application.name}
+  protocol:
+    name: dubbo
+    port: 20883
+  registry:
+    register: true
+    address: nacos://td-ops.htwig.com:30004
+    username: user_cn_java
+    password: "5zypuLZT91drfESp"
+    parameters:
+      namespace: cn_dubbo
+      group: dubbo21
+  config-center:
+    namespace: cn_dubbo
+    group: dubbo21
+
+quick-search:
+  quickSearchBoList:
+    - key: purchase_parent_no
+      tableName: purchase_parent_order
+      searchFieldName: purchase_parent_order_no
+      conditionFieldName: purchase_parent_order_no
+    - key: purchase_parent_spu
+      tableName: purchase_parent_order
+      searchFieldName: spu
+      conditionFieldName: spu
+    - key: purchase_parent_sku
+      tableName: purchase_parent_order_item
+      searchFieldName: sku
+      conditionFieldName: sku
+    - key: purchase_child_sku
+      tableName: purchase_child_order_item
+      searchFieldName: sku
+      conditionFieldName: sku
+    - key: purchase_parent_place_order
+      tableName: purchase_parent_order_change
+      searchFieldName: place_order_user
+      conditionFieldName: place_order_username
+    - key: purchase_parent_approve
+      tableName: purchase_parent_order_change
+      searchFieldName: approve_user
+      conditionFieldName: approve_username
+    - key: purchase_parent_variant_properties
+      tableName: purchase_child_order_item
+      searchFieldName: variant_properties
+      conditionFieldName: variant_properties
+    - key: sample_parent_no
+      tableName: sample_parent_order
+      searchFieldName: sample_parent_order_no
+      conditionFieldName: sample_parent_order_no
+    - key: sample_parent_spu
+      tableName: sample_parent_order
+      searchFieldName: spu
+      conditionFieldName: spu
+    - key: sample_child_sku
+      tableName: sample_child_order
+      searchFieldName: sku
+      conditionFieldName: sku
+    - key: sample_parent_place_order
+      tableName: sample_parent_order_change
+      searchFieldName: place_order_user
+      conditionFieldName: place_order_username
+    - key: sample_parent_approve
+      tableName: sample_parent_order_change
+      searchFieldName: approve_user
+      conditionFieldName: approve_username
+    - key: purchase_child_no
+      tableName: purchase_child_order
+      searchFieldName: purchase_child_order_no
+      conditionFieldName: purchase_child_order_no
+    - key: purchase_child_deliver_order
+      tableName: purchase_child_order_change
+      searchFieldName: purchase_deliver_order_no
+      conditionFieldName: purchase_deliver_order_no
+    - key: purchase_child_receipt_order
+      tableName: purchase_child_order_change
+      searchFieldName: purchase_receipt_order_no
+      conditionFieldName: purchase_receipt_order_no
+    - key: purchase_child_return_order
+      tableName: purchase_child_order_change
+      searchFieldName: purchase_return_order_no
+      conditionFieldName: purchase_return_order_no
+    - key: purchase_child_settle_order
+      tableName: purchase_child_order_change
+      searchFieldName: purchase_settle_order_no
+      conditionFieldName: purchase_settle_order_no
+    - key: purchase_child_supplier
+      tableName: purchase_child_order
+      searchFieldName: supplier_code
+      conditionFieldName: supplier_name
+    - key: purchase_child_confirm_user
+      tableName: purchase_child_order_change
+      searchFieldName: confirm_user
+      conditionFieldName: confirm_username
+    - key: purchase_child_receipt_user
+      tableName: purchase_child_order_change
+      searchFieldName: receipt_user
+      conditionFieldName: receipt_username
+    - key: purchase_child_qc_user
+      tableName: purchase_child_order_change
+      searchFieldName: qc_user
+      conditionFieldName: qc_username
+    - key: purchase_child_warehousing_user
+      tableName: purchase_child_order_change
+      searchFieldName: warehousing_user
+      conditionFieldName: warehousing_username
+    - key: sample_child_no
+      tableName: sample_child_order
+      searchFieldName: sample_child_order_no
+      conditionFieldName: sample_child_order_no
+    - key: sample_child_deliver_order
+      tableName: sample_child_order_change
+      searchFieldName: sample_deliver_order_no
+      conditionFieldName: sample_deliver_order_no
+    - key: sample_child_receipt_order
+      tableName: sample_child_order_change
+      searchFieldName: sample_receipt_order_no
+      conditionFieldName: sample_receipt_order_no
+    - key: sample_child_qc_order
+      tableName: sample_child_order_change
+      searchFieldName: sample_qc_order_no
+      conditionFieldName: sample_qc_order_no
+    - key: sample_child_warehousing_order
+      tableName: sample_child_order_change
+      searchFieldName: sample_warehousing_order_no
+      conditionFieldName: sample_warehousing_order_no
+    - key: sample_child_settle_order
+      tableName: sample_child_order_change
+      searchFieldName: sample_settle_order_no
+      conditionFieldName: sample_settle_order_no
+    - key: sample_child_supplier
+      tableName: sample_child_order
+      searchFieldName: supplier_code
+      conditionFieldName: supplier_name
+    - key: supplier_name
+      tableName: supplier
+      searchFieldName: supplier_code
+      conditionFieldName: supplier_name
+    - key: supplier_code
+      tableName: supplier
+      searchFieldName: supplier_name
+      conditionFieldName: supplier_code
+    - key: supplier_follow
+      tableName: supplier
+      searchFieldName: follow_user
+      conditionFieldName: follow_username
+    - key: supplier_dev
+      tableName: supplier
+      searchFieldName: dev_user
+      conditionFieldName: dev_username
+    - key: purchase_settle_order
+      tableName: purchase_settle_order
+      searchFieldName: purchase_settle_order_id
+      conditionFieldName: purchase_settle_order_no
+    - key: purchase_settle_order_confirm
+      tableName: purchase_settle_order
+      searchFieldName: confirm_user
+      conditionFieldName: confirm_username
+    - key: purchase_settle_order_examine
+      tableName: purchase_settle_order
+      searchFieldName: examine_user
+      conditionFieldName: examine_username
+    - key: purchase_settle_order_settle
+      tableName: purchase_settle_order
+      searchFieldName: settle_user
+      conditionFieldName: settle_username
+    - key: purchase_settle_order_pay
+      tableName: purchase_settle_order
+      searchFieldName: pay_user
+      conditionFieldName: pay_username
+    - key: purchase_settle_order_supplier
+      tableName: purchase_settle_order
+      searchFieldName: supplier_code
+      conditionFieldName: supplier_name
+    - key: process_settle_order
+      tableName: process_settle_order
+      searchFieldName: process_settle_order_id
+      conditionFieldName: process_settle_order_no
+    - key: process_settle_order_scan_complete
+      tableName: process_settle_order_scan
+      searchFieldName: complete_user
+      conditionFieldName: complete_username
+    - key: supplement_order_settle
+      tableName: supplement_order
+      searchFieldName: settle_user
+      conditionFieldName: settle_username
+    - key: supplement_order
+      tableName: supplement_order
+      searchFieldName: supplement_order_id
+      conditionFieldName: supplement_order_no
+    - key: supplement_order_submit
+      tableName: supplement_order
+      searchFieldName: submit_user
+      conditionFieldName: submit_username
+    - key: supplement_order_examine
+      tableName: supplement_order
+      searchFieldName: examine_user
+      conditionFieldName: examine_username
+    - key: supplement_order_confirm
+      tableName: supplement_order
+      searchFieldName: confirm_user
+      conditionFieldName: confirm_username
+    - key: supplement_order_supplement
+      tableName: supplement_order
+      searchFieldName: supplement_user
+      conditionFieldName: supplement_username
+    - key: deduct_order
+      tableName: deduct_order
+      searchFieldName: deduct_order_id
+      conditionFieldName: deduct_order_no
+    - key: deduct_order_submit
+      tableName: deduct_order
+      searchFieldName: submit_user
+      conditionFieldName: submit_username
+    - key: deduct_order_examine
+      tableName: deduct_order
+      searchFieldName: examine_user
+      conditionFieldName: examine_username
+    - key: deduct_order_confirm
+      tableName: deduct_order
+      searchFieldName: confirm_user
+      conditionFieldName: confirm_username
+    - key: deduct_order_supplement
+      tableName: deduct_order
+      searchFieldName: supplement_user
+      conditionFieldName: supplement_username
+    - key: sm_category
+      tableName: sm_category
+      searchFieldName: category_code
+      conditionFieldName: category_name
+    - key: sm_sku
+      tableName: subsidiary_material
+      searchFieldName: sm_sku
+      conditionFieldName: sm_sku
+    - key: sm_supplier
+      tableName: sm_supplier
+      searchFieldName: supplier_code
+      conditionFieldName: supplier_name
+    - key: process_name
+      tableName: process
+      searchFieldName: process_second_name
+      conditionFieldName: process_second_name
+    - key: process_template_name
+      tableName: process_template
+      searchFieldName: name
+      conditionFieldName: name
+    - key: process_template_sku
+      tableName: process_template
+      searchFieldName: type_value_name
+      conditionFieldName: type_value_name
+    - key: goods_process_spu
+      tableName: goods_process
+      searchFieldName: spu
+      conditionFieldName: spu
+    - key: process_desc_name
+      tableName: process_desc
+      searchFieldName: name
+      conditionFieldName: name
+    - key: process_create_username
+      tableName: process_order
+      searchFieldName: create_username
+      conditionFieldName: create_username
+    - key: process_receipt_username
+      tableName: process_order_extra
+      searchFieldName: receipt_username
+      conditionFieldName: receipt_username
+    - key: process_store_username
+      tableName: process_order_extra
+      searchFieldName: store_username
+      conditionFieldName: store_username
+    - key: process_complete_scan_username
+      tableName: process_order_extra
+      searchFieldName: complete_scan_username
+      conditionFieldName: complete_scan_username
+    - key: process_place_order_username
+      tableName: process_material_receipt
+      searchFieldName: place_order_username
+      conditionFieldName: place_order_username
+    - key: process_order_item_sku
+      tableName: process_order_item
+      searchFieldName: sku
+      conditionFieldName: sku
+    - key: process_order_no
+      tableName: process_order
+      searchFieldName: process_order_no
+      conditionFieldName: process_order_no
+    - key: process_receipt_item_sku
+      tableName: process_material_receipt_item
+      searchFieldName: sku
+      conditionFieldName: sku
+    - key: process_order_scan_no
+      tableName: process_order_scan
+      searchFieldName: process_order_no
+      conditionFieldName: process_order_no
+    - key: process_order_scan_name
+      tableName: process_order_scan
+      searchFieldName: process_name
+      conditionFieldName: process_name
+    - key: supplier_product_name
+      tableName: supplier_product_compare
+      searchFieldName: supplier_product_name
+      conditionFieldName: supplier_product_name
+    - key: plm_sku
+      tableName: plm_sku
+      searchFieldName: sku
+      conditionFieldName: sku
+    - key: sample_result_child_no
+      tableName: sample_child_order_result
+      searchFieldName: sample_child_order_no
+      conditionFieldName: sample_child_order_no
+    - key: sample_result_parent_no
+      tableName: sample_child_order_result
+      searchFieldName: sample_parent_order_no
+      conditionFieldName: sample_parent_order_no
+    - key: process_order_material_sku
+      tableName: process_order_material
+      searchFieldName: sku
+      conditionFieldName: sku
+    - key: deliver_order_item_sku_batch_code
+      tableName: purchase_deliver_order_item
+      searchFieldName: sku_batch_code
+      conditionFieldName: sku_batch_code
+    - key: return_order_item_sku_batch_code
+      tableName: purchase_return_order_item
+      searchFieldName: sku_batch_code
+      conditionFieldName: sku_batch_code
+    - key: purchase_child_sku_batch_code
+      tableName: purchase_child_order_item
+      searchFieldName: sku_batch_code
+      conditionFieldName: sku_batch_code
+    - key: purchase_raw_sku_batch_code
+      tableName: purchase_raw_receipt_order_item
+      searchFieldName: sku_batch_code
+      conditionFieldName: sku_batch_code
+    - key: defect_handling_sku
+      tableName: defect_handling
+      searchFieldName: sku
+      conditionFieldName: sku
+    - key: repair_order_plan_username
+      tableName: repair_order
+      searchFieldName: plan_create_username
+      conditionFieldName: plan_create_username
+    - key: channel_name
+      tableName: channel
+      searchFieldName: channel_id
+      conditionFieldName: channel_name
+    - key: supplement_order_handle_username
+      tableName: supplement_order
+      searchFieldName: handle_user
+      conditionFieldName: handle_username
+    - key: deduct_order_handle_username
+      tableName: deduct_order
+      searchFieldName: handle_user
+      conditionFieldName: handle_username
+
+spm:
+  employee:
+    processing:
+      orgChain: "ORG5154_ORG6954_ORG0170"
+# 产能池配置
+production-pool-config:
+  - production-pool-code: "capacity-pool-001"
+#  - production-pool-code: "capacity-pool-002"
+
+# 产能池信息1
+capacity-pool-001:
+  # 订单类型列表
+  order-types:
+    - "LIMITED"
+    - "NORMAL"
+  # 员工编号列表
+  employee-nos:
+    - "U012840"
+    - "U044072"
+    - "U051752"
+    - "U079400"
+    - "U143912"
+    - "U193064"
+    - "U322600"
+    - "U373288"
+    - "U437288"
+  # 排产周期（天）
+  production-cycle: "3"
+  # 上班时间
+  start-time: "09:00:00"
+  # 下班时间
+  end-time: "18:30:00"
+  # 节假日列表
+  holidays:
+    - "2023/8/6"
+    - "2023/8/13"
+    - "2023/8/23"
+    - "2023/8/28"
+  # 休息时间段列表
+  break-time-segments:
+    - start-time: "12:00:00"
+      end-time: "13:30:00"
+  # 工作时长（小时）
+  work-duration: "8.0"
+  # 最大排产单量
+  max-production-orders: "150"
+
+capacity-pool-002:
+  # 订单类型列表
+  order-types:
+    - "LIMITED"
+  # 员工编号列表
+  employee-nos:
+    - "U143912"
+    - "U193064"
+    - "U079400"
+    - "U322600"
+  # 排产周期（天）
+  production-cycle: "2"
+  # 上班时间
+  start-time: "09:00:00"
+  # 下班时间
+  end-time: "18:30:00"
+  # 节假日列表
+  holidays:
+    - "2023/8/6"
+    - "2023/8/13"
+    - "2023/8/20"
+    - "2023/8/27"
+  # 休息时间段列表
+  break-time-segments:
+    - start-time: "12:00:00"
+      end-time: "13:30:00"
+  # 工作时长（小时）
+  work-duration: "8.0"
+  # 最大排产单量
+  max-production-orders: "100"
+
+stringBuilderLogLimit: "3000"
+
+# 飞书配置信息
+feishu:
+  api: "https://open.feishu.cn/open-apis"
+  # 发审批单默认账号
+  defaultAccount: "U044072"
+  skuStockOutTable: "EanTsIFULhRBGftVd42cpcXDnyd"
+  skuStockOutSheet: "2YglKi"
+  skuStockOutReasonSheet: "F3gTbs"
+  skuStockOutOrderReasonSheet: "EYrouT"
+  skuStockOutMonthReasonSheet: "qTnhc4"
+  bfMsgRobotToken: "38187650-5e7f-4ee4-9e04-6872e7c769b9"
+  #在线表格
+  sheetTable:
+    #加工部人效（当月）
+    PROC_LABOR_EFFICIENCY_DAILY:
+      appToken: "NY3FbNqNOaPgOas2qUecZDtVnWc"
+      tableId: "tblxJUNAeMJlKojF"
+      columnNames:
+        timestamp: "日期"
+        shippedQuantity: "出货数"
+        laborCnt: "人数"
+    #2023年加工部平均人效
+    PROC_LABOR_EFFICIENCY_MONTHLY:
+      appToken: "AhPBbMmada9r9PshaORcvlf8nZb"
+      tableId: "tblC28IN62CbPFi4"
+      columnNames:
+        timestamp: "日期"
+        shippedQuantity: "出货数"
+        laborCnt: "人数"
+    #加工工序人效（当月）
+    PROC_PROCEDURE_EFFICIENCY_DAILY:
+      appToken: "Wc8ob54bnaKqcEsAXeEc9APcnxb"
+      tableId: "tbleSEWxujmabEix"
+      columnNames:
+        timestamp: "日期"
+        trimmingLaceCount: "修剪蕾丝"
+        trimmingLaceManpower: "人数"
+        stylingTeamStylingCount: "造型组造型"
+        stylingTeamStylingManpower: "人数 (1)"
+        coloringTeamStylingCount: "染色组造型"
+        coloringTeamStylingManpower: "人数 (5)"
+        coloringCount: "染色"
+        coloringManpower: "人数 (2)"
+        clipsElasticBandsCount: "卡子+松紧带"
+        clipsElasticBandsManpower: "人数 (3)"
+        sewingHeadbandsCount: "缝头套"
+        sewingHeadbandsManpower: "人数 (4)"
+    #加工工序人效（年）
+    PROC_PROCEDURE_EFFICIENCY_MONTHLY:
+      appToken: "Dw9ZbZA24ap000shDZDcGzitnvg"
+      tableId: "tblwh1oFTsEPMX3T"
+      columnNames:
+        dateStr: "日期"
+        trimmingLaceCount: "修剪蕾丝"
+        trimmingLaceManpower: "修剪蕾丝人数"
+        stylingTeamStylingCount: "造型"
+        stylingTeamStylingManpower: "造型人数"
+        coloringCount: "染色"
+        coloringManpower: "染色人数"
+        clipsElasticBandsCount: "卡子+松紧带"
+        clipsElasticBandsManpower: "卡子+松紧带人数"
+        sewingHeadbandsCount: "缝头套"
+        sewingHeadbandsManpower: "缝头套人数"
+    # 每日各平台加工需求
+    PROC_PLAT_PD_DAILY:
+      appToken: "WwJhbBTFgavNfzsdVyQcsQ0tneh"
+      tableId: "tbl8fPjXgRc7PFrF"
+      columnNames:
+        timestamp: "创建日期"
+        platForm: "平台"
+        processNum: "需求数"
+    # 每日各平台出库数
+    PROC_PLAT_PS_DAILY:
+      appToken: "WwJhbBTFgavNfzsdVyQcsQ0tneh"
+      tableId: "tblABV6vi3bvUpT7"
+      columnNames:
+        timestamp: "入库日期"
+        platForm: "平台"
+        storedNum: "出货数"
+
+# 退货返修单个产品提成金额
+repair:
+  preCommission: "10"
+  fixedCommission: "10"
+
+# 计算加工成本固定系数
+process:
+  cost:
+    coefficient: "1.5"
+
+# 加工单类型限制仓库编码配置
+procOrderTypeWarehouseRestricted:
+  WH:
+    - "WH01"
+
+
+# 生产属性配置
+produceDataAttr:
+  #蕾丝分类id
+  laceAreaAttributeNameId: "1620640427571933185"
+  #长度分类id
+  lengthAttributeNameId: "1620640427408355330"
+  #头套类目id
+  wigAttributeNameId: "1608730846746259458"
+  #头套类目名称
+  wigAttributeName: "头套"
+
+# spu配置信息
+spu:
+  spu-tip-map:
+    DU37463901: "该SKU内有一标签纸，请注意不要丢失！"
+    LM54122333: "该SKU内有一标签纸，请注意不要丢失！"
+
+# 质检
+qc:
+  # 采购单可创建质检单供应商
+  purchaseSupplierCodes:
+    - "test"
+    - "2233"
+  # 质检类型与仓库编码关系
+  qcOriginWarehouseMapping:
+    WH:
+      - "1"
+      - "2"
+    TT:
+      - "3"
+      - "4"
+    NORMAL:
+      - "8"
+
+scm:
+  bf:
+    batchSize: "10"
+    qc-bad-list:
+      - "不得了！【**%s**】供应商【**%s**】收货单出现了退货的情况，跟单员<at id=%s></at>快去瞧瞧，尽量确保这批货能准交！\n\n"
+      - "哎呀，【**%s**】供应商的收货单【**%s**】被退回来啦，跟单小能手<at id=%s></at>，快去瞅瞅，咱们得努力让这批宝贝按时出发哦！\n\n"
+      - "【**%s**】供应商【**%s**】收货单遇到了点小插曲，退货啦！跟单大侠<at id=%s></at>，赶紧出动，争取让这批货物顺利赶上交期的小火车！\n\n"
+      - "糟糕，【**%s**】供应商的【**%s**】的收货单显示要退货了，跟单超人<at id=%s></at>，快去现场看看，咱们得把这批货的准时交付大旗扛起来！\n\n"
+    qc-good-list:
+      - "哇塞！今天供应商回货质量堪比精雕细刻的艺术品！\n\n"
+      - "哇哦！今天的供应商回货质量高到简直可以拿去参展了！\n\n"
+      - "嘿，你听说了吗？今天的供应商回货，质量高到让人怀疑他们是不是偷偷请了质量大师来加持！\n\n"
+    receive-bad-list:
+      - "报！！！【**%s**】供应商有【**%s**】单货都已经发货超7天了，跟单员<at id=%s></at>问问物流是不是被劫持了！\n\n"
+      - "哎呀，【**%s**】供应商的【**%s**】单货已经“旅行”超过7天啦，跟单小侦探<at id=%s></at>，快去物流那里探探风声，看看它们是不是迷路了？\n\n"
+      - "不得了，【**%s**】供应商的【**%s**】单货已经“漂泊”7天以上了，跟单大侠<at id=%s></at>，快去物流那里打听打听，它们是不是遇到了什么奇遇？\n\n"
+      - "糟了，【**%s**】供应商的【**%s**】单货已经“离家出走”7天多了，跟单小能手<at id=%s></at>，快去物流那里“寻人启事”，看看它们是不是被哪个环节“扣留”了？\n\n"
+    receive-good-list:
+      - "YEAH！供应商发货物流时效完美控制在7天内，速度赛火箭！\n\n"
+      - "供应商发货嗖嗖快，物流七天必到来，时效完美真精彩，太棒啦！\n\n"
+      - "发货神速供应商，物流七天就亮相，时效控制顶呱呱，好得没法挡！\n\n"
+      - "供应商发货不含糊，七天物流走高速，时效完美真靠谱，赞声连连呼！\n\n"
+      - "发货如飞供应商，物流七天就登场，时效完美心中爽，真是太棒啦！\n\n"
+      - "供应商发货快如电，物流七天就见面，时效完美真耀眼，棒得没法言！\n\n"
+    purchase-bad-list:
+      - "丸辣！【**%s**】供应商本月整体准交率低于93%%跟单员<at id=%s></at>快去瞅瞅谁在摸鱼！\n\n"
+      - "供应商【**%s**】，本月准交差，九十三以下，<at id=%s></at>跟单员，速去了解它！\n\n"
+      - "警钟长鸣！【**%s**】供应商的本月准交率竟然没守住93%%的防线，跟单大侠<at id=%s></at>，你的江湖救急时刻到了！\n\n"
+    purchase-good-list:
+      - "BB们真棒！截至今日，本月采购全部准交~\n\n"
+      - "太好了！到今天为止，这个月的采购任务都准时搞定啦！\n\n"
+      - "哇塞！本月采购按时到位，真是给力到不行！\n\n"
+    bad-img-list:
+      - "F1852167714114666497tW1wzWRc"
+      - "F185216771411886080198knpLoU"
+      - "F1852167714114666496pmgphE94"
+      - "F1852167714118860800CgAmf6uS"
+      - "F1852168069036670978I6acoU6p"
+      - "F1852168069036670976mKAsm0nX"
+      - "F1852168069040865280FD12NYFG"
+      - "F1852168069036670977fjlTa06l"
+    good-img-list:
+      - "F18521687591422853120l1kXFTD"
+      - "F1852168759146479616H1X44wdo"
+      - "F1852168759142285313Rrj94tmJ"
+      - "F1852168759142285314BoMuKVs5"
+  category:
+    toolAccessoryId: "1608730846507184131"
+    wigId: "1600759865227440130"
+    syntheticHairId: "1635951047883730944"
+    wigRawId: "1601509104359243777"
+  produce-data-attr:
+    laceAreaAttributeNameId: "1620640427571933185"
+    completeLongSizeNameId: "1620640427492241409"
+    materialSizeNameId: "1620640427660013569"
+    whitelistNameIds:
+      - "1620640427408355330"
+    crotchLengthAttributeNameId: "1620640427408355330"
+    colorAttributeNameId: 1651554874392862720
+    colorSystemAttributeNameId: 1862040494385741824
+    colorSystemAttributeNameName: "颜色色系"
+    colorAttrRuleList:
+      - colorAttrValue: "NC"
+        colorSysAttrValue: "black"
+        priority: 4
+      - colorAttrValue: "1#色"
+        colorSysAttrValue: "black"
+        priority: 4
+      - colorAttrValue: "2#色"
+        colorSysAttrValue: "brown"
+        priority: 3
+      - colorAttrValue: "3#色"
+        colorSysAttrValue: "brown"
+        priority: 3
+      - colorAttrValue: "4#色"
+        colorSysAttrValue: "brown"
+        priority: 3
+      - colorAttrValue: "6#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "8#色"
+        colorSysAttrValue: "brown"
+        priority: 3
+      - colorAttrValue: "12#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "18#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "20#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "27#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "28#色"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "30#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "33#色"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "34#色"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "39#色"
+        colorSysAttrValue: "red"
+        priority: 1
+      - colorAttrValue: "60#色"
+        colorSysAttrValue: "grey"
+        priority: 1
+      - colorAttrValue: "135#色"
+        colorSysAttrValue: "red"
+        priority: 1
+      - colorAttrValue: "350#色"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "370#色"
+        colorSysAttrValue: "grey"
+        priority: 1
+      - colorAttrValue: "530#色"
+        colorSysAttrValue: "red"
+        priority: 1
+      - colorAttrValue: "613#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+      - colorAttrValue: "99J#色"
+        colorSysAttrValue: "burgundy"
+        priority: 1
+      - colorAttrValue: "AH"
+        colorSysAttrValue: "red"
+        priority: 1
+      - colorAttrValue: "TH"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "BLZ"
+        colorSysAttrValue: "brown"
+        priority: 3
+      - colorAttrValue: "DP"
+        colorSysAttrValue: "burgundy"
+        priority: 1
+      - colorAttrValue: "ZH"
+        colorSysAttrValue: "red"
+        priority: 1
+      - colorAttrValue: "GT"
+        colorSysAttrValue: "brown"
+        priority: 3
+      - colorAttrValue: "purple"
+        colorSysAttrValue: "purple"
+        priority: 1
+      - colorAttrValue: "ginger"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "Orange"
+        colorSysAttrValue: "ginger"
+        priority: 1
+      - colorAttrValue: "Silver"
+        colorSysAttrValue: "grey"
+        priority: 1
+      - colorAttrValue: "A99J"
+        colorSysAttrValue: "burgundy"
+        priority: 1
+      - colorAttrValue: "Green"
+        colorSysAttrValue: "green"
+        priority: 1
+      - colorAttrValue: "22#色"
+        colorSysAttrValue: "blonde"
+        priority: 2
+
+    attrVariantCompareList:
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1797938870369746944"
+        attributeValue: "02"
+        variantName: "Length"
+        variantValue: "2 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1620640427420938242"
+        attributeValue: "04"
+        variantName: "Length"
+        variantValue: "4 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1620640427425132545"
+        attributeValue: "06"
+        variantName: "Length"
+        variantValue: "6 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1620640427425132546"
+        attributeValue: "08"
+        variantName: "Length"
+        variantValue: "8 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490320671322114"
+        attributeValue: "10"
+        variantName: "length"
+        variantValue: "10 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490320671322115"
+        attributeValue: "12"
+        variantName: "length"
+        variantValue: "12 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490320675516417"
+        attributeValue: "14"
+        variantName: "length"
+        variantValue: "14 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490320679710721"
+        attributeValue: "16"
+        variantName: "length"
+        variantValue: "16 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490320679710722"
+        attributeValue: "18"
+        variantName: "length"
+        variantValue: "18 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490321069780994"
+        attributeValue: "20"
+        variantName: "length"
+        variantValue: "20 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490321073975298"
+        attributeValue: "22"
+        variantName: "length"
+        variantValue: "22 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490321078169601"
+        attributeValue: "24"
+        variantName: "length"
+        variantValue: "24 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490321078169602"
+        attributeValue: "26"
+        variantName: "length"
+        variantValue: "26 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490321082363905"
+        attributeValue: "28"
+        variantName: "length"
+        variantValue: "28 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490321086558210"
+        attributeValue: "30"
+        variantName: "length"
+        variantValue: "30 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490321086558211"
+        attributeValue: "32"
+        variantName: "length"
+        variantValue: "32 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490321090752513"
+        attributeValue: "34"
+        variantName: "length"
+        variantValue: "34 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490321090752514"
+        attributeValue: "36"
+        variantName: "length"
+        variantValue: "36 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490321094946818"
+        attributeValue: "38"
+        variantName: "length"
+        variantValue: "38 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1625490321099141122"
+        attributeValue: "40"
+        variantName: "length"
+        variantValue: "40 inches"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1797922308267016192"
+        attributeValue: "短尺寸"
+        variantName: "size"
+        variantValue: "short"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1797922308271210496"
+        attributeValue: "中尺寸"
+        variantName: "size"
+        variantValue: "medium"
+      - attributeNameId: "1620640427408355330"
+        attributeName: "档长尺寸"
+        attributeValueId: "1797922308271210497"
+        attributeValue: "长尺寸"
+        variantName: "size"
+        variantValue: "long"
+
+      - attributeNameId: "1626249415893155842"
+        attributeName: "Parting分式"
+        attributeValueId: "1684440297754431488"
+        attributeValue: "Left Side Parted"
+        variantName: "Parting"
+        variantValue: "Left Side Part"
+      - attributeNameId: "1626249415893155842"
+        attributeName: "Parting分式"
+        attributeValueId: "1684440297758625792"
+        attributeValue: "Right Side Parted"
+        variantName: "Parting"
+        variantValue: "Right Side Part"
+      - attributeNameId: "1626249415893155842"
+        attributeName: "Parting分式"
+        attributeValueId: "1684440297758625793"
+        attributeValue: "Left C Parted"
+        variantName: "Parting"
+        variantValue: "Left C Part"
+      - attributeNameId: "1626249415893155842"
+        attributeName: "Parting分式"
+        attributeValueId: "1684440297758625794"
+        attributeValue: "Right C Parted"
+        variantName: "parting"
+        variantValue: "Right C Part"
+      - attributeNameId: "1626249415893155842"
+        attributeName: "Parting分式"
+        attributeValueId: "1627969896111939586"
+        attributeValue: "Free Part"
+        variantName: "parting"
+        variantValue: "Free Parting"
+
+      - attributeNameId: "1650685682650038272"
+        attributeName: "网帽大小"
+        attributeValueId: "1650717460454555648"
+        attributeValue: "S码网帽"
+        variantName: "cap size"
+        variantValue: "Small (Circumference 21.5\")"
+      - attributeNameId: "1650685682650038272"
+        attributeName: "网帽大小"
+        attributeValueId: "1650717460458749952"
+        attributeValue: "M码网帽"
+        variantName: "cap size"
+        variantValue: "Medium (Circumference 22.5\")"
+      - attributeNameId: "1650685682650038272"
+        attributeName: "网帽大小"
+        attributeValueId: "1650717460462944256"
+        attributeValue: "L码网帽"
+        variantName: "cap size"
+        variantValue: "Large (Circumference 23.5\")"
+
+      - attributeNameId: "1651044774982668288"
+        attributeName: "预剪蕾丝"
+        attributeValueId: "1651045247842111488"
+        attributeValue: "是"
+        variantName: "Pre cut your lace?"
+        variantValue: "Yes (+$5.00)"
+      - attributeNameId: "1651044774982668288"
+        attributeName: "预剪蕾丝"
+        attributeValueId: "1651045247842111488"
+        attributeValue: "是"
+        variantName: "Pre cut your lace?"
+        variantValue: "Pre-cut Lace"
+      - attributeNameId: "1651044774982668288"
+        attributeName: "预剪蕾丝"
+        attributeValueId: "1651045247846305792"
+        attributeValue: "否"
+        variantName: "Pre cut your lace?"
+        variantValue: "Original Lace"
+      - attributeNameId: "1651044774982668288"
+        attributeName: "预剪蕾丝"
+        attributeValueId: "1651045247846305792"
+        attributeValue: "否"
+        variantName: "Pre cut your lace?"
+        variantValue: "No"
+  finance:
+    whitelist:
+      "U389672,U044072,U143912,U2207"
+  adjust:
+    purchaseApproveUser:
+      "U127528"
+    purchaseApproveUsername:
+      "陈文龙"
+  process:
+    createBatchCodeSupplierCode: "99"
+    deliveryWarehouseSku:
+      - deliveryWarehouseCode: "99"
+        skuList:
+          - "MU8613275195"
+          - "MU4545094993"
+          - "MU9962492870"
+          - "MU8143624460"
+          - "MU1067989440"
+          - "MU8266173887"
+          - "MU6185470533"
+          - "MU1471910831"
+          - "MU9173723339"
+          - "MU9717663850"
+          - "MU5603756174"
+          - "MU2562224009"
+          - "MU1474693510"
+          - "MU4942817419"
+          - "MU8032564537"
+          - "MU7015120886"
+          - "MU9014334957"
+          - "MU3460060476"
+          - "MU8295351770"
+          - "MU9144964453"
+  batch-code:
+    abnormalPriceTipsUsers:
+      - "U191528"
+      - "U209448"
+  attr:
+    categories:
+      - categoryName: "基础属性"
+        subCategoryNames:
+          - categoryName: "基础属性"
+          - categoryName: "图片属性"
+          - categoryName: "成品规格"
+          - categoryName: "LACE规格"
+          - categoryName: "分式规格"
+          - categoryName: "刘海规格"
+      - categoryName: "配件属性"
+        subCategoryNames:
+          - categoryName: "配件属性"
+      - categoryName: "产品属性"
+        subCategoryNames:
+          - categoryName: "产品属性"
+      - categoryName: "颜色属性"
+        subCategoryNames:
+          - categoryName: "颜色属性"
+      - categoryName: "工艺属性"
+        subCategoryNames:
+          - categoryName: "工艺属性"
+      - categoryName: "原料属性"
+        subCategoryNames:
+          - categoryName: "原料属性"
+    risk:
+      suppliers:
+        - "test"
+      rule:
+        #左闭右开
+        LOW:
+          min: 5
+          max: 6.5
+        MIDDLE:
+          min: 6.5
+          max: 7.5
+        HIGH:
+          min: 7.5
+          max: 99999999
+
+# 结算单补扣单配置信息
+settle:
+  # 价格确认人
+  confirmUser: "U127528"
+  # 审核人
+  examineUser: "U044072"
+  # 供应商
+  supplierName: "供应商"

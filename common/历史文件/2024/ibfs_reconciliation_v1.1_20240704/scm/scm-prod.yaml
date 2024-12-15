@@ -1,0 +1,8 @@
+scm:
+  finance:
+    prepaymentLink:
+      "https://bit.htwig.com/supply/purchase/#/reconciliation/prepaymentDetails?prepaymentOrderNo="
+    settlementLink:
+      "https://bit.htwig.com/supply/purchase/#/reconciliation/settleOrderDetails?settleOrderNo="
+    recoOrderLink:
+      "https://bit.htwig.com/supply/purchase/#/reconciliation/recoOrderDetails?financeRecoOrderNo="

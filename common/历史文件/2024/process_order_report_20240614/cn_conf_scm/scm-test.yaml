@@ -1,0 +1,19 @@
+feishu:
+  #在线表格
+  sheetTable:
+    # 每日各平台加工需求
+    PROC_PLAT_PD_DAILY:
+      appToken: "YVoubWGuUaxEICsLJX1cSCllnfc"
+      tableId: "tblmqZcQa45EnypL"
+      columnNames:
+        timestamp: "创建日期"
+        platForm: "平台"
+        processNum: "需求数"
+    # 每日各平台出库数
+    PROC_PLAT_PS_DAILY:
+      appToken: "YVoubWGuUaxEICsLJX1cSCllnfc"
+      tableId: "tblmGcHqMui8FY1H"
+      columnNames:
+        timestamp: "入库日期"
+        platForm: "平台"
+        storedNum: "出货数"

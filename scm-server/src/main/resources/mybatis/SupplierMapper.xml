@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.supplier.dao.SupplierMapper">
+    <sql id="common_where">
+        s.del_timestamp = 0
+        <if test="dto.supplierCode != null and dto.supplierCode != ''">
+            AND s.supplier_code = #{dto.supplierCode}
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND s.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierAliasList != null and dto.supplierAliasList.size() > 0">
+            AND s.supplier_alias IN
+            <foreach collection="dto.supplierAliasList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierName != null and dto.supplierName != ''">
+            AND s.supplier_name = #{dto.supplierName}
+        </if>
+        <if test="dto.supplierGrade != null">
+            AND s.supplier_grade = #{dto.supplierGrade}
+        </if>
+        <if test="dto.joinTimeStart != null">
+            <![CDATA[ AND s.join_time >= #{dto.joinTimeStart} ]]>
+        </if>
+        <if test="dto.joinTimeEnd != null">
+            <![CDATA[ AND s.join_time <= #{dto.joinTimeEnd}  ]]>
+        </if>
+        <if test="dto.followUser != null and dto.followUser != ''">
+            AND s.follow_user = #{dto.followUser}
+        </if>
+        <if test="dto.followUsername != null and dto.followUsername != ''">
+            AND s.follow_username = #{dto.followUsername}
+        </if>
+        <if test="dto.devUser != null and dto.devUser != ''">
+            AND s.dev_user = #{dto.devUser}
+        </if>
+        <if test="dto.devUsername != null and dto.devUsername != ''">
+            AND s.dev_username = #{dto.devUsername}
+        </if>
+        <if test="dto.capacityStart != null">
+            <![CDATA[ AND s.capacity >= #{dto.capacityStart} ]]>
+        </if>
+        <if test="dto.capacityEnd != null">
+            <![CDATA[ AND s.capacity <= #{dto.capacityEnd}  ]]>
+        </if>
+        <if test="dto.supplierStatus != null">
+            AND s.supplier_status = #{dto.supplierStatus}
+        </if>
+        <if test="dto.supplierStatusList != null and dto.supplierStatusList.size() > 0">
+            AND s.supplier_status IN
+            <foreach collection="dto.supplierStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierPayAccountBinding != null and dto.supplierPayAccountBinding.name() == 'TRUE'">
+            AND EXISTS (SELECT 1 FROM `supplier_payment_account` AS spa WHERE spa.`supplier_code` = s.`supplier_code`
+            AND spa.del_timestamp = 0 AND spa.supplier_payment_account_status = 'EFFECTIVE'
+            limit 1)
+        </if>
+        <if test="dto.supplierPayAccountBinding != null and dto.supplierPayAccountBinding.name() == 'FALSE'">
+            AND NOT EXISTS (SELECT 1 FROM `supplier_payment_account` AS spa WHERE spa.`supplier_code` =
+            s.`supplier_code`
+            AND spa.del_timestamp = 0 AND spa.supplier_payment_account_status = 'EFFECTIVE'
+            limit 1)
+        </if>
+        <if test="dto.supplierSubjectMaintain != null and dto.supplierSubjectMaintain.name() == 'TRUE'">
+            AND EXISTS (SELECT 1 FROM `supplier_subject` AS ss WHERE ss.`supplier_code` = s.`supplier_code`
+            AND ss.del_timestamp = 0
+            limit 1)
+        </if>
+        <if test="dto.supplierSubjectMaintain != null and dto.supplierSubjectMaintain.name() == 'FALSE'">
+            AND NOT EXISTS (SELECT 1 FROM `supplier_subject` AS ss WHERE ss.`supplier_code` = s.`supplier_code`
+            AND ss.del_timestamp = 0
+            limit 1)
+        </if>
+        <if test="dto.getSpuList != null and dto.getSpuList.size() > 0">
+            AND EXISTS (SELECT 1 FROM `develop_sample_order` AS dso WHERE dso.`supplier_code` = s.`supplier_code`
+            AND dso.del_timestamp = 0
+            AND dso.spu IN
+            <foreach item="item" collection="dto.getSpuList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            limit 1)
+        </if>
+    </sql>
+    <select id="selectSupplierPage" resultType="com.hete.supply.scm.server.scm.supplier.entity.vo.SupplierVo">
+        SELECT s.supplier_id AS supplierId,
+        s.version AS version,
+        s.supplier_code as supplierCode,
+        s.supplier_name as supplierName,
+        s.supplier_type as supplierType,
+        s.supplier_status as supplierStatus,
+        s.supplier_grade as supplierGrade,
+        s.capacity as capacity,
+        s.join_time as joinTime,
+        s.dev_user as devUser,
+        s.dev_username as devUsername,
+        s.follow_user AS followUser,
+        s.follow_username AS followUsername,
+        s.remarks AS remarks,
+        s.logistics_aging AS logisticsAging,
+        s.settle_time AS settleTime,
+        s.reconciliation_cycle AS reconciliationCycle,
+        s.create_time AS createTime,
+        s.supplier_alias AS supplierAlias
+        FROM supplier AS s
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY s.create_time DESC
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT
+        count(s.supplier_id) AS total
+        FROM supplier AS s
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.SupplierExportVo">
+        SELECT s.supplier_code as supplierCode,
+        s.supplier_name as supplierName,
+        s.supplier_type as supplierType,
+        s.supplier_status as supplierStatus,
+        s.supplier_grade as supplierGrade,
+        s.capacity as capacity,
+        s.join_time as joinTime,
+        s.dev_user as devUser,
+        s.dev_username as devUsername,
+        s.follow_user AS followUser,
+        s.follow_username AS followUsername,
+        s.remarks AS remarks,
+        s.supplier_export AS supplierExport,
+        s.supplier_invoicing AS supplierInvoicing,
+        s.tax_point AS taxPoint,
+        s.credit_code AS creditCode,
+        s.corporate_name AS corporateName,
+        s.legal_person AS legalPerson,
+        s.business_time_start AS businessTimeStart,
+        s.business_time_end AS businessTimeEnd,
+        s.country AS country,
+        s.province AS province,
+        s.city AS city,
+        s.address AS address,
+        s.remarks AS remarks,
+        s.logistics_aging AS logisticsAging,
+        s.settle_time AS settleTime,
+        s.reconciliation_cycle AS reconciliationCycle,
+        s.create_time AS createTime
+        FROM supplier AS s
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY s.create_time DESC
+    </select>
+    <select id="getSupplierQuickSearch"
+            resultType="com.hete.supply.scm.server.scm.supplier.entity.vo.SupplierQuickSearchVo">
+        SELECT
+        s.supplier_code as searchFieldName,
+        s.supplier_name as conditionFieldName
+        FROM supplier AS s
+        <where>
+            s.del_timestamp = 0
+            <if test="dto.searchContent != null and dto.searchContent != ''">
+                AND s.supplier_code LIKE concat('%',#{dto.searchContent}, '%')
+            </if>
+            <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+                AND s.supplier_code IN
+                <foreach collection="dto.supplierCodeList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY s.create_time DESC
+    </select>
+
+    <select id="listByLogisticsBo" resultType="com.hete.supply.scm.server.scm.supplier.entity.bo.SupplierLogisticsBo">
+        select
+        s.supplier_code as supplierCode,
+        s.logistics_aging as logisticsDays
+        from supplier as s
+        where del_timestamp=0
+        <if test="supplierCodeList != null and supplierCodeList.size() > 0">
+            and s.supplier_code in
+            <foreach collection="supplierCodeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+</mapper>

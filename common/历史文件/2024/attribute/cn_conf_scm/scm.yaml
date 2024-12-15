@@ -1,0 +1,30 @@
+# 配置之前询问韩子奇是否需要初始化如下属性类型？
+scm:
+  attr:
+    categories:
+      - categoryName: "基础属性"
+        subCategoryNames:
+          - categoryName: "基础属性"
+          - categoryName: "成品规格"
+          - categoryName: "LACE规格"
+          - categoryName: "刘海分式属性"
+      - categoryName: "配件属性"
+        subCategoryNames:
+          - categoryName: "配件属性"
+      - categoryName: "工艺属性"
+        subCategoryNames:
+          - categoryName: "工艺属性"
+    risk:
+      suppliers:
+        - "79"
+      rule:
+        #左闭右开
+        LOW:
+          min: 5
+          max: 6.5
+        MIDDLE:
+          min: 6.5
+          max: 7.5
+        HIGH:
+          min: 7.5
+          max: 99999999

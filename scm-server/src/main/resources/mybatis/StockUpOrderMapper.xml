@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.stockup.dao.StockUpOrderMapper">
+
+    <select id="searchStockUp" resultType="com.hete.supply.scm.server.scm.stockup.entity.vo.StockUpSearchVo">
+        SELECT suo.stock_up_order_id AS stockUpOrderId,
+        suo.version AS version,
+        suo.stock_up_order_no AS stockUpOrderNo,
+        suo.sku AS sku,
+        suo.category_name AS categoryName,
+        suo.stock_up_order_status AS stockUpOrderStatus,
+        suo.stock_up_price AS stockUpPrice,
+        suo.place_order_cnt AS placeOrderCnt,
+        suo.request_return_goods_date AS requestReturnGoodsDate,
+        suo.supplier_code AS supplierCode,
+        suo.supplier_name AS supplierName,
+        suo.create_user AS createUser,
+        suo.create_username AS createUsername,
+        suo.create_time AS createTime,
+        suo.follow_user AS followUser,
+        suo.follow_username AS followUsername,
+        suo.follow_remark AS followRemark,
+        suo.follow_date AS followDate,
+        suo.finish_user AS finishUser,
+        suo.finish_username AS finishUsername,
+        suo.finish_date AS finishDate
+        FROM stock_up_order AS suo
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY suo.create_time DESC
+    </select>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.StockUpExportVo">
+        SELECT suo.stock_up_order_id AS stockUpOrderId,
+        suo.version AS version,
+        suo.stock_up_order_no AS stockUpOrderNo,
+        suo.sku AS sku,
+        suo.category_name AS categoryName,
+        suo.stock_up_order_status AS stockUpOrderStatus,
+        suo.stock_up_price AS stockUpPrice,
+        suo.place_order_cnt AS placeOrderCnt,
+        suo.request_return_goods_date AS requestReturnGoodsDate,
+        suo.supplier_code AS supplierCode,
+        suo.supplier_name AS supplierName,
+        suo.create_user AS createUser,
+        suo.create_username AS createUsername,
+        suo.create_time AS createTime,
+        suo.follow_user AS followUser,
+        suo.follow_username AS followUsername,
+        suo.follow_date AS followDate,
+        suo.finish_user AS finishUser,
+        suo.finish_username AS finishUsername,
+        suo.finish_date AS finishDate,
+        suo.supplier_code AS supplierCode
+        FROM stock_up_order AS suo
+        <where>
+            <include refid="common_where"></include>
+        </where>
+        ORDER BY suo.create_time DESC
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM stock_up_order AS suo
+        <where>
+            <include refid="common_where"></include>
+        </where>
+    </select>
+
+    <sql id="common_where">
+        suo.del_timestamp = 0
+        <if test="dto.stockUpOrderNo != null and dto.stockUpOrderNo != ''">
+            AND suo.stock_up_order_no LIKE concat('%',#{dto.stockUpOrderNo}, '%')
+        </if>
+        <if test="dto.stockUpOrderNoList != null and dto.stockUpOrderNoList.size() > 0">
+            AND suo.stock_up_order_no IN
+            <foreach collection="dto.stockUpOrderNoList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.sku != null and dto.sku != ''">
+            AND suo.sku LIKE concat('%',#{dto.sku}, '%')
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND suo.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND suo.create_time <= #{dto.createTimeEnd}  ]]>
+        </if>
+        <if test="dto.createUser != null and dto.createUser != ''">
+            AND suo.create_user = #{dto.createUser}
+        </if>
+        <if test="dto.createUsername != null and dto.createUsername != ''">
+            AND suo.create_username = #{dto.createUsername}
+        </if>
+        <if test="dto.supplierCode != null and dto.supplierCode != ''">
+            AND suo.supplier_code = #{dto.supplierCode}
+        </if>
+        <if test="dto.supplierName != null and dto.supplierName != ''">
+            AND suo.supplier_name = #{dto.supplierName}
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND suo.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND suo.sku IN
+            <foreach collection="dto.skuList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.stockUpOrderStatusList != null and dto.stockUpOrderStatusList.size() > 0">
+            AND suo.stock_up_order_status IN
+            <foreach collection="dto.stockUpOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.notInStockUpOrderStatusList != null and dto.notInStockUpOrderStatusList.size() > 0">
+            AND suo.stock_up_order_status NOT IN
+            <foreach collection="dto.notInStockUpOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.supplierPdcNameItemList != null and dto.supplierPdcNameItemList.size() > 0">
+            AND (
+            <foreach collection="dto.supplierPdcNameItemList" item="item" separator="OR">
+                (suo.supplier_code = #{item.supplierCode} AND suo.sku = #{item.sku})
+            </foreach>
+            )
+        </if>
+    </sql>
+</mapper>

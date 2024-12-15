@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.dao.SkuAvgPriceMapper">
+
+    <update id="updateSkuAvgPrice">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE sku_avg_price AS sap
+            SET sap.accrue_cnt = sap.accrue_cnt + #{item.addAccrueCnt},
+            sap.accrue_price = sap.accrue_price + #{item.addAccruePrice}
+            WHERE sap.del_timestamp = 0
+            AND sap.sku = #{item.sku}
+            AND sap.sku_avg_price_biz_type = #{item.skuAvgPriceBizType}
+        </foreach>
+    </update>
+</mapper>

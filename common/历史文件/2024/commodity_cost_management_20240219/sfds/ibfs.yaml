@@ -1,0 +1,68 @@
+provider:
+  generic-export-map:
+    ibfs_goods_of_cost_one_export:
+      biz-system-code: IBFS
+      file-prefix: 商品成本列表信息
+      resource-name: IBFS系统-商品成本列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.CostFacade
+      method-name-count: getExportOneTotals
+      method-name-record: getExportOneList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.GoodsCostDto
+      header-alias:
+        warehouseName: 仓库
+        sku: 商品sku
+        skuEncode: 产品名称
+        yestInventory: 昨日库存数量
+        yestInventoryPrice: 昨日库存金额
+        yestWeightingPrice: 昨日加权单价
+        moInventory: 月初库存数量
+        moInventoryPrice: 月初库存金额
+        moWeightingPrice: 月初加权单价
+        yestUpdateTimeStr: 昨日更新时间
+        receiveOrderTimeStr: 最新接单时间
+        purchaseChildPurchasePrice: 最新采购单价
+        developPricingPurchasePrice: 最新核价单价
+        nuclearPriceTimeStr: 最新核价时间
+
+    ibfs_goods_of_cost_many_export:
+      biz-system-code: IBFS
+      file-prefix: 商品成本列表信息
+      resource-name: IBFS系统-商品成本列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.CostFacade
+      method-name-count: getExportManyTotals
+      method-name-record: getExportManyList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.GoodsCostDto
+      header-alias:
+        warehouseName: 多仓维度
+        sku: 商品sku
+        skuEncode: 产品名称
+        yestInventory: 昨日库存数量
+        yestInventoryPrice: 昨日库存金额
+        yestWeightingPrice: 昨日加权单价
+        moInventory: 月初库存数量
+        moInventoryPrice: 月初库存金额
+        moWeightingPrice: 月初加权单价
+        yestUpdateTimeStr: 昨日更新时间
+        receiveOrderTimeStr: 最新接单时间
+        purchaseChildPurchasePrice: 最新采购单价
+        developPricingPurchasePrice: 最新核价单价
+        nuclearPriceTimeStr: 最新核价时间
+  generic-import-map:
+    cost_import_change_data:
+      biz-system-code: IBFS
+      resource-name: 导入修改sku月初加权价
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.CostImportationFacade
+      method-name-record: importChangeMoData
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.CostImportDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[sku]": sku
+        "[月初加权单价]": moWeightingPriceMin

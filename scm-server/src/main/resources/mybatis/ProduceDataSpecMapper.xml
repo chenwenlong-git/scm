@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.dao.ProduceDataSpecMapper">
+
+    <select id="getProduceDataSpecInit"
+            resultType="com.hete.supply.scm.server.scm.entity.po.ProduceDataSpecPo">
+        SELECT *
+        FROM `produce_data_spec`
+        WHERE `produce_data_spec_id` NOT IN (SELECT pds.`produce_data_spec_id`
+        FROM `produce_data_spec` AS pds
+        INNER JOIN produce_data AS pd ON pds.`sku` = pd.`sku`)
+        AND `del_timestamp` = 0
+    </select>
+</mapper>

@@ -1,0 +1,51 @@
+provider:
+  generic-export-map:
+    scm_qc_detail_export:
+      biz-system-code: SCM
+      file-prefix: SCM质检单明细导出
+      resource-name: SCM系统-SCM明细导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.QcOrderFacade
+      method-name-count: getQcDetailExportTotals
+      method-name-record: getQcDetailExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.QcSearchDto
+      header-alias:
+        warehouse: 仓库
+        qcOrigin: 质检类型
+        qcOriginProperty: 质检标识
+        isUrgentOrder: 是否加急
+        receiveType: 入库类型
+        qcOrderNo: 质检单号
+        supplier: 供应商代码
+        supplierType: 供应商类型
+        supplierGrade: 供应商等级
+        sku: SKU
+        skuEncode: 产品名称
+        categoryName: 商品类目
+        batchCode: 批次码
+        handoverQuantity: 交接数量
+        amount: 需质检数量
+        completeQcAmount: 质检数量
+        goodAndDefectAmount: 明细质检数量
+        defectiveReason: 次品原因
+        qcType: 质检方式
+        processOrderNo: 加工单号
+        repairOrderNo: 返修单号
+        purchaseChildOrderNo: 采购订单号
+        receiveOrderNo: 收货单号
+        scmBizNo: 供应链单据号
+        goodQuantity: 正品数
+        defectiveQuantity: 次品数
+        qcPassRate: 检验合格率
+        handOverUser: 交接人
+        handOverTime: 交接时间
+        qcInspector: 质检员
+        taskFinishTime: 质检时间
+        taskFinishTimeMonth: 质检月份
+        auditor: 审核员
+        auditTime: 审核时间
+        qcUseHours: 质检耗时
+        planAmount: 计划上架数
+        compromiseCnt: 特采数
+        remark: 备注

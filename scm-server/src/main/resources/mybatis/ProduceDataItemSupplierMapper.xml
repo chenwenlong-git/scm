@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.dao.ProduceDataItemSupplierMapper">
+
+    <select id="getListBySuggestSupplierBoList"
+            resultType="com.hete.supply.scm.server.scm.entity.vo.ProduceDataItemGetSuggestSupplierVo">
+        SELECT pdis.sku AS sku,
+        pdis.supplier_code AS supplierCode
+        FROM produce_data_item_supplier AS pdis
+        INNER JOIN produce_data_item AS pdi ON pdi.produce_data_item_id = pdis.produce_data_item_id
+        <where>
+            pdis.del_timestamp = 0 AND pdi.del_timestamp = 0
+            <if test="boList != null and boList.size() > 0">
+                AND (pdis.sku, pdis.supplier_code) IN
+                <foreach collection="boList" item="item" separator="," open="(" close=")">
+                    (#{item.sku} , #{item.supplierCode})
+                </foreach>
+            </if>
+        </where>
+        ORDER BY pdis.produce_data_item_supplier_id DESC
+    </select>
+</mapper>

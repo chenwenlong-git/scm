@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.develop.dao.DevelopPamphletOrderMapper">
+
+    <select id="getListByGroupByStatus"
+            resultType="com.hete.supply.scm.server.scm.develop.entity.bo.DevelopPamphletGroupByStatusBo">
+        SELECT develop_pamphlet_order_status AS developPamphletOrderStatus,
+        COUNT(DISTINCT (develop_child_order_no)) AS num
+        FROM develop_pamphlet_order
+        WHERE del_timestamp = 0
+        <if test="supplierCodeList != null and supplierCodeList.size() > 0">
+            AND supplier_code IN
+            <foreach collection="supplierCodeList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        GROUP BY develop_pamphlet_order_status;
+    </select>
+</mapper>

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.supplier.purchase.dao.PurchaseReturnOrderMapper">
+    <sql id="search_where">
+        WHERE pro.del_timestamp = 0
+        <if test="dto.returnTypeList != null and dto.returnTypeList.size() > 0">
+            AND pro.return_type IN
+            <foreach collection="dto.returnTypeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.returnOrderStatusList != null and dto.returnOrderStatusList.size() > 0">
+            AND pro.return_order_status IN
+            <foreach collection="dto.returnOrderStatusList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="dto.authSupplierCode != null and dto.authSupplierCode.size() > 0">
+            AND pro.supplier_code IN
+            <foreach collection="dto.authSupplierCode" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.supplierCodeList != null and dto.supplierCodeList.size() > 0">
+            AND pro.supplier_code IN
+            <foreach collection="dto.supplierCodeList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.returnOrderNoList != null and dto.returnOrderNoList.size() > 0">
+            AND pro.return_order_no IN
+            <foreach collection="dto.returnOrderNoList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.returnOrderNoBySkuList != null and dto.returnOrderNoBySkuList.size() > 0">
+            AND pro.return_order_no IN
+            <foreach collection="dto.returnOrderNoBySkuList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+        <if test="dto.receiptUser != null and dto.receiptUser != ''">
+            AND pro.receiptUser = #{receiptUser}
+        </if>
+        <if test="dto.receiptUsername != null and dto.receiptUsername != ''">
+            AND pro.receipt_username LIKE concat('%',#{dto.receiptUsername}, '%')
+        </if>
+        <if test="dto.receiptTimeStart != null">
+            <![CDATA[ AND pro.receipt_time >= #{dto.receiptTimeStart} ]]>
+        </if>
+        <if test="dto.receiptTimeEnd != null">
+            <![CDATA[ AND pro.receipt_time <= #{dto.receiptTimeEnd} ]]>
+        </if>
+        <if test="dto.returnTimeStart != null">
+            <![CDATA[ AND pro.return_time >= #{dto.returnTimeStart} ]]>
+        </if>
+        <if test="dto.returnTimeEnd != null">
+            <![CDATA[ AND pro.return_time <= #{dto.returnTimeEnd} ]]>
+        </if>
+        <if test="dto.createTimeStart != null">
+            <![CDATA[ AND pro.create_time >= #{dto.createTimeStart} ]]>
+        </if>
+        <if test="dto.createTimeEnd != null">
+            <![CDATA[ AND pro.create_time <= #{dto.createTimeEnd} ]]>
+        </if>
+        <if test="dto.trackingNo != null and dto.trackingNo != ''">
+            AND pro.tracking_no = #{dto.trackingNo}
+        </if>
+        <if test="dto.returnOrderNo != null and dto.returnOrderNo != ''">
+            AND pro.return_order_no LIKE concat('%',#{dto.returnOrderNo}, '%')
+        </if>
+        <if test="dto.purchaseChildOrderNo != null and dto.purchaseChildOrderNo != ''">
+            AND pro.purchase_child_order_no LIKE concat('%',#{dto.purchaseChildOrderNo}, '%')
+        </if>
+        <if test="dto.sku != null and dto.sku != ''">
+            AND EXISTS (SELECT 1 FROM `purchase_return_order_item` AS proi1 WHERE proi1.`return_order_no` =
+            pro.`return_order_no`
+            AND proi1.del_timestamp = 0
+            AND proi1.sku LIKE concat('%',#{dto.sku}, '%') LIMIT 1)
+        </if>
+        <if test="dto.skuBatchCode != null and dto.skuBatchCode != ''">
+            AND EXISTS (SELECT 1 FROM `purchase_return_order_item` AS proi1 WHERE proi1.`return_order_no` =
+            pro.`return_order_no`
+            AND proi1.del_timestamp = 0
+            AND proi1.sku_batch_code LIKE concat('%',#{dto.skuBatchCode}, '%') LIMIT 1)
+        </if>
+        <if test="dto.skuList != null and dto.skuList.size() > 0">
+            AND EXISTS (SELECT 1 FROM `purchase_return_order_item` AS proi1 WHERE proi1.`return_order_no` =
+            pro.`return_order_no`
+            AND proi1.del_timestamp = 0
+            AND proi1.sku IN
+            <foreach item="item" collection="dto.skuList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            LIMIT 1
+            )
+        </if>
+        <if test="dto.skuBatchCodeList != null and dto.skuBatchCodeList.size() > 0">
+            AND EXISTS (SELECT 1 FROM `purchase_return_order_item` AS proi1 WHERE proi1.`return_order_no` =
+            pro.`return_order_no`
+            AND proi1.del_timestamp = 0
+            AND proi1.sku_batch_code IN
+            <foreach item="item" collection="dto.skuBatchCodeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            LIMIT 1
+            )
+        </if>
+        <if test="dto.skuEncode != null and dto.skuEncode != ''">
+            AND EXISTS (SELECT 1 FROM `purchase_return_order_item` AS proi1 WHERE proi1.`return_order_no` =
+            pro.`return_order_no`
+            AND proi1.del_timestamp = 0
+            AND proi1.sku_encode LIKE concat('%',#{dto.skuEncode}, '%') LIMIT 1)
+        </if>
+        <if test="dto.skuEncodeList != null and dto.skuEncodeList.size() > 0">
+            AND EXISTS (SELECT 1 FROM `purchase_return_order_item` AS proi1 WHERE proi1.`return_order_no` =
+            pro.`return_order_no`
+            AND proi1.del_timestamp = 0
+            AND proi1.sku_encode IN
+            <foreach item="item" collection="dto.skuEncodeList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            LIMIT 1
+            )
+        </if>
+        <if test="dto.purchaseChildOrderNoList != null and dto.purchaseChildOrderNoList.size() > 0">
+            AND pro.purchase_child_order_no IN
+            <foreach collection="dto.purchaseChildOrderNoList" item="code" separator="," open="(" close=")">
+                #{code}
+            </foreach>
+        </if>
+    </sql>
+    <select id="getExportList" resultType="com.hete.supply.scm.api.scm.entity.vo.PurchaseReturnExportVo">
+        SELECT proi.return_order_no AS returnOrderNo,
+        pro.return_order_status AS returnOrderStatus,
+        pro.return_type AS returnType,
+        proi.return_biz_no AS returnBizNo,
+        pro.supplier_code as supplierCode,
+        proi.sku AS sku,
+        proi.sku_batch_code AS skuBatchCode,
+        proi.sku_encode AS skuEncode,
+        proi.expected_return_cnt AS expectedReturnCnt,
+        proi.reality_return_cnt AS realityReturnCnt,
+        proi.receipt_cnt AS receiptCnt,
+        pro.logistics as logistics,
+        pro.tracking_no as trackingNo,
+        pro.return_create_username AS createUsername,
+        pro.create_time AS createTime,
+        pro.return_username AS returnUsername,
+        pro.return_time AS returnTime,
+        pro.receipt_username AS receiptUsername,
+        pro.receipt_time AS receiptTime,
+        pro.purchase_child_order_no AS purchaseChildOrderNo
+        FROM purchase_return_order_item AS proi
+        LEFT JOIN purchase_return_order AS pro
+        ON proi.return_order_no = pro.return_order_no
+        <include refid="search_where"></include>
+        AND proi.del_timestamp = 0
+        ORDER BY pro.purchase_return_order_id DESC
+    </select>
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM purchase_return_order_item AS proi
+        LEFT JOIN purchase_return_order AS pro
+        ON proi.return_order_no = pro.return_order_no
+        <include refid="search_where"></include>
+        AND proi.del_timestamp = 0
+    </select>
+    <select id="searchPurchaseReturnPage"
+            resultType="com.hete.supply.scm.server.scm.purchase.entity.vo.PurchaseReturnSearchVo">
+        SELECT pro.purchase_return_order_id AS purchaseReturnOrderId,
+        pro.return_order_no AS returnOrderNo,
+        pro.return_order_status AS returnOrderStatus,
+        pro.return_biz_no AS returnBizNo,
+        pro.return_user as returnUser,
+        pro.return_username AS returnUsername,
+        pro.return_time AS returnTime,
+        pro.logistics AS logistics,
+        pro.tracking_no AS trackingNo,
+        pro.expected_return_cnt AS expectedReturnCnt,
+        pro.reality_return_cnt AS realityReturnCnt,
+        pro.receipt_cnt as receiptCnt,
+        pro.supplier_code as supplierCode,
+        pro.supplier_name as supplierName,
+        pro.receipt_user as receiptUser,
+        pro.receipt_username AS receiptUsername,
+        pro.receipt_time AS receiptTime,
+        pro.return_type AS returnType,
+        pro.related_biz_no AS relatedBizNo,
+        pro.related_biz_type AS relatedBizType,
+        pro.related_biz_time AS relatedBizTime,
+        pro.note AS note,
+        pro.return_create_user AS returnCreateUser,
+        pro.return_create_username AS returnCreateUsername,
+        pro.purchase_child_order_no AS purchaseChildOrderNo,
+        pro.create_time AS createTime,
+        pro.create_user AS createUser,
+        pro.create_username AS createUsername,
+        pro.update_time AS updateTime,
+        pro.update_user AS updateUser,
+        pro.update_username AS updateUsername,
+        pro.platform AS platform,
+        pro.version AS version
+        FROM purchase_return_order AS pro
+        <include refid="search_where"></include>
+        ORDER BY pro.purchase_return_order_id DESC
+    </select>
+</mapper>

@@ -1,0 +1,51 @@
+provider:
+  generic-import-map:
+    process_order_import:
+      biz-system-code: SCM
+      resource-name: 导入加工单数据
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.ProcessOrderImportationFacade
+      method-name-record: importationProcess
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.ProcessOrderCreateImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      #表头转字段名
+      header-alias:
+        "[加工单类型]": processOrderType
+        "[平台]": platform
+        "[收货仓库编码]": warehouseCode
+        "[sku]": sku
+        "[加工数量]": processNum
+        "[业务约定日期]": deliverDate
+        "[加工备注]": processOrderNote
+        "[原料发货仓库编码]": deliveryWarehouseCode
+        "[原料sku1]": materialSku1
+        "[单个加工需求数1]": deliveryNum1
+        "[原料sku2]": materialSku2
+        "[单个加工需求数2]": deliveryNum2
+        "[原料sku3]": materialSku3
+        "[单个加工需求数3]": deliveryNum3
+        "[原料sku4]": materialSku4
+        "[单个加工需求数4]": deliveryNum4
+        "[原料sku5]": materialSku5
+        "[单个加工需求数5]": deliveryNum5
+        "[工序名称1]": processSecondName1
+        "[工序类别1]": processLabel1
+        "[工序名称2]": processSecondName2
+        "[工序类别2]": processLabel2
+        "[工序名称3]": processSecondName3
+        "[工序类别3]": processLabel3
+        "[工序名称4]": processSecondName4
+        "[工序类别4]": processLabel4
+        "[工序名称5]": processSecondName5
+        "[工序类别5]": processLabel5
+        "[加工描述名称1]": processDescName1
+        "[加工描述值1]": processDescValue1
+        "[加工描述名称2]": processDescName2
+        "[加工描述值2]": processDescValue2
+        "[加工描述名称3]": processDescName3
+        "[加工描述值3]": processDescValue3
+        "[加工描述名称4]": processDescName4
+        "[加工描述值4]": processDescValue4
+        "[加工描述名称5]": processDescName5
+        "[加工描述值5]": processDescValue5

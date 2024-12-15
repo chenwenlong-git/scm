@@ -1,0 +1,106 @@
+provider:
+  generic-export-map:
+    scm_develop_order_export:
+      biz-system-code: SCM
+      file-prefix: SCM开发子单信息
+      resource-name: SCM系统-开发子单列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.DevelopChildOrderFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.DevelopChildSearchDto
+      header-alias:
+        developChildOrderNo: 开发子单号
+        pamphletTimes: 打版次数
+        sku: sku
+        category: 商品类目
+        skuEncode: 产品名称
+        developParentOrderNo: 开发母单号
+        spu: spu
+        developChildOrderStatusName: 开发子单状态
+        skuDevTypeName: 开发类型
+        isUrgentName: 是否加急
+        supplierSamplePriceList: 供应商样品报价
+        pricingSamplePriceList: 样品核价
+        samplePrice: 样品价格
+        developPamphletOrderNo: 版单号
+        developPamphletOrderStatusName: 版单状态
+        supplierCode: 打版对象
+        developSampleNum: 样品数量
+        developReviewOrderNo: 审版单号
+        developReviewOrderStatusName: 审版单状态
+        reviewResultName: 审版结果
+        developPricingOrderNo: 核价单号
+        developPricingOrderStatusName: 核价状态
+        prenatalSampleOrderNo: 产前样单号
+        firstSampleOrderNo: 首单号
+        purchaseParentOrderNo: 采购需求单
+        devUsername: 开发人
+        followUsername: 跟单人
+        reviewUsername: 审版人
+        nuclearPriceUsername: 核价人
+        createTimeStr: 创建时间
+        pamphletDateStr: 开始打版时间
+        pamphletCompletionDateStr: 完成打版时间
+        firstSignTimeStr: 首次样品签收时间
+        followDateStr: 最新样品签收时间
+        submitReviewDateStr: 提交审版时间
+        reviewCompletionDateStr: 审版完成时间
+        submitTimeStr: 提交核价时间
+        pricingCompletionDateStr: 核价完成时间
+        newestCompletionDateStr: 上新完成时间
+        prenatalSampleOrderCreateTime: 产前样下单时间
+        firstSampleOrderCreateTime: 首单下单时间
+        firstSampleOrderWarehousingTime: 首单入库时间
+        purchaseParentOrderTime: 需求单下单时间
+    scm_develop_sample_order_export:
+      biz-system-code: SCM
+      file-prefix: SCM开发样品单信息
+      resource-name: SCM系统-开发样品单列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.DevelopSampleOrderFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.DevelopSampleOrderSearchDto
+      header-alias:
+        developSampleOrderNo: 样品单号
+        developChildOrderNo: 开发子单号
+        developParentOrderNo: 开发需求单号
+        developSampleMethodName: 处理方式
+        platform: 平台
+        supplierCode: 供应商代码
+        createUsername: 创建人
+        createTimeStr: 创建时间
+        sku: sku
+        skuEncode: 产品名称
+        skuBatchCode: sku批次码
+        developPricingOrderNo: 核价单号
+        samplePrice: 样品价格
+        developOrderPrice: 大货价格
+        handleUsername: 处理人
+        handleTimeStr: 处理时间
+        signTimeStr: 退样签收时间
+        receiptOrderNo: 关联单据号
+        shelvesTimeStr: 上架时间
+    scm_develop_pricing_order_export:
+      biz-system-code: SCM
+      file-prefix: SCM核价单列表信息
+      resource-name: SCM系统-核价单列表信息
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.DevelopPricingOrderFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.DevelopPricingOrderSearchDto
+      header-alias:
+        developPricingOrderNo: 核价单
+        developChildOrderNo: 开发子单号
+        developSampleOrderNo: 样品单号
+        developSampleMethodName: 处理方式
+        platform: 平台
+        supplierCode: 供应商代码
+        samplePrice: 样品价格
+        remarks: 备注
+

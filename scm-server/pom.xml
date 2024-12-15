@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.hete.support</groupId>
+        <artifactId>hete-spring-boot-parent</artifactId>
+        <version>1.4.12</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.hete.supply</groupId>
+    <artifactId>scm-server</artifactId>
+    <version>2023.02.18-RELEASE</version>
+
+    <properties>
+        <scm.api.version>2024.12.12-RELEASE</scm.api.version>
+        <udb.api.version>2024.06.11</udb.api.version>
+        <plm.api.version>2024.12.05-RELEASE</plm.api.version>
+        <wms.api.version>2024.12.02-RELEASE</wms.api.version>
+        <mc.api.version>2024.07.25</mc.api.version>
+        <bss.api.version>2023.02.18-RELEASE</bss.api.version>
+        <sfds.api.version>2023.05.25.1-RELEASE</sfds.api.version>
+        <sda.api.version>2024.11.19</sda.api.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.hete.support</groupId>
+            <artifactId>hete-quick-search</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hete.supply</groupId>
+            <artifactId>scm-api</artifactId>
+            <version>${scm.api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hete.supply</groupId>
+            <artifactId>udb-api</artifactId>
+            <version>${udb.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hete.supply</groupId>
+            <artifactId>plm-api</artifactId>
+            <version>${plm.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hete.supply</groupId>
+            <artifactId>wms-api</artifactId>
+            <version>${wms.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hete.supply</groupId>
+            <artifactId>mc-api</artifactId>
+            <version>${mc.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hete.supply</groupId>
+            <artifactId>bss-api</artifactId>
+            <version>${bss.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hete.supply</groupId>
+            <artifactId>sfds-api</artifactId>
+            <version>${sfds.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hete.supply</groupId>
+            <artifactId>sda-api</artifactId>
+            <version>${sda.api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hete.support</groupId>
+            <artifactId>hete-web-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hete.support</groupId>
+            <artifactId>hete-feign-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hete.support</groupId>
+            <artifactId>hete-database-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hete.support</groupId>
+            <artifactId>hete-mybatis-plus-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hete.support</groupId>
+            <artifactId>hete-nacos-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hete.support</groupId>
+            <artifactId>hete-dubbo-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hete.support</groupId>
+            <artifactId>hete-id-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hete.support</groupId>
+            <artifactId>hete-rocketmq-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hete.support</groupId>
+            <artifactId>hete-consistency-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hete.support</groupId>
+            <artifactId>hete-xxl-job-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-boot-starter</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,55 @@
+# 飞书配置信息
+feishu:
+
+  #在线表格
+  sheetTable:
+    #加工部人效（当月）
+    PROC_LABOR_EFFICIENCY_DAILY:
+      appToken: "VpWvbvCB3agghSsltG7ctl3jnqh"
+      tableId: "tblLH7XVdyl6kNtK"
+      columnNames:
+        timestamp: "日期"
+        shippedQuantity: "出货数"
+        laborCnt: "人数"
+    #2023年加工部平均人效
+    PROC_LABOR_EFFICIENCY_MONTHLY:
+      appToken: "VpWvbvCB3agghSsltG7ctl3jnqh"
+      tableId: "tbljvsXs6VjxOcCI"
+      columnNames:
+        timestamp: "日期"
+        shippedQuantity: "出货数"
+        laborCnt: "人数"
+    #加工工序人效（当月）
+    PROC_PROCEDURE_EFFICIENCY_DAILY:
+      appToken: "VpWvbvCB3agghSsltG7ctl3jnqh"
+      tableId: "tblbOmvLJm2okG4B"
+      columnNames:
+        timestamp: "日期"
+        trimmingLaceCount: "修剪蕾丝"
+        trimmingLaceManpower: "人数"
+        stylingTeamStylingCount: "造型组造型"
+        stylingTeamStylingManpower: "人数 (1)"
+        coloringTeamStylingCount: "染色组造型"
+        coloringTeamStylingManpower: "人数 (5)"
+        coloringCount: "染色"
+        coloringManpower: "人数 (2)"
+        clipsElasticBandsCount: "卡子+松紧带"
+        clipsElasticBandsManpower: "人数 (3)"
+        sewingHeadbandsCount: "缝头套"
+        sewingHeadbandsManpower: "人数 (4)"
+    #加工工序人效（年）
+    PROC_PROCEDURE_EFFICIENCY_MONTHLY:
+      appToken: "VpWvbvCB3agghSsltG7ctl3jnqh"
+      tableId: "tblQrBdU6ar5Gfjp"
+      columnNames:
+        dateStr: "日期"
+        trimmingLaceCount: "修剪蕾丝"
+        trimmingLaceManpower: "修剪蕾丝人数"
+        stylingTeamStylingCount: "造型"
+        stylingTeamStylingManpower: "造型人数"
+        coloringCount: "染色"
+        coloringManpower: "染色人数"
+        clipsElasticBandsCount: "卡子+松紧带"
+        clipsElasticBandsManpower: "卡子+松紧带人数"
+        sewingHeadbandsCount: "缝头套"
+        sewingHeadbandsManpower: "缝头套人数"

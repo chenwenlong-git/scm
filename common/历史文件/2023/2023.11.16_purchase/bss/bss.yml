@@ -1,0 +1,6 @@
+# 增加上传文件类型(*注意：正式环境是不是supply-prod-pri？)
+oss-biz-info-map:
+  scm_file:
+    bucket: supply-prod-pri
+    dir: scm/file
+    max-size: 20971520

@@ -1,0 +1,45 @@
+package com.hete.supply.scm.server.scm.supplier.entity.dto;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.util.List;
+
+/**
+ * @author ChenWenLong
+ * @date 2023/3/28 15:34
+ */
+@Data
+@NoArgsConstructor
+public class SupplierProductCompareEditDto {
+
+    @NotNull(message = "plm的产品ID不能为空")
+    @ApiModelProperty(value = "plm的产品ID")
+    private Long plmSkuId;
+
+    @NotNull(message = "version不能为空")
+    @ApiModelProperty(value = "version")
+    private Integer version;
+
+    @ApiModelProperty(value = "生产周期")
+    @DecimalMin(value = "0", message = "生产周期是数字")
+    private BigDecimal cycle;
+
+    @ApiModelProperty(value = "单件产能")
+    @NotNull(message = "单件产能不能为空")
+    @DecimalMin(value = "0", message = "单件产能是非负数")
+    @Digits(integer = 8, fraction = 2, message = "单件产能小数位数不能超过两位")
+    private BigDecimal singleCapacity;
+
+    @ApiModelProperty(value = "供应商产品对照列表")
+    @Valid
+    private List<SupplierProductCompareItemDto> supplierProductCompareEditList;
+
+
+}

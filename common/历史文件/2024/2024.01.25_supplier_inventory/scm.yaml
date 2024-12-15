@@ -1,0 +1,121 @@
+provider:
+  generic-export-map:
+    scm_supplier_inventory_record_export:
+      biz-system-code: SCM
+      file-prefix: SCM供应商库存记录导出
+      resource-name: SCM系统-SCM供应商库存记录导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.SupplierInventoryRecordFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.InventoryRecordDto
+      header-alias:
+        supplierCode: 供应商代码
+        sku: SKU
+        skuEncode: 产品名称
+        categoryName: 商品二级类目
+        supplierWarehouseStr: 仓库
+        supplierInventoryCtrlTypeStr: 供应商库存操作类型
+        beforeInventory: 操作前库存
+        ctrlCnt: 操作数量
+        afterInventory: 操作后库存
+        supplierInventoryCtrlReasonStr: 供应商库存操作原因
+        relateNo: 关联单据号
+        createTimeStr: 操作时间
+        createUsername: 操作人
+    scm_supplier_inventory_export:
+      biz-system-code: SCM
+      file-prefix: SCM供应商库存导出
+      resource-name: SCM系统-SCM供应商库存导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.SupplierInventoryFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.SearchInventoryDto
+      header-alias:
+        supplierCode: 供应商代码
+        sku: SKU
+        skuEncode: 产品名称
+        categoryName: 商品二级类目
+        inventoryStatusStr: 库存状态
+        stockUpInventory: 备货库存
+        selfProvideInventory: 自备库存
+    scm_stock_up_item_export:
+      biz-system-code: SCM
+      file-prefix: SCM备货单明细导出
+      resource-name: SCM系统-SCM备货单明细导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.StockUpFacade
+      method-name-count: getItemExportTotals
+      method-name-record: getItemExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.StockUpSearchDto
+      header-alias:
+        stockUpOrderNo: 备货单号
+        sku: SKU
+        skuEncode: 产品名称
+        categoryName: 分类名(一级或二级名称)
+        stockUpOrderStatusStr: 备货单状态
+        warehousingCnt: 入库数
+        returnGoodsCnt: 回货数
+        returnGoodsDateStr: 回货时间
+    scm_stock_up_export:
+      biz-system-code: SCM
+      file-prefix: SCM备货单导出
+      resource-name: SCM系统-SCM备货单导出
+      partition-size: 20
+      export-processor-type: DEFAULT
+      interface-name: com.hete.supply.scm.api.scm.facade.StockUpFacade
+      method-name-count: getExportTotals
+      method-name-record: getExportList
+      param-type: com.hete.supply.scm.api.scm.entity.dto.StockUpSearchDto
+      header-alias:
+        stockUpOrderNo: 备货单号
+        sku: SKU
+        skuEncode: 产品名称
+        categoryName: 商品二级类目
+        stockUpOrderStatusStr: 状态
+        stockUpPrice: 预计单价
+        warehousingCnt: 入库数
+        returnGoodsCnt: 回货数
+        placeOrderCnt: 下单数
+        createUsername: 创建人
+        createTimeStr: 创建时间
+        followUsername: 跟单人
+        followDateStr: 跟单时间
+        finishUsername: 完结人
+        finishDateStr: 完结时间
+  generic-import-map:
+    stock_up_import:
+      biz-system-code: SCM
+      resource-name: 备货单导入创建
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.StockUpImportationFacade
+      method-name-record: importCreateStockUp
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.StockUpImportDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[SKU]": sku
+        "[下单数]": placeOrderCnt
+        "[供应商代码]": supplierCode
+        "[要求回货时间]": requestReturnGoodsDateStr
+    purchase_child_confirm_import:
+      biz-system-code: SCM
+      resource-name: 导入采购子单批量跟单确认
+      interface-name: com.hete.supply.scm.api.scm.importation.facade.PurchaseChildImportationFacade
+      method-name-record: importPurchaseConfirmPurchaseChild
+      param-type: com.hete.support.api.entity.dto.ImportationReqDto
+      generic-param-type: com.hete.supply.scm.api.scm.importation.entity.dto.PurchaseChildConfirmImportationDto
+      partition-size: 20
+      import-processor-type: DEFAULT
+      use-prop-headers-temp: true
+      #表头转字段名
+      header-alias:
+        "[采购子单单号]": purchaseChildOrderNo
+        "[收货仓库编码]": warehouseCode
+        "[采购价]": purchasePrice

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.production.dao.SkuRiskMapper">
+    <select id="selectAllIds" resultType="java.lang.Long">
+        select sku_risk_id
+        from sku_risk
+        where del_timestamp = 0
+    </select>
+</mapper>

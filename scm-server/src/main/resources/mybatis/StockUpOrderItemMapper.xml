@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.stockup.dao.StockUpOrderItemMapper">
+
+    <select id="getSumCntByNoList" resultType="com.hete.supply.scm.server.scm.stockup.entity.bo.StockUpCntBo">
+        SELECT suoi.stock_up_order_no AS stockUpOrderNo,
+        SUM(suoi.warehousing_cnt) AS warehousingCnt,
+        SUM(suoi.return_goods_cnt) AS returnGoodsCnt
+        FROM stock_up_order_item AS suoi
+        WHERE del_timestamp = 0
+        <if test="noList != null and noList.size() > 0">
+            AND suoi.stock_up_order_no IN
+            <foreach collection="noList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY suoi.stock_up_order_no
+    </select>
+</mapper>

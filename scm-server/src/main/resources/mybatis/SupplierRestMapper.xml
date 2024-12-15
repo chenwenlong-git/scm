@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hete.supply.scm.server.scm.supplier.dao.SupplierRestMapper">
+    <sql id="commonConditions">
+        where sr.del_timestamp = 0
+        <if test="dto.supplierCode != null and dto.supplierCode != ''">
+            and sr.supplier_code = #{dto.supplierCode}
+        </if>
+    </sql>
+
+    <select id="getExportTotals" resultType="java.lang.Integer">
+        select count(1)
+        from supplier_rest sr
+        <include refid="commonConditions"/>
+    </select>
+
+    <select id="getByPage" resultType="com.hete.supply.scm.api.scm.entity.vo.SupplierRestExportVo">
+        select
+        sr.supplier_code,
+        sr.rest_date
+        from supplier_rest sr
+        <include refid="commonConditions"/>
+        order by sr.supplier_rest_id
+    </select>
+</mapper>

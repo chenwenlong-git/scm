@@ -1,0 +1,68 @@
+provider:
+  generic-export-map:
+    scm_sku_prod_supplier_process_export:
+      biz-system-code: SCM
+      file-prefix: 商品信息导出
+      resource-name: SCM系统-商品信息列表
+      partition-size: 20
+      export-processor-type: DEFAULT
+      param-type: com.hete.supply.scm.api.scm.entity.dto.PlmSkuSearchDto
+      sheet-list:
+        - sheet-name: 商品信息
+          interface-name: com.hete.supply.scm.api.scm.facade.SkuProdFacade
+          method-name-count: getExportTotals
+          method-name-record: getExportList
+          header-alias:
+            sku: SKU
+            skuEncode: 产品名称
+            spu: SPU
+            skuDevType: 开发类型
+            categoryName: 商品类目
+            isSale: 是否在售
+            platName: 在售平台
+            skuRisk: 质量风险
+            singleCapacity: 单件产能
+            cycle: 生产周期
+            weight: 克重
+            tolerance: 公差
+            color: 颜色
+            laceArea: 蕾丝面积
+            fileLengthSize: 档长尺寸
+            completeLongSize: 完成长尺寸
+            netCapSize: 网帽大小
+            partedBangs: 刘海分式
+            parting: Parting分式
+            material: 材料
+            contour: 廓形
+            colorSystem: 颜色色系
+            colorMixPartition: 颜色混合分区
+            leftSideLength: 左侧档长尺寸
+            leftFinish: 左侧完成长
+            rightSideLength: 右侧档长尺寸
+            rightFinish: 右侧完成长
+            symmetry: 是否对称
+            preselectionLace: 预剪蕾丝
+        - sheet-name: 商品+供应商信息
+          interface-name: com.hete.supply.scm.api.scm.facade.ProduceDataFacade
+          method-name-count: getSkuProcessExportTotals
+          method-name-record: getSkuProcessExportList
+          header-alias:
+            categoryName: 商品类目
+            spu: SPU
+            sku: SKU
+            skuEncode: 产品名称
+            supplierCodeJoining: 供应商
+            supplierProductNameJoining: 供应商产品名称
+            goodsPurchasePrice: 商品采购价格
+            latestGoodsPurchasePriceJoining: 最新采购价格
+            sort: 优先级
+            rawSku: 原料SKU
+            rawSkuEncode: 产品名称
+            skuCnt: 原料配比
+            process1: 工序1
+            process2: 工序2
+            process3: 工序3
+            process4: 工序4
+            process5: 工序5
+            process6: 工序6
+            process7: 工序7
